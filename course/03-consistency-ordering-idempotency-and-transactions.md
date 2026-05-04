@@ -127,18 +127,59 @@ This exact state must be fresh because otherwise this exact product failure happ
 
 ### Scope Changes The Cost
 
-The word `strong` is not precise enough by itself because the cost changes with the scope.
+The word `strong` is not precise enough by itself.
+Strong over what?
+One row?
+One booking workflow?
+The whole world?
 
-In the Airbnb story, keep three scopes separate:
+Imagine two guests try to book the same listing for the same nights.
+The product failure you are trying to prevent is simple:
+both guests should not walk away believing they own the same room.
 
-| Scope | Example | What it protects | Why it matters |
+That failure lives in a small place first.
+It lives around the scarce inventory fact:
+
+> listing `L` is either available or reserved for nights `D1-D3`.
+
+If that fact is wrong, the product is broken.
+So the first answer is not "make Airbnb strongly consistent globally."
+The first answer is:
+
+> "The strong boundary is the listing-date reservation decision. For one listing and one date range, only one booking should win."
+
+Now widen the scope one step.
+After the reservation decision, a few related facts must not contradict it:
+
+- the host calendar should not still show those nights as open
+- the booking record should not say confirmed while payment says failed without a repair path
+- the guest confirmation should not be sent for a booking that did not actually reserve the room
+
+That is still not global truth.
+It is one booking workflow.
+It may require a local transaction, idempotent payment attempt, outbox event, or compensation path, but the reason is still explainable:
+all facts around this one booking should tell the same story.
+
+The expensive version is much wider:
+every search result, every region, every cache, and every user everywhere sees the newest booking state immediately.
+That would reduce stale search results, but it forces far more coordination into read paths that usually do not need it.
+A common design is cheaper and more honest:
+search may lag, but the final booking commit checks the scarce listing-date truth before accepting the reservation.
+
+Use this ladder:
+
+| Scope | What it means in the booking story | What it protects | Cost shape |
 |---|---|---|---|
-| local scarce state | one listing, one date range | the room is sold only once | this is the correctness boundary |
-| bounded shared state | host calendar, payment attempt, confirmation state | related facts agree around one booking | coordination is still explainable |
-| global fresh truth | every region seeing every booking immediately | all users everywhere read the same latest truth | much higher latency and coordination cost |
+| local scarce state | one listing and one date range decides the winner | the room is sold only once | narrowest correctness boundary; easiest to defend |
+| bounded booking workflow | reservation, host calendar, payment attempt, and confirmation agree around one booking | the user does not see contradictory booking facts | more coordination, but still tied to one business action |
+| global fresh truth | every region, search result, cache, and user reads the latest booking immediately | nobody anywhere sees stale availability | highest latency and coordination cost; rarely the first requirement |
 
 Most strong interview answers do not jump to the third row.
-They start with the first row, expand only when the product forces it, and say what extra cost each wider scope buys.
+They start with the smallest state that can create a real correctness failure, then expand only when the product forces it.
+
+An interview-ready sentence:
+
+> "I need strong consistency for the scarce listing-date reservation decision, not global fresh truth for every Airbnb read. Search can be slightly stale as long as the final booking commit checks the authoritative availability and rejects the loser safely."
 
 ## Ordering Means Sequence Only Where Sequence Changes Meaning
 
