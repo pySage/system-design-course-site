@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "answer": {
+      "type": "string"
+    },
+    "checkBack": {
+      "type": "string"
+    },
+    "suggestedLessonSlug": {
+      "type": ["string", "null"]
+    },
+    "followups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "maxItems": 3
+    }
+  },
+  "required": [
+    "answer",
+    "checkBack",
+    "suggestedLessonSlug",
+    "followups"
+  ],
+  "additionalProperties": false
+}

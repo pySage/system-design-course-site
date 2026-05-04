@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "summary": {
+      "type": "string"
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "misses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "repairExplanation": {
+      "type": "string"
+    },
+    "recommendedStage": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "nextRepairMove": {
+      "type": "string"
+    },
+    "shouldGoDeeper": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "score",
+    "summary",
+    "strengths",
+    "misses",
+    "repairExplanation",
+    "recommendedStage",
+    "nextRepairMove",
+    "shouldGoDeeper"
+  ],
+  "additionalProperties": false
+}

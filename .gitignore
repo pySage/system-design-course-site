@@ -1,0 +1,23 @@
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
+
+# Dependencies and local environment
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+# Local learner-state, learner credentials, and Codex session runtime files
+runtime/
+
+# Local planning documents
+docs/personalization-understanding-mvp-plan.md
+docs/production-source-library.md
+
+# Local browser automation artifacts
+.playwright-cli/
+output/playwright/

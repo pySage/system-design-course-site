@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>07 - Hybrid Systems and Guided Walkthroughs | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/concept-diagrams.css" />
+  </head>
+  <body class="lesson-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link" href="labs.html">Labs</a>
+        <a class="topbar-link" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li class="is-active"><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-lesson">
+      <p class="eyebrow">Layer 7 of 8</p>
+      <h1>07 - Hybrid Systems and Guided Walkthroughs</h1>
+      <p class="hero-copy">Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="labs.html">Practice This In Labs</a>
+        <a class="button button-secondary" href="index.html">Back To Overview</a>
+      </div>
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="06-archetypes-and-component-maps.html"><span>Previous</span><strong>06 - Archetypes and Component Maps</strong></a>
+      <a class="pager-card" href="08-drill-order-and-mock-interview-prep.html"><span>Next</span><strong>08 - Drill Order and Mock Interview Prep</strong></a>
+    </nav>
+
+
+    <section class="chapter-frame" id="chapter-frame">
+      <div class="section-heading">
+        <p class="eyebrow">Layer 7 of 8</p>
+        <h2>This Chapter In The Story</h2>
+        <p>Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Why This Chapter</p>
+          <p>Real product <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> such as YouTube, Airbnb, and Slack stop making sense when collapsed into one <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>. This chapter teaches path ownership so different stresses, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a>, and <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure modes</a> can be explained cleanly.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Where We Are</p>
+          <p>You are at the composition layer of the map: one product, several meaningful paths, and different <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> owning different slices.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">How It Fits</p>
+          <p>This chapter is where single-shape intuition turns into real-product reasoning.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Goals</p>
+          <ul class="framed-list"><li>Split a product into meaningful paths before drawing one architecture</li><li>Assign path owners from <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> instead of product branding</li><li>Distinguish true co-owners from subordinate supporting paths</li><li>Use a path-owner test so <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> thinking does not become over-splitting</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <article class="prose">
+      <h1 id="07-hybrid-systems-and-guided-walkthroughs">07 - Hybrid Systems and Guided Walkthroughs</h1>
+<p>At the end of Chapter 06, one rule started to break.</p>
+<p>You learned to hear one dominant <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code>. That was correct. But now real product <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> start pushing back.</p>
+<p>Imagine the interviewer says:</p>
+<blockquote>Design YouTube.</blockquote>
+<p>If you answer, &quot;This is a media system,&quot; you are right about upload, storage, transcoding, and playback delivery.</p>
+<p>But you have not yet explained search, homepage ranking, recommendation <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a>, or candidate retrieval.</p>
+<p>If you answer, &quot;This is a discovery system,&quot; you are right about search and recommendations.</p>
+<p>But you have not yet explained <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> upload acceptance, blob storage, or transcoding backlog.</p>
+<p>The product is not confused. The answer is.</p>
+<p>This chapter teaches the move that fixes that: separate the product by path, then ask who owns each path.</p>
+<p>The shape of the move is:</p>
+<pre class="code-block"><code class="language-text">one product name
+        |
+        v
+several user-visible paths
+        |
+        v
+different dominant pressures
+        |
+        v
+different owners, tradeoffs, and first failures</code></pre>
+<p>If you skip the middle two lines, a <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> product turns into one blurry diagram.</p>
+<h2 id="when-one-honest-label-is-not-enough">When One Honest Label Is Not Enough</h2>
+<p>A <code><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a></code> system is not just a product with many technologies.</p>
+<p>It is a product whose important paths are owned by different <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a></code>.</p>
+<p>That means different paths have different:</p>
+<ul><li>dominant <code><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></code></li><li>expected components</li><li>core <code><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></code></li><li>first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code></li></ul>
+<p>This is why a whole-product label sometimes becomes too blunt.</p>
+<p>The point is not to say more labels. The point is to stop flattening unlike paths into one vague diagram.</p>
+<h2 id="what-hybrid-does-and-does-not-mean">What Hybrid Does And Does Not Mean</h2>
+<p><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">Hybrid</a> does mean:</p>
+<ul><li>one product contains paths with different <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a></li><li>one path may be about <code><a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a></code> while another is about retrieval speed</li><li>one path may want a very different <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a> or <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> budget from another</li></ul>
+<p><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">Hybrid</a> does not mean:</p>
+<ul><li>the product uses both SQL and NoSQL</li><li>the product has web and mobile clients</li><li>the company has many teams</li><li>every subsystem deserves equal explanation time</li></ul>
+<p>That last mistake matters most.</p>
+<p>Strong <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> answers separate what is primary from what is supportive. Weak <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> answers either collapse everything together or promote every side feature into a co-equal owner.</p>
+<h2 id="start-by-slicing-the-product">Start By Slicing The Product</h2>
+<p>The first split is usually:</p>
+<ul><li>what owns the <code><a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a></code>?</li><li>what owns the primary <code><a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a></code>?</li></ul>
+<p>That is a good start, but it is not always enough.</p>
+<p>Sometimes the read side itself still contains very different paths.</p>
+<p>For YouTube:</p>
+<ul><li>upload is one path</li><li>discovery is another path</li><li>playback delivery is another path again</li></ul>
+<p>So the more general rule is:</p>
+<p>What path am I explaining right now?</p>
+<p>Then ask:</p>
+<ol><li>What user-visible job is this path doing?</li><li>What <code><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></code> dominates here?</li><li>Which <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> owns that <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>?</li><li>What stays secondary on this path?</li></ol>
+<p>That fourth question keeps the answer disciplined. It stops discovery from hijacking upload. It stops compliance export from hijacking message delivery. It stops side chat from hijacking dispatch.</p>
+<p>Use this quick test before declaring a separate owner:</p>
+<div class="table-wrap"><table><thead><tr><th>Ask</th><th>If the answer is yes</th></tr></thead><tbody><tr><td>Does this path have a different user-visible job?</td><td>it may deserve its own explanation</td></tr><tr><td>Does a different <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> dominate?</td><td>the owner may change</td></tr><tr><td>Would the expected components change?</td><td>separate the path before drawing</td></tr><tr><td>Would the main <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> or first failure change?</td><td>name that ownership explicitly</td></tr><tr><td>Is it merely a supporting feature?</td><td>keep it secondary</td></tr></tbody></table></div>
+<p>The goal is not to split forever. The goal is to split until the design stops lying.</p>
+<h2 id="walkthrough-1-design-youtube-without-flattening-it">Walkthrough 1: Design YouTube Without Flattening It</h2>
+<p>This is the cleanest place to feel <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> ownership.</p>
+<p>The full product contains at least three important paths:</p>
+<h3 id="upload-path">Upload Path</h3>
+<p>The creator sends a large video file. The system must durably accept it, store it, and move it into processing.</p>
+<p>Owner: <code>Media Storage / Delivery</code></p>
+<p>Why:</p>
+<ul><li>large blob ingest dominates the path</li><li><a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> acceptance matters before later work can happen</li><li>background transformation is part of the main runtime shape</li></ul>
+<p>What that pulls in:</p>
+<ul><li>chunked upload service</li><li><a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> object storage</li><li>metadata state for processing and visibility</li><li>transcoding <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> and workers</li></ul>
+<p>Expected <code><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></code>: eager versus lazy transcoding.</p>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: transcoding backlog or slow <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> accept under burst.</p>
+<p>What stays secondary here: homepage ranking and search retrieval.</p>
+<h3 id="discovery-path">Discovery Path</h3>
+<p>A viewer wants to find something worth watching. Now the hard part is retrieval, ranking, <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a>, and candidate selection.</p>
+<p>Owner: <code>Search / Discovery</code></p>
+<p>Why:</p>
+<ul><li>query <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and ranking quality dominate</li><li>text search, recommendation, and <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> matter more than blob ingest</li><li>the user-visible pain is &quot;I cannot find the right video,&quot; not &quot;a segment file was stored&quot;</li></ul>
+<p>What that pulls in:</p>
+<ul><li><a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> pipeline</li><li>query and ranking services</li><li>feature or recommendation inputs</li><li><a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a> around hot search and homepage requests</li></ul>
+<p>Expected <code><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></code>: <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> versus query <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and ranking cost.</p>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: stale discovery, hot queries, or overloaded ranking paths.</p>
+<p>What stays secondary here: upload <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durability</a> and transcode throughput.</p>
+<h3 id="playback-path">Playback Path</h3>
+<p>The viewer has already chosen a video. Now the problem becomes serving it smoothly.</p>
+<p>Owner: <code>Media Storage / Delivery</code></p>
+<p>Why:</p>
+<ul><li>edge delivery, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> locality, bitrate adaptation, and origin protection dominate</li><li>the user-visible pain is buffering, not poor search ranking</li><li>this is a <a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a>, but it is still not discovery-owned</li></ul>
+<p>What that pulls in:</p>
+<ul><li>CDN</li><li>segment or manifest serving</li><li>origin protection</li><li>playback telemetry</li></ul>
+<p>Expected <code><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></code>: <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> efficiency versus <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> and invalidation complexity.</p>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: cold-<a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> origin overload or rebuffering spikes.</p>
+<p>This is the first big lesson of <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrids</a>: do not force the whole read side under one owner if the read side itself contains different dominant pain.</p>
+<p>The YouTube map now looks like this:</p>
+<pre class="code-block"><code class="language-text">creator upload  -&gt; media owner      -&gt; durable blob + processing backlog
+viewer discovery -&gt; discovery owner -&gt; retrieval, ranking, freshness
+viewer playback -&gt; media owner      -&gt; CDN, segments, buffering, origin protection</code></pre>
+<p>Same product. Different path. Different pain.</p>
+<h3 id="shared-seam">Shared Seam</h3>
+<p>The paths are separate, but they are not unrelated.</p>
+<p>The seam is the shared video truth:</p>
+<div class="table-wrap"><table><thead><tr><th>Seam question</th><th>YouTube answer</th></tr></thead><tbody><tr><td>What is the source truth?</td><td>video metadata, ownership, processing state, and <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> blob references</td></tr><tr><td>What flows downstream?</td><td><a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> events, recommendation features, playback manifests, analytics signals</td></tr><tr><td>What <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> is expected?</td><td>upload acceptance must be honest immediately; discovery and analytics can lag within a budget; playback needs a usable rendition before it is promised</td></tr><tr><td>What should not happen?</td><td>discovery should not invent videos that were not accepted, and playback should not depend on recommendation <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a></td></tr></tbody></table></div>
+<p>This is where <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> answers often fail. They split paths, but never explain what the paths share and what each path is allowed to borrow.</p>
+<h2 id="walkthrough-2-airbnb">Walkthrough 2: Airbnb</h2>
+<p><code>Airbnb</code> feels simple from the UI: search, click, book.</p>
+<p>But the paths are not owned by the same <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">system shape</a>.</p>
+<h3 id="listing-discovery-path">Listing Discovery Path</h3>
+<p>Owner: <code>Search / Discovery</code></p>
+<p>Why:</p>
+<ul><li>retrieval, filtering, ranking, and geography shape the experience</li><li>some <code><a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a></code> lag is tolerable compared with booking <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a></li></ul>
+<p>What that pulls in:</p>
+<ul><li><a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">search-oriented index</a></li><li>ranking or filtering logic</li><li><a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a>-friendly <a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a></li></ul>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: stale listing visibility, hot search filters, or ranking drift.</p>
+<h3 id="booking-path">Booking Path</h3>
+<p>Owner: <code><a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">Transactional</a> / Ledger</code></p>
+<p>Why:</p>
+<ul><li>scarce inventory and money movement dominate</li><li>stale truth is dangerous here</li><li><a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> and duplicate booking attempts are product failures</li></ul>
+<p>What that pulls in:</p>
+<ul><li>reservation boundary</li><li>payment or booking state store</li><li><code><a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a></code></li><li><a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> side-effect publication</li></ul>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: double-booking, duplicate charge, or missing confirmation side effect.</p>
+<p>This is why &quot;Airbnb is a search system&quot; is incomplete and &quot;Airbnb is a booking system&quot; is also incomplete.</p>
+<p>The honest answer is path-owned.</p>
+<p>A flat answer says:</p>
+<blockquote>&quot;Airbnb needs search, booking, payment, and messaging.&quot;</blockquote>
+<p>A repaired answer says:</p>
+<blockquote>&quot;I would split listing discovery from booking. Discovery is search-owned because filters, geo, ranking, and tolerable <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> lag dominate. Booking is <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a>-owned because the scarce listing-date state and payment attempt cannot duplicate or disagree. Messaging and notifications are supporting paths unless the <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> makes them central.&quot;</blockquote>
+<p>Shared seam:</p>
+<div class="table-wrap"><table><thead><tr><th>Seam question</th><th>Airbnb answer</th></tr></thead><tbody><tr><td>What is the source truth?</td><td>listing calendar, booking state, payment state, host/listing metadata</td></tr><tr><td>What is derived?</td><td><a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">search index</a>, ranking features, recommendations, emails, analytics</td></tr><tr><td>What must be fresh?</td><td>the booking commit decision for a scarce date range</td></tr><tr><td>What may lag?</td><td>search visibility, recommendations, confirmation side effects, analytics</td></tr></tbody></table></div>
+<p>The seam matters because search can show a listing that looked <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">available</a> a moment ago, but booking must still check the fresh source before selling it.</p>
+<h2 id="walkthrough-3-slack">Walkthrough 3: Slack</h2>
+<p><code>Slack</code> is a strong <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> because the product keeps the same surface while the paths quietly change shape.</p>
+<h3 id="message-send-path">Message Send Path</h3>
+<p>Owner: <code>Messaging / Delivery</code></p>
+<p>Why:</p>
+<ul><li>per-channel <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a>, delivery, presence, and <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> dominate</li><li>the user-visible pain is missed or delayed messages</li></ul>
+<p>What that pulls in:</p>
+<ul><li>append-only message log</li><li>connection layer</li><li>presence</li><li>offline <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a></li><li><a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> workers</li></ul>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: large-channel <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> amplification.</p>
+<h3 id="history-search-path">History Search Path</h3>
+<p>Owner: <code>Search / Discovery</code></p>
+<p>Why:</p>
+<ul><li>retrieval over old messages is a different read shape from live delivery</li><li>looser <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> is acceptable than on the send path</li><li><a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> and ranking matter more than connection management</li></ul>
+<p>What that pulls in:</p>
+<ul><li><a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> pipeline</li><li><a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">search-oriented index</a></li><li>query path and ranking</li></ul>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: stale search results or hot query <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<h3 id="compliance-export-path">Compliance / Export Path</h3>
+<p>Owner: <code>Event Ingestion / Observability</code></p>
+<p>Why:</p>
+<ul><li>this path is event-pipeline-shaped, even if the product is not an observability product</li><li>long-running export and audit workflows behave differently from live delivery</li><li>retention, replay, batch processing, and downstream consumers become central</li></ul>
+<p>What that pulls in:</p>
+<ul><li><a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> event capture</li><li>export or sink processors</li><li>retention and replay handling</li></ul>
+<p>Typical first <code><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></code>: consumer lag or export backlog.</p>
+<p>This path is real. But it still does not own the whole product. That is the discipline <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrids</a> require.</p>
+<p>A flat answer says:</p>
+<blockquote>&quot;Slack is messaging with search and compliance.&quot;</blockquote>
+<p>A repaired answer says:</p>
+<blockquote>&quot;Live send is messaging-owned because <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, online/offline delivery, and local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> dominate. History search is discovery-owned because old-message retrieval and <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a>-lagged <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> dominate. Compliance export is a support path shaped like event ingestion because retention, replay, and export backlog dominate, but it should not steal ownership from the live send path.&quot;</blockquote>
+<p>Shared seam:</p>
+<div class="table-wrap"><table><thead><tr><th>Seam question</th><th>Slack answer</th></tr></thead><tbody><tr><td>What is the source truth?</td><td>accepted messages in the conversation or channel log, with workspace/tenant boundaries</td></tr><tr><td>What flows downstream?</td><td>delivery attempts, search <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a>, notifications, compliance/export feeds, analytics</td></tr><tr><td>What <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> is expected?</td><td>live delivery should be fast and ordered locally; search/export can lag with visible backlog</td></tr><tr><td>What should not happen?</td><td>search, export, or analytics should not redefine whether the message was accepted</td></tr></tbody></table></div>
+<h2 id="production-lab-path-ownership-in-real-systems">Production Lab: Path Ownership In Real Systems</h2>
+<p>Now the production stories can be read as <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> ownership problems.</p>
+<h3 id="slack-shared-channels-one-product-boundary-stopped-being-enough">Slack Shared Channels: One Product Boundary Stopped Being Enough</h3>
+<p>Slack&#39;s shared-channels writeup is useful here because it shows a product feature forcing architecture to cross the old workspace boundary. If you flatten that into &quot;Slack is messaging,&quot; you miss the important design change.</p>
+<p>Situation:</p>
+<p>A channel is no longer cleanly owned by one workspace. People from separate workspaces need shared visibility, membership behavior, message access, and API behavior around one channel-shaped product object.</p>
+<p>Path read:</p>
+<ul><li>live message behavior still smells like messaging</li><li>shared-channel data placement changes because two workspaces interact with one channel</li><li>user visibility and <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> behavior become cross-boundary problems</li></ul>
+<p>Learner decision:</p>
+<p>Does the shared channel become a totally new <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>, or does messaging still own the path while the ownership boundary changes?</p>
+<p>Interview-ready sentence:</p>
+<blockquote>&quot;Slack Connect-style channels keep the core messaging path, but the ownership boundary changes because channel data and user visibility now cross workspace boundaries.&quot;</blockquote>
+<p>Source: <a href="https://slack.engineering/how-slack-built-shared-channels/">Slack Engineering, &quot;How Slack Built Shared Channels&quot;</a></p>
+<h3 id="netflix-open-connect-playback-is-not-discovery">Netflix Open Connect: Playback Is Not Discovery</h3>
+<p>Netflix Open Connect is a good reminder that a media product&#39;s playback path can be its own serious design conversation. Search and recommendation help the user choose content, but repeated playback traffic is dominated by edge placement, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> health, peering, and fallback.</p>
+<p>Situation:</p>
+<p>A viewer has already chosen a show. The system&#39;s job is no longer ranking titles; it is delivering the same popular bytes smoothly to many viewers across different networks.</p>
+<p>Path read:</p>
+<ul><li>discovery helps the user decide what to play</li><li>playback owns the heavy <a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a> once the video starts</li><li>repeated bytes should be served close to viewers when possible</li><li><a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> health and fallback decide whether a regional problem becomes a playback incident</li></ul>
+<p>Learner decision:</p>
+<p>If an interviewer asks for Netflix, which path owns the answer after the user presses play?</p>
+<p>Interview-ready sentence:</p>
+<blockquote>&quot;For Netflix-like systems, discovery and playback should not be flattened. Discovery is retrieval and ranking; playback delivery is media serving, edge placement, origin protection, and fallback when a delivery path is unhealthy.&quot;</blockquote>
+<p>Source: <a href="https://openconnect.netflix.com/en/">Netflix Open Connect</a></p>
+<h3 id="uber-h3-the-hot-path-owns-the-answer">Uber H3: The Hot Path Owns The Answer</h3>
+<p>Uber&#39;s H3 writeup is not a full dispatch architecture, but it shows why location shape deserves explicit ownership. In an Uber-like design, chat, payments, trip history, and analytics are real, but the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a> is still nearby supply, matching <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>, and assignment safety.</p>
+<p>Situation:</p>
+<p>A rider opens the app and asks for a car nearby. The system may later need payment, chat, receipts, and history, but the moment that defines the product is matching live demand with live nearby supply.</p>
+<p>Path read:</p>
+<ul><li>nearby lookup is not a generic database lookup</li><li>location changes quickly, so the <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> owns the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a></li><li>assignment safety matters because the same driver should not be promised to two riders</li><li>chat and payment are important supporting paths, not the primary owner of dispatch</li></ul>
+<p>Learner decision:</p>
+<p>Which path gets first-class architecture attention before you mention side features?</p>
+<p>Interview-ready sentence:</p>
+<blockquote>&quot;Uber&#39;s core path is geo/dispatch-owned because nearby lookup and live assignment dominate; payments and chat are important supporting paths, but they should not steal ownership from the matching loop.&quot;</blockquote>
+<p>Source: <a href="https://www.uber.com/blog/h3/">Uber Engineering, &quot;H3: Uber&#39;s Hexagonal Hierarchical Spatial Index&quot;</a></p>
+<h2 id="do-not-promote-every-side-feature-into-a-co-owner">Do Not Promote Every Side Feature Into A Co-Owner</h2>
+<p>Once people learn <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrids</a>, they often over-correct.</p>
+<p>They start naming every side path as if it deserves equal billing.</p>
+<p>That is also weak.</p>
+<p>A path deserves explicit ownership only if it changes the design conversation in a real way:</p>
+<ul><li>it changes the dominant <code><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></code></li><li>it changes the expected components</li><li>it changes the main <code><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></code></li><li>it changes the first thing likely to break</li></ul>
+<p>If not, keep it subordinate.</p>
+<p>Examples:</p>
+<ul><li><code>WhatsApp</code> attachments do not make the core product mostly media-first</li><li><code>Uber</code> rider-driver chat does not take ownership away from dispatch</li><li><code>Airbnb</code> host messaging is real, but it does not dominate the booking path</li></ul>
+<p><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">Hybrid</a> thinking is not about saying more things. It is about separating the few things that actually need to be separated.</p>
+<h3 id="borderline-drill-split-or-keep-secondary">Borderline Drill: Split Or Keep Secondary?</h3>
+<p>Use this when you are unsure whether a path deserves its own owner.</p>
+<div class="table-wrap"><table><thead><tr><th>Product moment</th><th>Candidate path</th><th>Decision</th></tr></thead><tbody><tr><td>WhatsApp group text send</td><td>media attachments</td><td>keep secondary unless the ask is attachment-heavy</td></tr><tr><td>Airbnb booking flow</td><td>host messaging</td><td>keep secondary unless the ask is host-guest communication</td></tr><tr><td>Slack enterprise export</td><td>compliance/export</td><td>separate only when retention, replay, and legal access are in scope</td></tr><tr><td>Uber trip request</td><td>rider-driver chat</td><td>keep secondary to dispatch unless communication reliability is the actual ask</td></tr><tr><td>YouTube after video starts</td><td>playback delivery</td><td>separate, because buffering, edge <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a>, and origin protection are different from discovery</td></tr></tbody></table></div>
+<p>The stop rule is simple: split when the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, components, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, or first failure changes enough that one owner would lie. Keep it secondary when it is real but does not change the main path you are explaining.</p>
+<h2 id="difficulty-ladder-hybrid-reads">Difficulty Ladder: Hybrid Reads</h2>
+<h3 id="easy-airbnb">Easy: Airbnb</h3>
+<p>The UI flow is simple: search, view, book.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;Airbnb is a search system with bookings.&quot;</blockquote>
+<p>A better answer says:</p>
+<blockquote>&quot;Listing discovery is search-owned because retrieval, filters, ranking, and some <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> lag dominate there. Booking is <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a>-owned because scarce inventory, payment, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, and duplicate prevention dominate there.&quot;</blockquote>
+<p>This is easy because the two major paths are visible in the product flow.</p>
+<h3 id="medium-slack">Medium: Slack</h3>
+<p>Slack looks like one messaging product, but its paths split.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;Slack is messaging, and search is just another feature.&quot;</blockquote>
+<p>A better answer says:</p>
+<blockquote>&quot;Live send and delivery are messaging-owned, while history search is discovery-owned because old-message retrieval, <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a>, ranking, and <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> lag are a different problem from live delivery. Compliance export may deserve a separate explanation when enterprise retention and replay are in scope, but it still should not hijack the core send path.&quot;</blockquote>
+<p>This is medium because the same message data appears in multiple paths with different access needs.</p>
+<h3 id="hard-uber">Hard: Uber</h3>
+<p>Uber has dispatch, maps, chat, payment, fraud, notifications, and trip history.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;Uber is a <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> of geo, messaging, payments, and analytics, so I will design all of them.&quot;</blockquote>
+<p>A better answer says:</p>
+<blockquote>&quot;The <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a> is geo/dispatch-owned because live location, nearby supply, matching <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>, and assignment races dominate. Payments and chat are real supporting paths, but unless the <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> focuses on them, they should stay secondary so the dispatch loop remains clear.&quot;</blockquote>
+<p>This is hard because the product has many real subsystems. <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">Hybrid</a> discipline means choosing which ones own the current answer.</p>
+<h2 id="phrase-drill-path-ownership">Phrase Drill: Path Ownership</h2>
+<p>Practice this sentence shape:</p>
+<blockquote>&quot;For this product, I would split ___ from ___. The ___ path is owned by ___ because ___. The ___ path is owned by ___ because ___. I would keep ___ secondary because it does not change the main <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> of this path.&quot;</blockquote>
+<p>Examples:</p>
+<div class="table-wrap"><table><thead><tr><th>Product</th><th>Interview-ready ownership sentence</th></tr></thead><tbody><tr><td>YouTube</td><td>&quot;I would split upload, discovery, and playback. Upload and playback are media-owned because blob processing and edge serving dominate; discovery is search-owned because retrieval, ranking, and <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> dominate.&quot;</td></tr><tr><td>Airbnb</td><td>&quot;I would split listing discovery from booking. Discovery is search-owned because filters and ranking dominate; booking is <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a>-owned because scarce inventory and money movement dominate.&quot;</td></tr><tr><td>Slack</td><td>&quot;I would split live messaging from history search. Live messaging is messaging-owned because <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> and <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> dominate; history search is discovery-owned because <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> and retrieval dominate.&quot;</td></tr></tbody></table></div>
+<h2 id="path-split-rehearsal">Path-Split Rehearsal</h2>
+<p>Suppose your YouTube answer starts flat:</p>
+<blockquote>&quot;This is basically a media platform, so I would use object storage, a CDN, and some search.&quot;</blockquote>
+<p>That answer is too flat. It leaves the discovery path blurry and treats search like a bolt-on.</p>
+<p>Repair it by splitting the product into paths before you draw:</p>
+<blockquote>&quot;I would split YouTube by path before drawing one architecture. The upload and playback-serving paths are owned by media storage and delivery because blob handling, transcoding, and edge serving dominate there. The discovery path is owned by search and recommendation because retrieval, ranking, and <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> dominate there. I would explain each path separately, then show what shared metadata or pipelines connect them.&quot;</blockquote>
+<p>The repair works because:</p>
+<ul><li>it isolates the paths before naming components</li><li>it earns each <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> from the path&#39;s <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a></li><li>it keeps shared state and shared services from turning into conceptual blur</li></ul>
+<h2 id="mini-drill-slice-the-product-before-you-sketch">Mini Drill: Slice The Product Before You Sketch</h2>
+<p>For each product below, say out loud:</p>
+<ul><li>the main path you would isolate first</li><li>which <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> owns it</li><li>one other real path with a different owner</li><li>one side path you would keep secondary</li></ul>
+<p>Products:</p>
+<ul><li><code>YouTube</code></li><li><code>Airbnb</code></li><li><code>Slack</code></li><li><code>Uber</code></li></ul>
+<p>Expected direction:</p>
+<p><code>YouTube</code> splits into upload, discovery, and playback. <code>Airbnb</code> splits into listing discovery and booking <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>. <code>Slack</code> splits into live messaging and history search, with compliance/export as a real side path. <code>Uber</code> is primarily <code>Geo / Dispatch</code>, while chat and payouts are secondary supporting paths rather than the core owner of the system.</p>
+<p>If the product turns back into one giant box diagram, pause and name the path you are currently explaining.</p>
+<h2 id="before-you-move-to-lesson-08">Before You Move To Lesson 08</h2>
+<p>The checkpoint is path ownership. You should be able to:</p>
+<ul><li>split a product by meaningful path before naming the whole architecture</li><li>assign an owner to each important path from its dominant <code><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></code></li><li>explain what stays secondary on that path</li><li>avoid both under-splitting and over-splitting</li></ul>
+<p>You are ready for Lesson <code>08</code> when you can take a real interview <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a>, slice it into paths, and explain the owners clearly in spoken form.</p>
+<p>Lesson <code>08</code> turns the whole course into a practice ladder so these moves become automatic under interview <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+    </article>
+
+
+    <section class="section-block chapter-intuition" id="chapter-intuition">
+      <div class="section-heading">
+        <p class="eyebrow">After Reading</p>
+        <h2>Now See The Concept Move</h2>
+        <p>You have the chapter vocabulary now. Use this as a moving picture, not a mini simulator. The chapter diagram teaches the concept; the Arena is where you will make and break systems.</p>
+      </div>
+      <section class="diagram-panel" id="chapter-diagram">
+        <div class="section-heading">
+          <p class="eyebrow">Animated Concept Diagram</p>
+          <h2>Hybrid Systems Split By Path</h2>
+          <p>Watch one product split into paths. Each path earns its own owner only when the stress, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, or first failure changes.</p>
+        </div>
+        <div class="chapter-visual-shell" data-concept-diagram="07-hybrid-systems-and-guided-walkthroughs"></div>
+        <p class="concept-lab-note">
+          Want to test the physics by changing load, shape, scale, and failure? Use the
+          <a href="arena.html">Practice Arena</a>. Chapters stay focused on concept clarity.
+        </p>
+      </section>
+
+    <section class="course-map-panel" id="course-map">
+      <div class="section-heading">
+        <p class="eyebrow">Mind Map</p>
+        <h2>Where We Are In The Story</h2>
+        <p>Click a node to see what that chapter adds to the picture.</p>
+      </div>
+      <div class="course-map-shell" data-course-map>
+        <div class="course-map-track">
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Start Here: The Habit This Course Builds"
+          data-map-stage="Start Here"
+          data-map-summary="Understand why this course starts from pressure instead of components, and what habit of reasoning the later chapters are trying to build."
+        >
+          <span class="map-node-index">00</span>
+          <span class="map-node-label">Start Here: The Habit This Course Builds</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Load, Latency, and Data Shape"
+          data-map-stage="Layer 1 of 8"
+          data-map-summary="Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components."
+        >
+          <span class="map-node-index">01</span>
+          <span class="map-node-label">Load, Latency, and Data Shape</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Storage, Partitioning, and Replication"
+          data-map-stage="Layer 2 of 8"
+          data-map-summary="Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied."
+        >
+          <span class="map-node-index">02</span>
+          <span class="map-node-label">Storage, Partitioning, and Replication</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Consistency, Ordering, Idempotency, and Transactions"
+          data-map-stage="Layer 3 of 8"
+          data-map-summary="Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe."
+        >
+          <span class="map-node-index">03</span>
+          <span class="map-node-label">Consistency, Ordering, Idempotency, and Transactions</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Async, Caching, Failure Handling, and Operability"
+          data-map-stage="Layer 4 of 8"
+          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+        >
+          <span class="map-node-index">04</span>
+          <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="The Interview Framework: 7+1 and LGTC"
+          data-map-stage="Layer 5 of 8"
+          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+        >
+          <span class="map-node-index">05</span>
+          <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Archetypes and Component Maps"
+          data-map-stage="Layer 6 of 8"
+          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+        >
+          <span class="map-node-index">06</span>
+          <span class="map-node-label">Archetypes and Component Maps</span>
+        </button>
+
+        <button
+          class="map-node is-current"
+          type="button"
+          data-map-node
+          data-map-title="Hybrid Systems and Guided Walkthroughs"
+          data-map-stage="Layer 7 of 8"
+          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+        >
+          <span class="map-node-index">07</span>
+          <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Drill Order and Mock Interview Prep"
+          data-map-stage="Layer 8 of 8"
+          data-map-summary="This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer."
+        >
+          <span class="map-node-index">08</span>
+          <span class="map-node-label">Drill Order and Mock Interview Prep</span>
+        </button>
+
+        </div>
+        <div class="map-detail" data-map-detail>
+          <p class="panel-label" data-map-detail-stage>Layer 7 of 8</p>
+          <h3 data-map-detail-title>Hybrid Systems and Guided Walkthroughs</h3>
+          <p data-map-detail-summary>Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+        </div>
+      </div>
+    </section>
+
+    </section>
+
+
+    <section class="chapter-summary" id="key-learnings">
+      <div class="section-heading">
+        <p class="eyebrow">Before You Move On</p>
+        <h2>Key Learnings</h2>
+        <p>These are the ideas that should stay in your head after you finish the chapter.</p>
+      </div>
+      <ul class="takeaway-list"><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">Hybrid systems</a> are about path ownership, not technology count.</li><li><strong>Remember:</strong> Start with the write/read split, then split again if one side is still mixed.</li><li><strong>Remember:</strong> A path deserves separate ownership only when it changes components, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a>, or first failures.</li><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">Hybrid</a> answers should name what stays secondary as clearly as what owns the main path.</li></ul>
+    </section>
+
+    <section class="quiz-panel" id="lesson-check" data-lesson-quiz="07-hybrid-systems-and-guided-walkthroughs">
+      <div class="section-heading">
+        <p class="eyebrow">Lesson Check</p>
+        <h2>Interactive Quiz</h2>
+        <p>Answer these before moving on. The goal is explanation-grade understanding, not lucky guesses.</p>
+      </div>
+      <div class="quiz-root"></div>
+    </section>
+    <section class="section-block chapter-coach-block" id="chapter-coach">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Coach</p>
+        <h2>Ask Questions And Prove The Chapter</h2>
+        <p>Use the left panel to clear doubts about this chapter in plain language. Use the right panel after the lesson check to keep answering chapter-specific probes until the main understanding is stable.</p>
+      </div>
+
+      <div class="chapter-coach-grid">
+        <div data-chapter-doubt-chat="07-hybrid-systems-and-guided-walkthroughs"></div>
+        <div data-chapter-mastery="07-hybrid-systems-and-guided-walkthroughs"></div>
+      </div>
+
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="06-archetypes-and-component-maps.html"><span>Previous</span><strong>06 - Archetypes and Component Maps</strong></a>
+      <a class="pager-card" href="08-drill-order-and-mock-interview-prep.html"><span>Next</span><strong>08 - Drill Order and Mock Interview Prep</strong></a>
+    </nav>
+
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#when-one-honest-label-is-not-enough">When One Honest Label Is Not Enough</a></li><li class="level-2"><a href="#what-hybrid-does-and-does-not-mean">What Hybrid Does And Does Not Mean</a></li><li class="level-2"><a href="#start-by-slicing-the-product">Start By Slicing The Product</a></li><li class="level-2"><a href="#walkthrough-1-design-youtube-without-flattening-it">Walkthrough 1: Design YouTube Without Flattening It</a></li><li class="level-2"><a href="#walkthrough-2-airbnb">Walkthrough 2: Airbnb</a></li><li class="level-2"><a href="#walkthrough-3-slack">Walkthrough 3: Slack</a></li><li class="level-2"><a href="#production-lab-path-ownership-in-real-systems">Production Lab: Path Ownership In Real Systems</a></li><li class="level-2"><a href="#do-not-promote-every-side-feature-into-a-co-owner">Do Not Promote Every Side Feature Into A Co-Owner</a></li><li class="level-2"><a href="#difficulty-ladder-hybrid-reads">Difficulty Ladder: Hybrid Reads</a></li><li class="level-2"><a href="#phrase-drill-path-ownership">Phrase Drill: Path Ownership</a></li><li class="level-2"><a href="#path-split-rehearsal">Path-Split Rehearsal</a></li><li class="level-2"><a href="#mini-drill-slice-the-product-before-you-sketch">Mini Drill: Slice The Product Before You Sketch</a></li><li class="level-2"><a href="#before-you-move-to-lesson-08">Before You Move To Lesson 08</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+    <script src="assets/concept-diagrams.js"></script>
+  </body>
+</html>

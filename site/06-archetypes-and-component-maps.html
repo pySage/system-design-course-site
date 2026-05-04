@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>06 - Archetypes and Component Maps | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/concept-diagrams.css" />
+  </head>
+  <body class="lesson-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link" href="labs.html">Labs</a>
+        <a class="topbar-link" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li class="is-active"><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-lesson">
+      <p class="eyebrow">Layer 6 of 8</p>
+      <h1>06 - Archetypes and Component Maps</h1>
+      <p class="hero-copy">Once a <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> has an <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a> shape, you stop seeing only product names and start hearing recurring kinds of system pain.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="labs.html">Practice This In Labs</a>
+        <a class="button button-secondary" href="index.html">Back To Overview</a>
+      </div>
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span>Previous</span><strong>05 - The Interview Framework: 7+1 and LGTC</strong></a>
+      <a class="pager-card" href="07-hybrid-systems-and-guided-walkthroughs.html"><span>Next</span><strong>07 - Hybrid Systems and Guided Walkthroughs</strong></a>
+    </nav>
+
+
+    <section class="chapter-frame" id="chapter-frame">
+      <div class="section-heading">
+        <p class="eyebrow">Layer 6 of 8</p>
+        <h2>This Chapter In The Story</h2>
+        <p>Once a <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> has an <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a> shape, you stop seeing only product names and start hearing recurring kinds of system pain.</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Why This Chapter</p>
+          <p>Interview speed improves when recurring <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">system shapes</a> become recognizable. This chapter teaches how to justify an <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> by <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> and how that label pulls in expected components, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a>, and first failures.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Where We Are</p>
+          <p>You are at the shape-recognition layer of the map: recurring system families, their component pull, and the <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure modes</a> they tend to bring with them.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">How It Fits</p>
+          <p>This chapter converts a good description of a system into a fast architectural starting point.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Goals</p>
+          <ul class="framed-list"><li>Recognize the main system <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> from concrete design-ask reads</li><li>Associate each justified label with its usual component map, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, and first failure</li><li>Avoid brand-name pattern matching by grounding <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> in <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a></li><li>Give a reason for every component pulled from an <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> map</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <article class="prose">
+      <h1 id="06-archetypes-and-component-maps">06 - Archetypes and Component Maps</h1>
+<p>You now know how to open a <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a>, extract the real <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, and compress it into <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code>.</p>
+<p>The next question is: what kind of system are you actually looking at?</p>
+<p>This chapter teaches the next speed-up: stop seeing only product names and start hearing recurring <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">system shapes</a>.</p>
+<p>That does not mean memorizing labels. It means recognizing that different <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> keep producing the same kind of pain, the same kind of default components, the same kind of <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, and the same kind of first failure.</p>
+<h2 id="start-with-three-cold-reads">Start With Three Cold Reads</h2>
+<p>Imagine you have already done the Chapter 05 opening on three <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a>.</p>
+<h3 id="whatsapp">WhatsApp</h3>
+<p>One user sends to one person or to a large group. Delivery can happen to online or offline recipients. <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">Ordering</a> matters inside the conversation. <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">Fanout</a> can explode during big group moments.</p>
+<h3 id="stripe">Stripe</h3>
+<p>Wrong answers are more dangerous than slow answers. <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">Retries</a> happen. Money movement must be audit-friendly. Duplicate execution is a product failure, not just a technical inconvenience.</p>
+<h3 id="youtube">YouTube</h3>
+<p>Large binary uploads must be accepted, transformed, stored, and served. Background processing is heavy. Bandwidth and edge delivery matter. The <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a> and the discovery path do not have the same <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<p>If those three <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> already feel like different kinds of systems before you draw any boxes, that instinct is the beginning of <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> recognition.</p>
+<p>The important part is what your ear noticed:</p>
+<pre class="code-block"><code class="language-text">WhatsApp -&gt; one send becomes delivery work for recipients
+Stripe   -&gt; one retry can become duplicate money movement
+YouTube  -&gt; one upload becomes large-object storage and processing</code></pre>
+<p>Those are not product categories. They are different kinds of pain. The <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> label should come after you can say that pain plainly.</p>
+<h2 id="what-an-archetype-actually-is">What An Archetype Actually Is</h2>
+<p>An <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> is a recurring family of system pain.</p>
+<p>It is not a product badge. It is not a brand label. It is not a shortcut for skipping reasoning.</p>
+<p>Once the <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> read is clear, the <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> gives you four useful things quickly:</p>
+<ul><li>the <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> to keep centered</li><li>the component map that usually follows from that stress</li><li>the <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> interviewers usually expect you to recognize</li><li>the <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a> that often appears first at scale</li></ul>
+<p>That is why <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> recognition happens after <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code>, not before it.</p>
+<p>The label is supposed to compress a good read, not replace one.</p>
+<p>The safe order is:</p>
+<pre class="code-block"><code class="language-text">LGTC read -&gt; dominant stress -&gt; archetype -&gt; component map -&gt; tradeoff -&gt; first failure</code></pre>
+<p>If the order becomes:</p>
+<pre class="code-block"><code class="language-text">product name -&gt; archetype -&gt; memorized boxes</code></pre>
+<p>the answer may sound fluent while still being brittle. The interviewer can break it with one follow-up: &quot;Why is that component there?&quot;</p>
+<h2 id="product-names-lie-dominant-stress-tells-the-truth">Product Names Lie; Dominant Stress Tells The Truth</h2>
+<p>Many weak answers still choose <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> by product name.</p>
+<p>That is unreliable.</p>
+<ul><li><code>Slack</code> includes search, but its core <a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a> still smells like messaging</li><li><code>Stripe</code> emits events, but that does not make it event-ingestion-first</li><li><code>Instagram</code> has DMs, but the whole product is not therefore mostly messaging</li><li><code>YouTube</code> includes discovery, but the <a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a> still clearly smells like media</li></ul>
+<p>This is the question that keeps you honest:</p>
+<p>What <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> dominates the path I am talking about right now?</p>
+<p>If the answer changes by path, you are getting close to Chapter 07. For now, this chapter stays one step earlier: learn the pure shapes first.</p>
+<p>Before the catalog appears, keep one warning in front of you:</p>
+<blockquote>The component map is allowed only after the label is earned.</blockquote>
+<p>The bridge from Chapter 05 should sound like this:</p>
+<pre class="code-block"><code class="language-text">LGTC read -&gt; dominant stress -&gt; earned archetype -&gt; component memory</code></pre>
+<p>For example, Slack does not become messaging because it is a chat brand. It becomes messaging on the core path because the <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> read says bursty <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a>, <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> send acceptance, online/offline delivery, and lag-tolerant derived views. Only then do message logs, delivery handling, presence, offline <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a>, and <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> workers start to make sense.</p>
+<h2 id="the-main-archetypes-as-recognizable-reads">The Main Archetypes As Recognizable Reads</h2>
+<h3 id="messaging-delivery">Messaging / Delivery</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when one actor sends and one or many other actors must receive, especially when delivery timing, online versus offline state, or local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> changes the product experience.</p>
+<p><code>WhatsApp</code>, the core <a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a> of <code>Slack</code>, and many notification systems live here.</p>
+<p>What the label pulls in:</p>
+<ul><li>append-only message storage or conversation log</li><li>connection layer for active clients</li><li>presence or session awareness</li><li>offline queueing</li><li><a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> workers where one send becomes many deliveries</li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: at-least-once delivery versus exactly-once cost.</p>
+<p>Typical first failure: large-group <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> amplification or overloaded receiver paths.</p>
+<h3 id="media-storage-delivery">Media Storage / Delivery</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when the hard part is accepting, processing, storing, and serving large blobs rather than coordinating tiny <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>-critical writes.</p>
+<p><code>YouTube</code> uploads and playback, attachment-heavy media products, and photo or video hosting systems often live here.</p>
+<p>What the label pulls in:</p>
+<ul><li>chunked or resumable upload</li><li><a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> object storage</li><li>processing <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a></li><li>background transformation pipelines</li><li>CDN or edge serving</li><li>metadata separate from the blob itself</li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: eager processing versus lazy processing.</p>
+<p>Typical first failure: processing backlog, cold-<a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> origin pain, or invalidation trouble after updates.</p>
+<h3 id="transactional-ledger">Transactional / Ledger</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when wrong outcomes are more dangerous than slow outcomes, and when <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, money movement, scarce inventory, or auditability dominate the design.</p>
+<p><code>Stripe</code>, booking systems, order systems, and ledger-like financial paths live here.</p>
+<p>What the label pulls in:</p>
+<ul><li>append-only ledger or <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a> log</li><li><a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> keys</li><li>narrow strong state boundary</li><li>lock or reservation logic when scarce state exists</li><li><a class="term-link" href="glossary.html#outbox" title="A pattern for atomically recording a state change and the event that should be published.">outbox</a> or equivalent for downstream side effects</li><li><a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> handling that preserves business <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a></li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: smaller local commits with explicit recovery steps versus one large distributed commit. You may later hear this as <code>saga</code> versus <code>2PC</code>, but the plain decision comes first: scalable recovery logic versus expensive cross-system atomicity.</p>
+<p>Typical first failure: duplicate execution, double-booking, double-charge, or lost downstream side effects after a successful commit.</p>
+<h3 id="pause-the-label-must-still-earn-its-boxes">Pause: The Label Must Still Earn Its Boxes</h3>
+<p>At this point in the catalog, notice the rhythm:</p>
+<pre class="code-block"><code class="language-text">pain first
+label second
+boxes third</code></pre>
+<p>If you say &quot;<a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a>&quot; but cannot name the duplicated business effect, the label is not earned. If you say &quot;messaging&quot; but cannot name the delivery <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, the label is not earned. The component list is memory, not evidence.</p>
+<h3 id="real-time-collaboration">Real-Time Collaboration</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when many users are editing or mutating the same shared state concurrently and the hard problem is not only storage, but convergence under overlapping writes.</p>
+<p><code>Google Docs</code> is the cleanest example.</p>
+<p>What the label pulls in:</p>
+<ul><li>low-<a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> bidirectional session channel</li><li>operation log</li><li>merge logic for concurrent edits, often discussed as <code>OT</code> or <code>CRDT</code></li><li>snapshotting</li><li>presence and collaborator session tracking</li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: server-authoritative <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> that is simpler to reason about versus more offline-friendly client/peer merge complexity. You may later name those families as <code>OT</code> and <code>CRDT</code>, but the product decision is about where merge authority and offline tolerance live.</p>
+<p>Typical first failure: history loss after compaction, replay pain, or high-frequency collaboration <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>.</p>
+<h3 id="search-discovery">Search / Discovery</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when users are asking retrieval questions under a query-<a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> budget and relevance plus <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> matters more than point-update <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> on the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a>.</p>
+<p><code>Elasticsearch</code>, product search, feed retrieval, and document discovery systems live here.</p>
+<p>What the label pulls in:</p>
+<ul><li><a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> pipeline or change-feed ingestion</li><li>inverted or <a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">search-oriented index</a></li><li>query coordinator</li><li>ranking or scoring stage</li><li><a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caching</a> for repeated popular queries</li><li>document source or retrieval store behind the <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a></li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> versus query <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> cost.</p>
+<p>Typical first failure: hot terms, hot shards, stale ranking, or lagging <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexes</a>.</p>
+<h3 id="event-ingestion-observability">Event Ingestion / Observability</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when the primary job is to absorb a producer firehose, keep schemas survivable, and make the stream queryable or alertable with bounded lag.</p>
+<p><code>Datadog</code>, metrics platforms, log pipelines, and telemetry systems live here.</p>
+<p>What the label pulls in:</p>
+<ul><li><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioned</a> ingestion</li><li>buffering or streaming backbone</li><li>stream processors</li><li>schema registry or compatibility controls</li><li><a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> or <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">columnar storage</a></li><li>query, dashboard, or alerting layer</li><li>downsampling or sampling for cost control</li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: raw retention versus pre-aggregation.</p>
+<p>Typical first failure: consumer lag during spikes or schema changes breaking downstream consumers.</p>
+<h3 id="geo-dispatch">Geo / Dispatch</h3>
+<p>You should hear this <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> when the hard problem is matching supply and demand in physical space under real-time <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, with live location state and assignment races.</p>
+<p><code>Uber</code> dispatch is the cleanest example.</p>
+<p>What the label pulls in:</p>
+<ul><li>location ingestion</li><li>geo-<a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a></li><li>live supply or demand state</li><li>matching engine</li><li>assignment lock or conflict control</li><li>ETA computation</li></ul>
+<p>Expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>: optimistic versus pessimistic assignment locking.</p>
+<p>Typical first failure: dense hot zones, hot geo cells, or ETA <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> inside the matching loop.</p>
+<h2 id="field-notes-archetypes-from-real-engineering-writeups">Field Notes: Archetypes From Real Engineering Writeups</h2>
+<p>At this stage, real company writeups become useful only if you force them through the same question:</p>
+<blockquote>&quot;What <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> does this story reveal, what component map does it justify, and what first failure should I carry into an interview?&quot;</blockquote>
+<p>Do not begin by scanning a shelf of famous sources. Work one story. The wider shelf at the end of this section is optional practice; it becomes more valuable after Chapter 07 teaches path ownership.</p>
+<h3 id="field-note-1-stripe-idempotency">Field Note 1: Stripe Idempotency</h3>
+<p>Situation:</p>
+<p>A payment API call times out. The buyer&#39;s phone or the merchant backend sends the same request again because it does not know whether the first attempt reached the server.</p>
+<p>Learner decision:</p>
+<p>Is this mainly generic event processing, or does it smell like a <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>?</p>
+<p>Reveal:</p>
+<p>It smells <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> because the dangerous thing is not slow notification. The dangerous thing is a duplicated business effect: the same logical payment attempt turning into two charges or two state changes.</p>
+<p>Component map pulled by the <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>:</p>
+<ul><li>an <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a>-key record, because <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> need a stable business identity</li><li>a narrow <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a> boundary around the payment truth, because duplicate execution is worse than delayed side effects</li><li>an audit-friendly record of what happened, because money systems must be explainable later</li></ul>
+<p>Interview-ready sentence:</p>
+<blockquote>&quot;This is <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> because <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> safety is part of the core <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundary; the <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> key exists so repeated transport attempts map to one business attempt.&quot;</blockquote>
+<p>Source: <a href="https://docs.stripe.com/api/idempotent_requests">Stripe API docs, &quot;Idempotent requests&quot;</a></p>
+<h3 id="field-note-2-netflix-open-connect">Field Note 2: Netflix Open Connect</h3>
+<p>Situation:</p>
+<p>Millions of viewers repeatedly request popular video content. Search and recommendations help people choose what to watch, but the painful path during playback is repeated byte delivery.</p>
+<p>Learner decision:</p>
+<p>Does the discovery <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> own the whole Netflix-like design?</p>
+<p>Reveal:</p>
+<p>No. Discovery matters, but playback is a media-delivery path. The <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bandwidth, edge placement, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> health, origin protection, and graceful movement around unhealthy delivery paths.</p>
+<p>Component map pulled by the <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>:</p>
+<ul><li>edge <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a>, because repeated playback should be absorbed close to viewers</li><li>origin storage, because the system still needs <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> source content</li><li>health and fallback routing, because <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> placement changes how failures are experienced</li></ul>
+<p>Interview-ready sentence:</p>
+<blockquote>&quot;For a Netflix-like system, discovery may own the browse path, but media delivery owns playback because repeated video bytes, edge placement, and origin protection dominate the user experience.&quot;</blockquote>
+<p>Source: <a href="https://openconnect.netflix.com/en/">Netflix Open Connect</a></p>
+<p>The other sources are still useful, but treat them as practice after you have modeled one story:</p>
+<div class="table-wrap"><table><thead><tr><th>Source story</th><th>Practice lens</th></tr></thead><tbody><tr><td><a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Discord storing trillions of messages</a></td><td>Messaging / Delivery plus storage placement: hot message-history reads, ordered channel history, migration <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></td></tr><tr><td><a href="https://slack.engineering/how-slack-built-shared-channels/">Slack shared channels</a></td><td>Messaging / Delivery moving toward <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> ownership: workspace boundaries changed, channel ownership needed rethinking</td></tr><tr><td><a href="https://www.uber.com/blog/h3/">Uber H3</a></td><td>Geo / Dispatch: nearby lookup is a first-class <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a></td></tr><tr><td><a href="https://sre.google/sre-book/addressing-cascading-failures/">Google SRE cascading failures</a></td><td><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">Failure mode</a> lens across <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a>: overload, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, resource exhaustion, and feedback loops</td></tr><tr><td><a href="https://research.google/pubs/bigtable-a-distributed-storage-system-for-structured-data/">Google Bigtable</a></td><td>Storage support for several <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a>: layout and locality matter for large structured data</td></tr><tr><td><a href="https://research.google/pubs/spanner-googles-globally-distributed-database/">Google Spanner</a></td><td><a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">Transactional</a> / distributed <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> lens: global <a class="term-link" href="glossary.html#consistency" title="What a reader is allowed to assume about data after writes happen.">consistency</a> is a paid <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> choice</td></tr></tbody></table></div>
+<h2 id="component-maps-are-compressed-memory-not-copy-paste-templates">Component Maps Are Compressed Memory, Not Copy-Paste Templates</h2>
+<p>The <code>component map</code> is the cluster of components an <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> usually pulls with it once the label is justified.</p>
+<p>That does not mean you copy every box every time.</p>
+<p>It means the <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> is helping you remember what tends to be necessary and why.</p>
+<p>Use component maps with three rules:</p>
+<ul><li>every named component must answer a stress or a <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a></li><li>smaller systems should drop unnecessary components rather than include them for theater</li><li>if you remove a common component, say which <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> or scale pain is absent so the omission sounds intentional</li></ul>
+<p>Examples:</p>
+<ul><li>a small chat system without offline users may not need a serious offline <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> yet</li><li>a small search product may not need a separate ranking service on day one</li><li>a collaboration <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> without offline editing may not justify the more complex merge strategy</li></ul>
+<p>The map is there to compress experience, not to force over-design.</p>
+<p>Use this small justification test for every component:</p>
+<div class="table-wrap"><table><thead><tr><th>If you name...</th><th>You should be able to say...</th></tr></thead><tbody><tr><td>message log</td><td>what <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a>, <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durability</a>, or replay need it protects</td></tr><tr><td>object storage</td><td>why the blob does not belong in the small-record store</td></tr><tr><td><a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> key store</td><td>which <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> would otherwise duplicate a business effect</td></tr><tr><td>operation log</td><td>why concurrent edits need history or replay</td></tr><tr><td><a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">inverted index</a></td><td>why scanning records directly cannot meet the <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a></td></tr><tr><td>stream processor</td><td>what continuous aggregation or enrichment must happen</td></tr><tr><td><a class="term-link" href="glossary.html#geo-index" title="A structure optimized for nearby, within-radius, and other spatial queries.">geo-index</a></td><td>why nearby lookup cannot be treated as a generic database query</td></tr></tbody></table></div>
+<p>The component name is only half the answer. The reason is the part that proves you are designing.</p>
+<h2 id="one-step-before-hybrids">One Step Before Hybrids</h2>
+<p>Pure <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> are a learning tool. Real products often combine them.</p>
+<p>You can already feel that in the examples:</p>
+<ul><li><code>YouTube</code> smells like media on the <a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a> and discovery on the <a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a></li><li><code>Slack</code> smells like messaging on the core path and search on the history-search path</li><li><code>Airbnb</code> smells <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> for booking and search for listing discovery</li></ul>
+<p>This chapter only needs one preparation rule for that next step: name the dominant pure shape of the path you are currently describing.</p>
+<p>Chapter 07 will separate the mixed ownership cleanly.</p>
+<h2 id="difficulty-ladder-shape-reads">Difficulty Ladder: Shape Reads</h2>
+<h3 id="easy-notification-delivery">Easy: Notification Delivery</h3>
+<p>A product needs to send push notifications to millions of users. Some users are online, some are offline, and duplicate notifications are annoying but not usually as dangerous as duplicate payments.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;Use Kafka and workers.&quot;</blockquote>
+<p>A better answer says:</p>
+<blockquote>&quot;This smells like messaging and delivery because one event becomes delivery work to recipients, timing and <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> matter, and the first failure is <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> or delayed receiver paths.&quot;</blockquote>
+<p>The label is earned from delivery <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, not from the <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a>.</p>
+<h3 id="medium-product-search">Medium: Product Search</h3>
+<p>An e-commerce site lets users search by words, filters, popularity, and price. Sellers update listings all day.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;Use Elasticsearch because search.&quot;</blockquote>
+<p>A better answer says:</p>
+<blockquote>&quot;This is search and discovery because query <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>, relevance, ranking, and <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> dominate. The component map follows from that: <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> pipeline, <a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">search-oriented index</a>, query coordination, ranking, and <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a> for repeated hot queries.&quot;</blockquote>
+<p>The better answer names the read shape and <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> before naming a product.</p>
+<h3 id="hard-collaborative-whiteboard">Hard: Collaborative Whiteboard</h3>
+<p>Multiple users draw on the same canvas at once. They expect local-feeling updates, no lost strokes, and sensible convergence after brief disconnects.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;Use WebSockets and a database.&quot;</blockquote>
+<p>A better answer says:</p>
+<blockquote>&quot;This smells like real-time collaboration because concurrent mutations to shared state must converge without losing intent. The expected map includes a session channel, operation log, merge strategy such as <code>OT</code> or <code>CRDT</code>, snapshots, and presence. The <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> is simpler server-authoritative <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> versus more offline-friendly merge complexity.&quot;</blockquote>
+<p>This is hard because the visible product is drawing, but the hidden pain is concurrent state convergence.</p>
+<h2 id="phrase-drill-earn-the-label">Phrase Drill: Earn The Label</h2>
+<p>Practice this sentence shape:</p>
+<blockquote>&quot;Given the <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> read, the <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> is ___, so the path smells like ___. That pulls in ___, and the first failure I would watch for is ___.&quot;</blockquote>
+<p>Examples:</p>
+<div class="table-wrap"><table><thead><tr><th>System path</th><th>Filled version</th></tr></thead><tbody><tr><td>WhatsApp group send</td><td>&quot;The <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> is delivery <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> with local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a>, so the path smells like messaging. That pulls in a conversation log, delivery handling, presence/offline behavior, and a first failure around large-group <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>.&quot;</td></tr><tr><td>Stripe charge</td><td>&quot;The <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> is <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> under <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> and auditability, so the path smells like <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a>/ledger. That pulls in <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a>, a narrow ledger boundary, <a class="term-link" href="glossary.html#outbox" title="A pattern for atomically recording a state change and the event that should be published.">outbox</a>-style side effects, and a first failure around duplicate execution or lost downstream publication.&quot;</td></tr><tr><td>Datadog metrics ingest</td><td>&quot;The <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> is absorbing a producer firehose with queryable lag, so the path smells like event ingestion. That pulls in <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioned</a> ingestion, stream processing, schema handling, <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> storage, and a first failure around consumer lag or schema breakage.&quot;</td></tr></tbody></table></div>
+<h2 id="earn-the-label-under-pressure">Earn The Label Under Pressure</h2>
+<p>If the interviewer hears this:</p>
+<blockquote>&quot;Slack is messaging because it is a chat app.&quot;</blockquote>
+<p>they still do not know whether you recognized the system or only recognized the product category. Earn the label from the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>:</p>
+<blockquote>&quot;Given the <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> read, the <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> on the core path is bursty <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> plus per-conversation <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> with online and offline recipients. That makes the primary <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> messaging and delivery. So I expect an append-only message log, delivery or connection handling, presence or offline behavior, a delivery <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> around at-least-once versus exactly-once cost, and a first <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a> around large-channel <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> amplification.&quot;</blockquote>
+<p>Now the label is doing work: it connects <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> to component memory, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, and likely <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a>.</p>
+<h2 id="mini-drill-justify-the-dominant-shape">Mini Drill: Justify The Dominant Shape</h2>
+<p>Pick one system from each pair and justify the dominant <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> out loud:</p>
+<ul><li><code>WhatsApp</code> vs <code>Instagram</code></li><li><code>Airbnb</code> vs <code>Elasticsearch</code></li><li><code>Google Docs</code> vs <code>Uber</code></li></ul>
+<p>Expected direction:</p>
+<p><code>WhatsApp</code> is dominated by messaging and delivery <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, while <code>Instagram</code> as a whole more often smells like discovery or media depending on the path you are discussing. <code>Airbnb</code> booking is dominated by <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>, while <code>Elasticsearch</code> is cleanly search and discovery. <code>Google Docs</code> is about concurrent writers and convergence, while <code>Uber</code> dispatch is about geo state, matching <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>, and assignment races.</p>
+<p>If your answer starts from the product brand, restart from the <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> and let the label arrive second.</p>
+<h2 id="before-you-move-to-lesson-07">Before You Move To Lesson 07</h2>
+<p>Your checkpoint is earned pattern recognition, not category recall.</p>
+<p>You should be able to:</p>
+<ul><li>name the dominant <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> after <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code></li><li>justify it with the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> that dominates the path</li><li>use the component map as a starting memory, not a copy-paste diagram</li><li>state the expected <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></li><li>name the <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a> that usually appears first</li></ul>
+<p>You are ready for Lesson <code>07</code> when you can hear a <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a>, name the dominant shape, and defend that label without leaning on the product name.</p>
+<p>Lesson <code>07</code> adds the next reality check: the most interesting products are rarely one pure shape. They are several shapes combined.</p>
+    </article>
+
+
+    <section class="section-block chapter-intuition" id="chapter-intuition">
+      <div class="section-heading">
+        <p class="eyebrow">After Reading</p>
+        <h2>Now See The Concept Move</h2>
+        <p>You have the chapter vocabulary now. Use this as a moving picture, not a mini simulator. The chapter diagram teaches the concept; the Arena is where you will make and break systems.</p>
+      </div>
+      <section class="diagram-panel" id="chapter-diagram">
+        <div class="section-heading">
+          <p class="eyebrow">Animated Concept Diagram</p>
+          <h2>Archetype Labels Are Earned</h2>
+          <p>Watch a product name turn into <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a>, then into an <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>, and finally into components with reasons.</p>
+        </div>
+        <div class="chapter-visual-shell" data-concept-diagram="06-archetypes-and-component-maps"></div>
+        <p class="concept-lab-note">
+          Want to test the physics by changing load, shape, scale, and failure? Use the
+          <a href="arena.html">Practice Arena</a>. Chapters stay focused on concept clarity.
+        </p>
+      </section>
+
+    <section class="course-map-panel" id="course-map">
+      <div class="section-heading">
+        <p class="eyebrow">Mind Map</p>
+        <h2>Where We Are In The Story</h2>
+        <p>Click a node to see what that chapter adds to the picture.</p>
+      </div>
+      <div class="course-map-shell" data-course-map>
+        <div class="course-map-track">
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Start Here: The Habit This Course Builds"
+          data-map-stage="Start Here"
+          data-map-summary="Understand why this course starts from pressure instead of components, and what habit of reasoning the later chapters are trying to build."
+        >
+          <span class="map-node-index">00</span>
+          <span class="map-node-label">Start Here: The Habit This Course Builds</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Load, Latency, and Data Shape"
+          data-map-stage="Layer 1 of 8"
+          data-map-summary="Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components."
+        >
+          <span class="map-node-index">01</span>
+          <span class="map-node-label">Load, Latency, and Data Shape</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Storage, Partitioning, and Replication"
+          data-map-stage="Layer 2 of 8"
+          data-map-summary="Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied."
+        >
+          <span class="map-node-index">02</span>
+          <span class="map-node-label">Storage, Partitioning, and Replication</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Consistency, Ordering, Idempotency, and Transactions"
+          data-map-stage="Layer 3 of 8"
+          data-map-summary="Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe."
+        >
+          <span class="map-node-index">03</span>
+          <span class="map-node-label">Consistency, Ordering, Idempotency, and Transactions</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Async, Caching, Failure Handling, and Operability"
+          data-map-stage="Layer 4 of 8"
+          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+        >
+          <span class="map-node-index">04</span>
+          <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="The Interview Framework: 7+1 and LGTC"
+          data-map-stage="Layer 5 of 8"
+          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+        >
+          <span class="map-node-index">05</span>
+          <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
+        </button>
+
+        <button
+          class="map-node is-current"
+          type="button"
+          data-map-node
+          data-map-title="Archetypes and Component Maps"
+          data-map-stage="Layer 6 of 8"
+          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+        >
+          <span class="map-node-index">06</span>
+          <span class="map-node-label">Archetypes and Component Maps</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Hybrid Systems and Guided Walkthroughs"
+          data-map-stage="Layer 7 of 8"
+          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+        >
+          <span class="map-node-index">07</span>
+          <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Drill Order and Mock Interview Prep"
+          data-map-stage="Layer 8 of 8"
+          data-map-summary="This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer."
+        >
+          <span class="map-node-index">08</span>
+          <span class="map-node-label">Drill Order and Mock Interview Prep</span>
+        </button>
+
+        </div>
+        <div class="map-detail" data-map-detail>
+          <p class="panel-label" data-map-detail-stage>Layer 6 of 8</p>
+          <h3 data-map-detail-title>Archetypes and Component Maps</h3>
+          <p data-map-detail-summary>Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain.</p>
+        </div>
+      </div>
+    </section>
+
+    </section>
+
+
+    <section class="chapter-summary" id="key-learnings">
+      <div class="section-heading">
+        <p class="eyebrow">Before You Move On</p>
+        <h2>Key Learnings</h2>
+        <p>These are the ideas that should stay in your head after you finish the chapter.</p>
+      </div>
+      <ul class="takeaway-list"><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">Archetypes</a> compress repeated kinds of system pain, not product branding.</li><li><strong>Remember:</strong> A correct label is justified by <a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a> after <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a>, not by the company name.</li><li><strong>Remember:</strong> A good <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> read naturally pulls in expected components, a core <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, and an early <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a>.</li><li><strong>Remember:</strong> Component maps are useful only when each component is tied back to a stress, <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a>, or failure.</li></ul>
+    </section>
+
+    <section class="quiz-panel" id="lesson-check" data-lesson-quiz="06-archetypes-and-component-maps">
+      <div class="section-heading">
+        <p class="eyebrow">Lesson Check</p>
+        <h2>Interactive Quiz</h2>
+        <p>Answer these before moving on. The goal is explanation-grade understanding, not lucky guesses.</p>
+      </div>
+      <div class="quiz-root"></div>
+    </section>
+    <section class="section-block chapter-coach-block" id="chapter-coach">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Coach</p>
+        <h2>Ask Questions And Prove The Chapter</h2>
+        <p>Use the left panel to clear doubts about this chapter in plain language. Use the right panel after the lesson check to keep answering chapter-specific probes until the main understanding is stable.</p>
+      </div>
+
+      <div class="chapter-coach-grid">
+        <div data-chapter-doubt-chat="06-archetypes-and-component-maps"></div>
+        <div data-chapter-mastery="06-archetypes-and-component-maps"></div>
+      </div>
+
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span>Previous</span><strong>05 - The Interview Framework: 7+1 and LGTC</strong></a>
+      <a class="pager-card" href="07-hybrid-systems-and-guided-walkthroughs.html"><span>Next</span><strong>07 - Hybrid Systems and Guided Walkthroughs</strong></a>
+    </nav>
+
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#start-with-three-cold-reads">Start With Three Cold Reads</a></li><li class="level-2"><a href="#what-an-archetype-actually-is">What An Archetype Actually Is</a></li><li class="level-2"><a href="#product-names-lie-dominant-stress-tells-the-truth">Product Names Lie; Dominant Stress Tells The Truth</a></li><li class="level-2"><a href="#the-main-archetypes-as-recognizable-reads">The Main Archetypes As Recognizable Reads</a></li><li class="level-2"><a href="#field-notes-archetypes-from-real-engineering-writeups">Field Notes: Archetypes From Real Engineering Writeups</a></li><li class="level-2"><a href="#component-maps-are-compressed-memory-not-copy-paste-templates">Component Maps Are Compressed Memory, Not Copy-Paste Templates</a></li><li class="level-2"><a href="#one-step-before-hybrids">One Step Before Hybrids</a></li><li class="level-2"><a href="#difficulty-ladder-shape-reads">Difficulty Ladder: Shape Reads</a></li><li class="level-2"><a href="#phrase-drill-earn-the-label">Phrase Drill: Earn The Label</a></li><li class="level-2"><a href="#earn-the-label-under-pressure">Earn The Label Under Pressure</a></li><li class="level-2"><a href="#mini-drill-justify-the-dominant-shape">Mini Drill: Justify The Dominant Shape</a></li><li class="level-2"><a href="#before-you-move-to-lesson-07">Before You Move To Lesson 07</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+    <script src="assets/concept-diagrams.js"></script>
+  </body>
+</html>

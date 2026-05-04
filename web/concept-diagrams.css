@@ -1,0 +1,184 @@
+.concept-diagram {
+  --concept-accent: var(--accent);
+  --concept-warm: var(--warm);
+  --concept-soft: rgba(15, 118, 110, 0.09);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(15, 118, 110, 0.12), transparent 32%),
+    radial-gradient(circle at 95% 10%, rgba(196, 104, 45, 0.14), transparent 34%),
+    rgba(255, 252, 247, 0.9);
+  border: 1px solid rgba(39, 49, 66, 0.1);
+  border-radius: 24px;
+  display: grid;
+  gap: 1rem;
+  overflow: hidden;
+  padding: 1.1rem;
+}
+
+.concept-diagram--storage {
+  --concept-accent: #356d8b;
+  --concept-soft: rgba(53, 109, 139, 0.1);
+}
+
+.concept-diagram--promise {
+  --concept-accent: #8a5a14;
+  --concept-soft: rgba(138, 90, 20, 0.1);
+}
+
+.concept-diagram--runtime {
+  --concept-accent: #9f3a1a;
+  --concept-soft: rgba(159, 58, 26, 0.09);
+}
+
+.concept-diagram--framework,
+.concept-diagram--archetype,
+.concept-diagram--hybrid,
+.concept-diagram--practice {
+  --concept-accent: #0f766e;
+  --concept-soft: rgba(15, 118, 110, 0.1);
+}
+
+.concept-diagram__intro h3 {
+  font-size: clamp(1.45rem, 2.5vw, 2.1rem);
+  line-height: 1.04;
+  margin: 0.2rem 0 0.45rem;
+}
+
+.concept-diagram__intro p {
+  color: var(--muted);
+  margin: 0;
+  max-width: 62rem;
+}
+
+.concept-flow {
+  align-items: stretch;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 1fr;
+}
+
+.concept-node {
+  animation: concept-node-breathe 4.8s ease-in-out infinite;
+  animation-delay: var(--node-delay);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 247, 0.94), rgba(255, 247, 235, 0.82)),
+    var(--concept-soft);
+  border: 1px solid rgba(39, 49, 66, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 14px 28px rgba(35, 43, 61, 0.08);
+  display: grid;
+  gap: 0.35rem;
+  min-height: auto;
+  padding: 0.9rem;
+  position: relative;
+}
+
+.concept-node::before {
+  background: linear-gradient(135deg, var(--concept-accent), var(--concept-warm));
+  border-radius: 999px;
+  content: "";
+  height: 0.3rem;
+  left: 0.9rem;
+  opacity: 0.78;
+  position: absolute;
+  right: 0.9rem;
+  top: 0.72rem;
+}
+
+.concept-node span,
+.concept-takeaway span {
+  color: var(--muted);
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.concept-node strong {
+  color: var(--ink);
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  margin-top: 0.8rem;
+}
+
+.concept-node p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.concept-link {
+  align-self: center;
+  background: rgba(39, 49, 66, 0.08);
+  border-radius: 999px;
+  height: 2.25rem;
+  justify-self: center;
+  overflow: hidden;
+  position: relative;
+  width: 0.48rem;
+}
+
+.concept-link span {
+  animation: concept-pulse-down 2.6s ease-in-out infinite;
+  animation-delay: var(--node-delay);
+  background: linear-gradient(90deg, var(--concept-accent), var(--concept-warm));
+  border-radius: inherit;
+  height: 45%;
+  left: 0;
+  position: absolute;
+  top: -45%;
+  width: 100%;
+}
+
+.concept-takeaway,
+.concept-lab-note {
+  background: var(--concept-soft);
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 18px;
+  padding: 0.9rem 1rem;
+}
+
+.concept-takeaway p,
+.concept-lab-note {
+  color: var(--ink);
+  margin: 0;
+}
+
+.concept-takeaway p {
+  margin-top: 0.25rem;
+}
+
+.concept-lab-note {
+  margin: 1rem 0 0;
+}
+
+@keyframes concept-node-breathe {
+  0%,
+  100% {
+    border-color: rgba(39, 49, 66, 0.1);
+    transform: translateY(0);
+  }
+
+  38% {
+    border-color: rgba(15, 118, 110, 0.34);
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes concept-pulse-down {
+  0% {
+    top: -45%;
+  }
+
+  55%,
+  100% {
+    top: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .concept-node,
+  .concept-link span {
+    animation: none;
+  }
+}

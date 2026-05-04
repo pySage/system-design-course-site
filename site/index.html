@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Home | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body class="home-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+      <header class="topbar">
+        <nav class="topbar-nav" aria-label="Primary">
+          <a class="topbar-link is-current" href="index.html">Course Home</a>
+          <a class="topbar-link" href="00-study-method.html">Start Here</a>
+          <a class="topbar-link" href="#course-lessons">Read In Order</a>
+          <a class="topbar-link" href="#study-tools">Study Tools</a>
+        </nav>
+        <div class="topbar-utility" data-topbar-personalization></div>
+      </header>
+
+    <div class="page-shell page-shell--single page-shell--home">
+
+      <main class="main-content">
+
+    <section class="hero hero-home">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Start Here</p>
+          <h1>Build one clear picture of system design, then learn how to speak it under interview pressure.</h1>
+          <p class="hero-copy">The course is designed as a sequence of layers in your head: <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, data placement, <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>, movement, <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">system shape</a>, <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> ownership, and finally timed interview fluency.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="00-study-method.html">Read Chapter 00</a>
+            <a class="button button-ghost" href="#course-path">See The Path</a>
+          </div>
+          <p class="small-copy home-hero-note">Chapter 00 teaches the study habit. Lesson 01 is the first real checkpoint where the site should start tracking understanding.</p>
+        </div>
+        <div class="hero-panel">
+          <p class="panel-label">What Happens Next</p>
+          <ol class="flow-list">
+            <li>Read chapter 00 to learn the reasoning habit the rest of the course keeps using.</li>
+            <li>Read lesson 01 and finish its quiz. That is the first real checkpoint.</li>
+            <li>Only after that do saved progress, follow-up questions, and adaptive practice become useful.</li>
+            <li>Keep reading in order so each chapter earns the next one.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block" id="course-path">
+      <div class="section-heading">
+        <p class="eyebrow">One Path</p>
+        <h2>Follow one study path before you touch the extra tools</h2>
+        <p>This site works best when it feels like one story, not a pile of features. Start with the habit, then earn the first checkpoint, then let support tools appear when they can actually help.</p>
+      </div>
+      <div class="path-grid">
+        <article class="path-card">
+          <span class="path-card-index">00</span>
+          <h3>Learn how this course thinks</h3>
+          <p>Chapter 00 explains why the course begins from the hard <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> in the system instead of from a memorized box diagram.</p>
+          <a class="button button-secondary" href="00-study-method.html">Open Chapter 00</a>
+        </article>
+        <article class="path-card">
+          <span class="path-card-index">01</span>
+          <h3>Make the first hard thing visible</h3>
+          <p>Lesson 01 teaches the first real move: read hidden work, tail pain, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a>, and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> before architecture appears.</p>
+          <a class="button button-secondary" href="01-load-latency-and-data-shape.html">Open Lesson 01</a>
+        </article>
+        <article class="path-card">
+          <span class="path-card-index">02-04</span>
+          <h3>Place data, promises, and work honestly</h3>
+          <p>The middle lessons teach storage fit, <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundaries, and what must stay on the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a> versus what can move behind it.</p>
+        </article>
+        <article class="path-card">
+          <span class="path-card-index">05-08</span>
+          <h3>Turn the map into interview speech</h3>
+          <p>Later lessons turn the mental map into openings, <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a>, <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrids</a>, drills, and final timed practice.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block personalization-block" id="personal-coach">
+      <div class="section-heading">
+        <p class="eyebrow">Continue Your Path</p>
+        <h2>Save your place and pick up support after the first checkpoint</h2>
+        <p>Use a reader profile when you want the site to remember your place. After lesson 01 and its quiz, this area will start showing saved progress, the next useful question, and chapter-linked support.</p>
+      </div>
+      <div data-personalization-home></div>
+    </section>
+
+    <section class="section-block" id="course-lessons">
+      <div class="section-heading">
+        <p class="eyebrow">Read In Order</p>
+        <h2>The full course still reads in order</h2>
+        <p>Use the first two chapters as your starting lane, then keep moving in sequence. The later chapters depend on the earlier mental picture being stable.</p>
+      </div>
+      <div class="lesson-grid">
+        <a class="lesson-card" href="00-study-method.html">
+          <span class="lesson-card-index">00</span>
+          <strong>00 - Start Here: The Habit This Course Builds</strong>
+          <p>Understand why this course starts from pressure instead of components, and what habit of reasoning the later chapters are trying to build.</p>
+        </a>
+
+        <a class="lesson-card" href="01-load-latency-and-data-shape.html">
+          <span class="lesson-card-index">01</span>
+          <strong>01 - Load, Latency, and Data Shape</strong>
+          <p>Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components.</p>
+        </a>
+
+        <a class="lesson-card" href="02-storage-partitioning-and-replication.html">
+          <span class="lesson-card-index">02</span>
+          <strong>02 - Storage, Partitioning, and Replication</strong>
+          <p>Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied.</p>
+        </a>
+
+        <a class="lesson-card" href="03-consistency-ordering-idempotency-and-transactions.html">
+          <span class="lesson-card-index">03</span>
+          <strong>03 - Consistency, Ordering, Idempotency, and Transactions</strong>
+          <p>Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe.</p>
+        </a>
+
+        <a class="lesson-card" href="04-async-caching-failure-handling-and-operability.html">
+          <span class="lesson-card-index">04</span>
+          <strong>04 - Async, Caching, Failure Handling, and Operability</strong>
+          <p>You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline.</p>
+        </a>
+
+        <a class="lesson-card" href="05-the-interview-framework-7-plus-1-and-lgtc.html">
+          <span class="lesson-card-index">05</span>
+          <strong>05 - The Interview Framework: 7+1 and LGTC</strong>
+          <p>You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture.</p>
+        </a>
+
+        <a class="lesson-card" href="06-archetypes-and-component-maps.html">
+          <span class="lesson-card-index">06</span>
+          <strong>06 - Archetypes and Component Maps</strong>
+          <p>Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain.</p>
+        </a>
+
+        <a class="lesson-card" href="07-hybrid-systems-and-guided-walkthroughs.html">
+          <span class="lesson-card-index">07</span>
+          <strong>07 - Hybrid Systems and Guided Walkthroughs</strong>
+          <p>Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+        </a>
+
+        <a class="lesson-card" href="08-drill-order-and-mock-interview-prep.html">
+          <span class="lesson-card-index">08</span>
+          <strong>08 - Drill Order and Mock Interview Prep</strong>
+          <p>This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-block" id="study-tools">
+      <div class="section-heading">
+        <p class="eyebrow">Study Tools</p>
+        <h2>Use support when the story needs help, not before</h2>
+        <p>These tools are here to stabilize understanding after you have started, not to replace the reading path. Use them when a chapter needs another angle or when you want deliberate practice.</p>
+      </div>
+      <div class="lesson-grid">
+      <div class="feature-card">
+        <p class="eyebrow">Interactive</p>
+        <h2>Intuition Labs</h2>
+        <p>Build intuition with live exercises around system <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantees</a>, and <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot-path</a> decisions once the chapter idea already exists in your head.</p>
+        <a class="button button-secondary" href="labs.html">Go To Labs</a>
+      </div>
+      <div class="feature-card">
+        <p class="eyebrow">Reference</p>
+        <h2>Contextual Glossary</h2>
+        <p>Use the glossary when a course word still feels slippery. It is there to recover meaning, not to become the main learning path.</p>
+        <a class="button button-secondary" href="glossary.html">Open Glossary</a>
+      </div>
+      <div class="feature-card">
+        <p class="eyebrow">Adaptive</p>
+        <h2>Practice Arena</h2>
+        <p>The arena is the mental gym for later repetition and <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>. It becomes useful after lesson 01 has given the first stable idea something real to practice.</p>
+        <a class="button button-secondary" href="arena.html">Open Arena</a>
+      </div>
+      </div>
+    </section>
+
+      </main>
+
+    </div>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

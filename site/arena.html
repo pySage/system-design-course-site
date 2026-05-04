@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice Arena | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body class="arena-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link" href="labs.html">Labs</a>
+        <a class="topbar-link is-current" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-labs">
+      <p class="eyebrow">Final Practice Arena</p>
+      <h1>Train the course until the reasoning chain still holds after transfer, pressure, and interviewer pushback.</h1>
+      <p class="hero-copy">
+        The arena is the mental gym for this course. It starts from the weakest useful layer for the active reader,
+        forces one clean answer, then raises the heat only after that answer earns it.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#arena-live">Open The Arena</a>
+        <a class="button button-secondary" href="08-drill-order-and-mock-interview-prep.html">Back To Chapter 08</a>
+      </div>
+    </section>
+
+    <section class="section-block" id="arena-sets">
+      <div class="section-heading">
+        <p class="eyebrow">How A Set Works</p>
+        <h2>Each arena set raises heat in four steps</h2>
+        <p>The arena follows the same teacher rhythm as the course itself: understand first, transfer second, <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>-test third, and defend the answer last.</p>
+      </div>
+      <div class="chapter-frame-grid">
+
+              <article class="frame-card">
+                <p class="panel-label">Phase 01</p>
+                <h3>Settle The Idea</h3>
+                <p>Start with one clean answer in spoken interview language. The arena should not add more <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> until the core idea is actually stable.</p>
+              </article>
+
+              <article class="frame-card">
+                <p class="panel-label">Phase 02</p>
+                <h3>Move The Idea</h3>
+                <p>The same idea is pushed into a different system or path so the learner proves transfer instead of replaying one remembered example.</p>
+              </article>
+
+              <article class="frame-card">
+                <p class="panel-label">Phase 03</p>
+                <h3>Add Pressure</h3>
+                <p>A real constraint appears: failure, <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> pain, or a <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> that forces a sharper answer than the calm version.</p>
+              </article>
+
+              <article class="frame-card">
+                <p class="panel-label">Phase 04</p>
+                <h3>Hold The Line</h3>
+                <p>The arena sounds like an interviewer now. The learner has to defend the choice, represent the strongest alternative, or name <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">what breaks first</a>.</p>
+              </article>
+
+      </div>
+    </section>
+
+    <section class="section-block" id="arena-case-files">
+      <div class="section-heading">
+        <p class="eyebrow">Production Case Files</p>
+        <h2>Use company writeups as decision simulations, not passive reading</h2>
+        <p>The arena can anchor later rounds in real engineering stories. Try to answer from the course lens first, then open the cited source and compare your reasoning with what the team actually faced.</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Storage And Hotspots</p>
+          <h3>Discord Message Storage</h3>
+          <p>Use this when practicing hot partitions, message-history shape, migration <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, and shielding storage from repeated hot reads.</p>
+          <a class="sidebar-link" href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Open source</a>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Rollout And Overload</p>
+          <h3>Cloudflare WAF Outage</h3>
+          <p>Use this when practicing CPU <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, global rollout safety, rollback access, and operational <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure modes</a>.</p>
+          <a class="sidebar-link" href="https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/">Open source</a>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Integrity And Recovery</p>
+          <h3>GitHub 2018 Incident</h3>
+          <p>Use this when practicing data integrity, failover <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a>, stale <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replicas</a>, backlog recovery, and <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a> extraction from a postmortem.</p>
+          <a class="sidebar-link" href="https://github.blog/news-insights/company-news/oct21-post-incident-analysis/">Open source</a>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Retries</p>
+          <h3>Stripe Idempotency</h3>
+          <p>Use this when practicing <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a>-safe business effects, <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> keys, and <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> language.</p>
+          <a class="sidebar-link" href="https://docs.stripe.com/api/idempotent_requests">Open source</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block" id="arena-live">
+      <div class="section-heading">
+        <p class="eyebrow">Live Arena</p>
+        <h2>Run adaptive circuits on the ideas you have already studied</h2>
+        <p>Sign in to a reader profile, then start a set. The arena tracks what has been cleared, what still breaks, and when to step back instead of pretending the answer is solid.</p>
+      </div>
+      <div data-practice-arena></div>
+    </section>
+
+    <section class="section-block two-up" id="arena-rhythm">
+      <div class="feature-card">
+        <p class="eyebrow">Use It Well</p>
+        <h2>One useful rhythm</h2>
+        <ul>
+          <li>Read a chapter and finish its lesson check.</li>
+          <li>Use chapter mastery when one chapter still feels unstable.</li>
+          <li>Use the arena when you want repeated transfer and pressure across the course.</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <p class="eyebrow">What The Arena Tracks</p>
+        <h2>Progress that matters</h2>
+        <p>The arena is not counting activity for its own sake. It tracks whether a reader can keep the right idea stable while the situation changes and the interviewer starts pushing back.</p>
+      </div>
+    </section>
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#arena-sets">How A Set Works</a></li><li class="level-2"><a href="#arena-case-files">Production Case Files</a></li><li class="level-2"><a href="#arena-live">Live Arena</a></li><li class="level-2"><a href="#arena-rhythm">Use It Well</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

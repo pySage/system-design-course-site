@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>08 - Drill Order and Mock Interview Prep | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/concept-diagrams.css" />
+  </head>
+  <body class="lesson-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link" href="labs.html">Labs</a>
+        <a class="topbar-link" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li class="is-active"><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-lesson">
+      <p class="eyebrow">Layer 8 of 8</p>
+      <h1>08 - Drill Order and Mock Interview Prep</h1>
+      <p class="hero-copy">This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="labs.html">Practice This In Labs</a>
+        <a class="button button-secondary" href="index.html">Back To Overview</a>
+      </div>
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="07-hybrid-systems-and-guided-walkthroughs.html"><span>Previous</span><strong>07 - Hybrid Systems and Guided Walkthroughs</strong></a>
+      <span class="pager-card is-empty"><span>Next</span><strong>Final Lesson</strong></span>
+    </nav>
+
+
+    <section class="chapter-frame" id="chapter-frame">
+      <div class="section-heading">
+        <p class="eyebrow">Layer 8 of 8</p>
+        <h2>This Chapter In The Story</h2>
+        <p>This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer.</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Why This Chapter</p>
+          <p>Most candidates practice too hard too early. This chapter teaches how to move from concepts to openings to <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> to <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrids</a> to mocks, and how to step back to the earliest layer that owns a miss.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Where We Are</p>
+          <p>You are at the performance layer: not learning new ideas, but making the whole chain stay <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">available</a> under <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">How It Fits</p>
+          <p>This final chapter closes the loop by turning course knowledge into a deliberate training system.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Goals</p>
+          <ul class="framed-list"><li>Practice in the right order instead of jumping straight into full-<a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> mocks</li><li>Diagnose which stage owns a miss and step back deliberately to repair it</li><li>Use teach, quiz, and test sessions to turn the full design map into spoken fluency</li><li>Increase practice <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> gradually so the structure survives timer, interruption, and new <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a></li></ul>
+        </article>
+      </div>
+    </section>
+
+    <article class="prose">
+      <h1 id="08-drill-order-and-mock-interview-prep">08 - Drill Order and Mock Interview Prep</h1>
+<p>You have the map now.</p>
+<p>The last problem is not learning one more concept. The last problem is making the whole chain come out in the right order while a clock is running and another person is listening.</p>
+<p>That is why the final chapter is about practice order. Not because practice is a separate topic after the real content, but because the whole course was quietly building toward spoken performance from the beginning.</p>
+<h2 id="start-with-one-bad-week-of-preparation">Start With One Bad Week Of Preparation</h2>
+<p>Imagine a candidate who has spent a week doing full mocks.</p>
+<p>On paper, that sounds serious. In practice, every mock goes wrong in the same way.</p>
+<p>The interviewer says:</p>
+<blockquote>&quot;Design Stripe.&quot;</blockquote>
+<p>The candidate answers fast:</p>
+<blockquote>&quot;We will need an API gateway, a ledger, Kafka, Redis, a database, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, and maybe sagas.&quot;</blockquote>
+<p>Then the interviewer asks:</p>
+<blockquote>&quot;How are you handling <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>?&quot;</blockquote>
+<p>The answer turns vague.</p>
+<p>Then:</p>
+<blockquote>&quot;What exactly needs <a class="term-link" href="glossary.html#strong-consistency" title="Relevant reads should reflect the latest acknowledged write.">strong consistency</a>?&quot;</blockquote>
+<p>Still vague.</p>
+<p>Then:</p>
+<blockquote>&quot;<a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">What breaks first</a>?&quot;</blockquote>
+<p>The answer becomes:</p>
+<blockquote>&quot;Maybe downtime or scale issues.&quot;</blockquote>
+<p>This is not mainly a knowledge problem. The candidate has seen the words. The real problem is training order.</p>
+<p>Mocks amplify your current habits. They do not repair weak habits efficiently.</p>
+<p>If you put full <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> on top of fuzzy concepts, fuzzy openings, and half-formed <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> language, the mock mostly teaches panic. That is why this chapter exists.</p>
+<p>The repair picture is:</p>
+<pre class="code-block"><code class="language-text">miss in a mock
+      |
+      v
+find the earliest layer that owns the miss
+      |
+      v
+drill that layer without full interview pressure
+      |
+      v
+rerun the broken part
+      |
+      v
+return to harder practice only after the repair is audible</code></pre>
+<p>This is how practice becomes a mental gym instead of a random calendar of mocks.</p>
+<h2 id="what-practice-is-training">What Practice Is Training</h2>
+<p>Practice here does not mean &quot;touch many systems.&quot; It means making one reasoning chain reliable enough that it still appears under <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<p>That chain is the same one the course kept building:</p>
+<ol><li>hear the <code><a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a></code> clearly</li><li>open with the <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code></li><li>compress into <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code></li><li>name the <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> or split the <code><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a></code></li><li>justify components</li><li>name the real <code><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></code></li><li>explain <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">what breaks first</a></li></ol>
+<p>When the chain snaps, diagnose the first broken link instead of repeating full mocks blindly:</p>
+<div class="table-wrap"><table><thead><tr><th>If the answer breaks here...</th><th>Repair here first</th></tr></thead><tbody><tr><td>concept meaning is fuzzy</td><td>Stage 1: make one idea speakable</td></tr><tr><td>components appear before facts</td><td>Stage 2: stabilize the opening</td></tr><tr><td>product label is guessed</td><td>Stage 3: earn one clean <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></td></tr><tr><td>mixed product becomes blurry</td><td>Stage 4: split path ownership</td></tr><tr><td>structure disappears under interruption</td><td>Stage 5: timed <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> and recovery</td></tr></tbody></table></div>
+<p>The ladder is a repair loop because each stage locks behavior the next stage depends on. If Stage 5 exposes a Stage 2 miss, do not do Stage 5 harder. Repair the opening, rerun the broken slice, then return to <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<h2 id="stage-1-make-one-idea-speakable">Stage 1: Make One Idea Speakable</h2>
+<p>Start by taking one idea at a time and making it explainable out loud.</p>
+<p>Not just definable. Explainable.</p>
+<p>If I ask:</p>
+<blockquote>&quot;Why is <code><a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a></code> essential in payments but not equally heavy in search?&quot;</blockquote>
+<p>you should be able to answer without needing a full system diagram.</p>
+<p>This stage is where you train:</p>
+<ul><li>one concept in plain language</li><li>one concrete system where it matters</li><li>one believable alternative</li><li>one cost of that alternative</li><li>one failure if you ignore the concept</li></ul>
+<p>The clearest drills here are very small.</p>
+<p>Examples:</p>
+<ul><li><code>Stripe</code>: <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a>, <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a> boundary, <a class="term-link" href="glossary.html#outbox" title="A pattern for atomically recording a state change and the event that should be published.">outbox</a></li><li><code>YouTube</code>: eager versus lazy transcoding</li><li><code>Google Docs</code>: <code>OT</code> versus <code>CRDT</code></li><li><code>Elasticsearch</code>: <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> versus query <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a></li><li><code>Uber</code>: optimistic versus pessimistic assignment locking</li></ul>
+<p>If your explanation still sounds like glossary text, stay here. If you can only name one side of the <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, stay here. If you can name a component but not the <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> it is protecting, stay here.</p>
+<p>You move on only when the idea becomes speakable in one minute and defendable in two.</p>
+<h2 id="stage-2-make-the-opening-stable">Stage 2: Make The Opening Stable</h2>
+<p>Now take a full <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a>, but ban yourself from architecture for the first pass.</p>
+<p>Your whole job is:</p>
+<ul><li>ask the <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code></li><li>compress to <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code></li></ul>
+<p>Nothing else.</p>
+<p>This stage exists because many weak interviews are already lost before the first component appears.</p>
+<p>The strongest signal that Stage 2 is still weak is very easy to hear: you say &quot;Kafka,&quot; &quot;Redis,&quot; or &quot;database&quot; before you can say what the main <code><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></code> actually is.</p>
+<p>Use a few <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> repeatedly here:</p>
+<ul><li><code>Slack</code></li><li><code>Stripe</code></li><li><code>YouTube</code></li><li><code>Uber</code></li></ul>
+<p>Those four are enough because they force different openings. <code>Slack</code> makes you hear <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> and local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a>. <code>Stripe</code> forces <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> and <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> language. <code>YouTube</code> makes the <code>+1</code> question heavier. <code>Uber</code> makes you separate live state from deferred work.</p>
+<p>A strong Stage-2 run has a very specific feel: the first two or three minutes sound slower than a component dump, but much more stable after that.</p>
+<p>Do not leave this stage until you can run a clean opening without decorative boxes, and do it consistently.</p>
+<h2 id="stage-3-make-one-clean-archetype-feel-native">Stage 3: Make One Clean Archetype Feel Native</h2>
+<p>Once the opening is stable, you can train one full system family at a time.</p>
+<p>This is where the design starts to feel interview-shaped.</p>
+<p>Pick one clean system for each <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code>:</p>
+<ul><li><code>WhatsApp</code> for messaging</li><li><code>YouTube upload/playback path</code> or a simple photo/video hosting product for media</li><li><code>Stripe</code> for <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a></li><li><code>Google Docs</code> for collaboration</li><li><code>Elasticsearch</code> for search</li><li><code>Datadog</code> for event ingestion</li><li><code>Uber</code> for geo / dispatch</li></ul>
+<p>At this stage, you are not trying to memorize a component list. You are trying to make the <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> feel earned.</p>
+<p>For each system, you should be able to say:</p>
+<ul><li>why this <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> owns the path</li><li>what components naturally follow</li><li>what <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> interviewers expect you to notice</li><li>what <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a> appears first</li></ul>
+<p>This is where many candidates sound better than they really are. They can say the right nouns, but the components still feel detached from the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<p>If I ask:</p>
+<blockquote>&quot;Why is the <a class="term-link" href="glossary.html#outbox" title="A pattern for atomically recording a state change and the event that should be published.">outbox</a> there?&quot;</blockquote>
+<p>or:</p>
+<blockquote>&quot;Why a <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> here instead of a direct <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a>?&quot;</blockquote>
+<p>and the answer becomes hand-wavy, Stage 3 is not locked yet.</p>
+<h2 id="stage-4-learn-to-step-into-mixed-ownership">Stage 4: Learn To Step Into Mixed Ownership</h2>
+<p>Only after the clean families feel stable should you spend serious time on mixed products.</p>
+<p>This stage matters because real interviews often use systems that stop making sense under one label.</p>
+<p>Examples:</p>
+<ul><li><code>YouTube</code></li><li><code>Airbnb</code></li><li><code>Slack</code></li><li><code>DoorDash</code></li><li><code>Netflix</code></li></ul>
+<p>The move here is not &quot;say more labels.&quot; The move is:</p>
+<p>What path am I explaining right now, and who owns it?</p>
+<p>If upload, playback, and discovery all get flattened into one media story, the answer blurs. If booking, search, and messaging all become one Airbnb diagram, the answer blurs.</p>
+<p>This stage is working when you can say:</p>
+<ul><li>what owns the <code><a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a></code></li><li>what owns the main <code><a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a></code></li><li>when the read side itself needs to split again</li><li>what stays secondary instead of becoming a fake co-owner</li></ul>
+<p>If every side feature becomes a co-equal subsystem, you are over-splitting. If one product label hides real differences in <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a> and failures, you are under-splitting.</p>
+<p>Stage 4 teaches the middle.</p>
+<p>Use short timed reps before full mocks:</p>
+<div class="table-wrap"><table><thead><tr><th>Rep</th><th>Time box</th><th>Pass condition</th></tr></thead><tbody><tr><td>path names only</td><td>2 minutes</td><td>name the major paths without components</td></tr><tr><td>owner and reason</td><td>4 minutes</td><td>assign owners from <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, not product brand</td></tr><tr><td>secondary-path cut</td><td>3 minutes</td><td>say what stays subordinate and why</td></tr><tr><td>interruption recovery</td><td>5 minutes</td><td>handle &quot;but what about search/payment/chat?&quot; without losing the main owner</td></tr></tbody></table></div>
+<p>For YouTube, a passing rep says upload and playback are media-owned, discovery is search-owned, and analytics stays secondary unless the <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> changes. For Airbnb, a passing rep says discovery is search-owned, booking is <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a>-owned, and messaging stays secondary unless it becomes the focus.</p>
+<p>If the rep turns into a full architecture, stop. Stage 4 is not drawing practice. It is ownership practice.</p>
+<h2 id="stage-5-add-the-clock-only-after-structure-exists">Stage 5: Add The Clock Only After Structure Exists</h2>
+<p>Now come the timed mocks.</p>
+<p>Not because mocks are the most important part. Because they are the most expensive part.</p>
+<p>A mock should test structure that already mostly exists. It should not be the place where structure is first invented.</p>
+<p>At this stage, add:</p>
+<ul><li>a timer</li><li>interruptions</li><li>new <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a> midway</li><li>follow-up questions on <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a></li><li>explicit failure probing</li></ul>
+<p>Good <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> challenges look like this:</p>
+<ul><li>same system, now one region fails</li><li>same system, now cost must drop by <code>10x</code></li><li>same system, now compliance becomes critical</li><li>same system, now the main <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> target is cut in half</li><li>same system, now one side path becomes far more important</li></ul>
+<p>The goal is not a perfect performance. The goal is recovery without losing the framework.</p>
+<p>When <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> rises, the answer should still land back on: <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code>, owner, components, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a>.</p>
+<p>If the clock makes you forget the whole shape, the fix is rarely &quot;do mocks harder.&quot; It is usually to step back one layer and repair the exact piece that disappeared.</p>
+<p>Progressive overload matters here. Do not jump from calm reading to a 45-minute mock and call that training. Increase <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> one variable at a time:</p>
+<div class="table-wrap"><table><thead><tr><th>Overload step</th><th>What changes</th></tr></thead><tbody><tr><td>no timer</td><td>explain the idea cleanly</td></tr><tr><td>soft timer</td><td>keep the same structure with mild time <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></td></tr><tr><td>interviewer interruption</td><td>recover without losing the current layer</td></tr><tr><td>new constraint</td><td>feed the new fact back into <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> or ownership</td></tr><tr><td>full mock</td><td>run the whole chain while being probed</td></tr></tbody></table></div>
+<p>The point is not comfort. The point is controlled difficulty. If a new <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> makes the whole answer collapse, lower the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> and repair the missing layer.</p>
+<p>Use exit criteria before you promote yourself to harder practice:</p>
+<div class="table-wrap"><table><thead><tr><th>Before moving on...</th><th>Evidence</th></tr></thead><tbody><tr><td>from Stage 1 to Stage 2</td><td>you can explain the concept in one minute and defend one <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> in two</td></tr><tr><td>from Stage 2 to Stage 3</td><td>three component-ban openings reach <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> cleanly</td></tr><tr><td>from Stage 3 to Stage 4</td><td>one clean <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> answer names components, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a>, and first failure without notes</td></tr><tr><td>from Stage 4 to Stage 5</td><td>three <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> splits name owners and secondary paths under a short timer</td></tr><tr><td>from Stage 5 to full mocks</td><td>you can recover from two interruptions without abandoning the current layer</td></tr></tbody></table></div>
+<p>That is progressive overload. The <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> increases only after the current movement is stable enough to survive it.</p>
+<h2 id="three-session-modes-keep-practice-honest">Three Session Modes Keep Practice Honest</h2>
+<p>By this point, you should stop treating every session as the same kind of session.</p>
+<p>Use three modes deliberately:</p>
+<h3 id="teach"><code>Teach</code></h3>
+<p>Use this when one concept still feels verbal but not owned.</p>
+<p>Examples:</p>
+<ul><li>you keep saying &quot;<a class="term-link" href="glossary.html#strong-consistency" title="Relevant reads should reflect the latest acknowledged write.">strong consistency</a>&quot; without naming the exact shared state</li><li>you know <code>OT</code> and <code>CRDT</code> as labels but cannot explain why one is cheaper in one situation</li><li>you can say &quot;use a <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a>&quot; but not what that <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> is protecting</li></ul>
+<p>Teach mode means: anchor the concept to its bucket, explain it through one concrete system, state the alternative, then answer one retention question.</p>
+<h3 id="quiz"><code>Quiz</code></h3>
+<p>This should be the default mode.</p>
+<p>A cold system is better than a rehearsed monologue because it tells you whether the framework is actually <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">available</a> under mild <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<p>Quiz mode means: run the whole flow, then <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>-test the weak sections immediately.</p>
+<h3 id="test"><code>Test</code></h3>
+<p>Use this only when the earlier layers are mostly stable.</p>
+<p>Test mode should feel like an interview: less coaching, more <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a>, more interruptions, sharper scoring.</p>
+<p>If test mode keeps exposing the same weakness, do not stay in test mode out of pride. Step back to teach or quiz mode and repair it directly.</p>
+<h2 id="one-useful-45-minute-practice-session">One Useful 45-Minute Practice Session</h2>
+<p>A good session does not need to be long. It needs to close a loop.</p>
+<p>One reliable pattern is:</p>
+<ol><li><code>5 minutes</code>: review the last <a class="term-link" href="glossary.html#weak-spot" title="A concept you still cannot explain cleanly under pressure.">weak spot</a></li><li><code>10 minutes</code>: drill one concept or one Stage-2 opening</li><li><code>15 minutes</code>: run one full system</li><li><code>10 minutes</code>: rerun only the part that broke</li><li><code>5 minutes</code>: update the ledger with the exact miss and the next repair</li></ol>
+<p>Notice what is not in that plan:</p>
+<ul><li>random extra reading</li><li>starting a second full system because the first one felt uncomfortable</li><li>ending right after the mock exposed the weakness</li></ul>
+<p>The rerun is where most learning happens.</p>
+<p>Here is what that looks like with a real miss:</p>
+<pre class="code-block"><code class="language-text">miss:
+  In a Stripe mock, I said &quot;retry with Kafka&quot; but never explained duplicate-charge prevention.
+
+owning layer:
+  Stage 1 + Stage 3
+
+repair:
+  Explain idempotency in payments for 5 minutes.
+  Then rerun only the Stripe charge hot path.
+
+close when:
+  I can say how a stable idempotency key prevents a repeated client request from creating a second business effect.</code></pre>
+<p>Notice that the repair is smaller than another full mock. That is why it can actually change tomorrow&#39;s answer.</p>
+<h2 id="production-case-files-borrowed-experience-not-passive-reading">Production Case Files: Borrowed Experience, Not Passive Reading</h2>
+<p>After the course has built the full map, you can finally use real company writeups at full strength.</p>
+<p>Use each case as a simulation before opening the source:</p>
+<ol><li>read the short setup</li><li>make your own <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read</li><li>choose the <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> or recovery move you would try</li><li>only then open the source</li><li>compare what the real team did against your reasoning</li><li>write one interview-ready sentence you want to keep</li></ol>
+<h3 id="worked-model-discord-message-storage-migration">Worked Model: Discord Message Storage Migration</h3>
+<p>Setup:</p>
+<p>Discord had message history at enormous scale, with some channels and servers far hotter than ordinary ones. The team faced unpredictable <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>, high operational toil, hot local slices of data, and a major migration.</p>
+<p>Before opening the source, answer:</p>
+<ul><li>Chapter 01: what is the dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>?</li><li>Chapter 02: what data/<a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> makes message storage special?</li><li>Chapter 04: what runtime protection would reduce repeated reads against the same hot data?</li><li>Interview line: how would you explain the first failure without saying only &quot;database scale&quot;?</li></ul>
+<p>One worked answer:</p>
+<p>Chapter 01 <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read:</p>
+<blockquote>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is skewed message-history traffic: a few channels or servers become much hotter than the average, so local <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> appears before fleet-wide request count sounds impossible.&quot;</blockquote>
+<p>Chapter 02 data/query-shape read:</p>
+<blockquote>&quot;The natural query is recent messages for one channel in time order. That suggests a local ordered-history shape, but it also creates a hot-slice risk when one channel becomes unusually active.&quot;</blockquote>
+<p>Chapter 04 runtime read:</p>
+<blockquote>&quot;Repeated reads against the same hot history need protection such as request coalescing, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caching</a> where <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> allows it, and clear signals for database <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and repeated hot-key <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.&quot;</blockquote>
+<p><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">Tradeoff</a>:</p>
+<ul><li>Keeping recent channel history local makes common reads simple and fast.</li><li>But the same locality can concentrate pain when one channel becomes huge or suddenly active.</li></ul>
+<p>Interview line to keep:</p>
+<blockquote>&quot;This is not just database scale; it is a skewed ordered-history workload where the hottest channel slices dominate <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> and force careful <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> plus runtime shielding.&quot;</blockquote>
+<p>Now use the remaining case files the same way:</p>
+<ol><li>name the first <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></li><li>name the shape or <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> that explains it</li><li>name one runtime or migration risk</li><li>compress the lesson into one interview-ready sentence</li></ol>
+<p>Source: <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Discord Engineering, &quot;How Discord Stores Trillions of Messages&quot;</a></p>
+<h3 id="case-file-1-cloudflare-global-waf-outage">Case File 1: Cloudflare Global WAF Outage</h3>
+<p>Setup:</p>
+<p>A globally deployed rule change made request handling far more CPU-expensive and caused widespread failures. The issue was not just a bad rule; it was also about rollout safety, detection, emergency controls, and recovery path design.</p>
+<p>Before opening the source, answer:</p>
+<ul><li>Chapter 01: what <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> changed if traffic volume alone was not enough to explain the incident?</li><li>Chapter 04: what rollout and rollback protections would you want?</li><li>Chapter 08: what would you drill afterward so the same class of failure is less likely?</li><li>Interview line: how would you say &quot;deployment pipeline is part of architecture&quot; without sounding vague?</li></ul>
+<p>One worked answer:</p>
+<p>Chapter 01 <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read:</p>
+<blockquote>&quot;The <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> was not only more requests; the per-request CPU cost changed globally, so ordinary traffic became much heavier and saturation appeared fast.&quot;</blockquote>
+<p>Chapter 04 runtime read:</p>
+<blockquote>&quot;A globally executed rule needs staged rollout, resource-saturation signals, and a rollback path that stays reachable when the normal control plane is degraded.&quot;</blockquote>
+<p>Drill decision:</p>
+<blockquote>&quot;I would practice turning deployment choices into runtime promises: what slice sees the change first, what signal stops rollout, and what independent control path reverses it.&quot;</blockquote>
+<p>Interview line to keep:</p>
+<blockquote>&quot;For globally executed request-path logic, rollout safety is part of architecture because a small rule change can multiply CPU cost across every request before traffic volume changes.&quot;</blockquote>
+<p>Source: <a href="https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/">Cloudflare, &quot;Details of the Cloudflare outage on July 2, 2019&quot;</a></p>
+<h3 id="case-file-2-github-october-2018-incident">Case File 2: GitHub October 2018 Incident</h3>
+<p>Setup:</p>
+<p>A brief network partition triggered database <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a> changes, inconsistent <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> state, degraded service, delayed <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replicas</a>, and large downstream backlogs. The recovery had to prioritize data integrity even though service usability suffered.</p>
+<p>Before opening the source, answer:</p>
+<ul><li>Chapter 03: what <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundary mattered more than fast recovery?</li><li>Chapter 04: what recovery backlog and stale-read signals would you track?</li><li>Chapter 05: what is the <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> summary?</li><li>Interview line: how would you defend choosing data integrity over shorter outage time?</li></ul>
+<p>Source: <a href="https://github.blog/news-insights/company-news/oct21-post-incident-analysis/">GitHub, &quot;October 21 post-incident analysis&quot;</a></p>
+<h3 id="case-file-3-stripe-idempotent-requests">Case File 3: Stripe Idempotent Requests</h3>
+<p>Setup:</p>
+<p>Payment APIs face timeouts and <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, but <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retrying</a> must not create duplicate business effects. The system needs the same logical request to be recognized across attempts.</p>
+<p>Before opening the source, answer:</p>
+<ul><li>Chapter 03: what exactly does <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> protect?</li><li>Chapter 04: what <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> behavior is safe and what <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> behavior is dangerous?</li><li>Chapter 06: why does this smell <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transactional</a> rather than generic event processing?</li><li>Interview line: how would you explain exactly-once business outcome without promising magical exactly-once transport?</li></ul>
+<p>Source: <a href="https://docs.stripe.com/api/idempotent_requests">Stripe API docs, &quot;Idempotent requests&quot;</a></p>
+<h3 id="case-file-4-slack-shared-channels">Case File 4: Slack Shared Channels</h3>
+<p>Setup:</p>
+<p>Slack added channels shared across workspace boundaries. That broke assumptions about where channel data lived, how user visibility worked, and how <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a> or APIs should reason about external users.</p>
+<p>Before opening the source, answer:</p>
+<ul><li>Chapter 02: what old storage boundary stopped fitting the product?</li><li>Chapter 07: which path remains messaging-owned, and which ownership boundary changed?</li><li>Chapter 08: what migration risk would you drill before implementation?</li><li>Interview line: how would you say &quot;product boundary changed, so data ownership changed&quot;?</li></ul>
+<p>One worked answer:</p>
+<p>Chapter 02 boundary read:</p>
+<blockquote>&quot;The old assumption was that a channel and its data lived cleanly inside one workspace boundary. Shared channels break that assumption because membership, visibility, API behavior, and <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> reads now cross workspace ownership.&quot;</blockquote>
+<p>Chapter 07 ownership read:</p>
+<blockquote>&quot;Live messaging still owns the send path, but the seam changes: channel identity and visibility can no longer be treated as purely local to one workspace.&quot;</blockquote>
+<p>Migration drill:</p>
+<blockquote>&quot;I would drill dual-read or compatibility behavior around old and new channel ownership, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> invalidation for external visibility, and rollback behavior if one workspace sees a different channel state from the other.&quot;</blockquote>
+<p>Interview line to keep:</p>
+<blockquote>&quot;Slack shared channels are not a new <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>; they are a messaging path whose product boundary changed, forcing data ownership, visibility, and migration safety to become first-class design concerns.&quot;</blockquote>
+<p>Source: <a href="https://slack.engineering/how-slack-built-shared-channels/">Slack Engineering, &quot;How Slack Built Shared Channels&quot;</a></p>
+<h2 id="the-weak-spot-ledger-should-close-loops-not-decorate-them">The Weak-Spot Ledger Should Close Loops, Not Decorate Them</h2>
+<p>A weak-spot ledger is useful only if it changes tomorrow&#39;s drill.</p>
+<p>Do not record:</p>
+<ul><li>&quot;Need to get better at scalability&quot;</li><li>&quot;Need to be sharper&quot;</li><li>&quot;Need more practice&quot;</li></ul>
+<p>Those are moods, not repair instructions.</p>
+<p>Record something concrete:</p>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>System</th><th>Exact miss</th><th>Owning stage</th><th>Repair drill</th><th>Ready to close when</th></tr></thead><tbody><tr><td>2026-04-15</td><td>Stripe</td><td>said <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> but never named an <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> key</td><td>Stage 1 + 3</td><td>10-minute <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotency</a> explanation, then rerun Stripe <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a></td><td>I can explain <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> safety and duplicate prevention without notes</td></tr><tr><td>2026-04-16</td><td>YouTube</td><td>kept describing the whole product as media</td><td>Stage 4</td><td>split upload, playback, and discovery aloud three times</td><td>I can name path owners before components</td></tr><tr><td>2026-04-17</td><td>Slack</td><td>said WebSockets before finishing the <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code></td><td>Stage 2</td><td>component-ban opening drill on Slack and WhatsApp</td><td>I can reach <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> before naming boxes</td></tr></tbody></table></div>
+<p>That last column matters most. Without a closure condition, <a class="term-link" href="glossary.html#weak-spot" title="A concept you still cannot explain cleanly under pressure.">weak spots</a> just accumulate emotionally and never retire operationally.</p>
+<h2 id="readiness-is-audible-not-internal">Readiness Is Audible, Not Internal</h2>
+<p>One of the easiest ways to fool yourself is to confuse internal recognition with interview readiness.</p>
+<p>You may feel that you &quot;know&quot; a system because the diagram makes sense when you read it. But the interview only scores what became audible.</p>
+<p>A strong answer has to be heard:</p>
+<ul><li>the opening questions were actually asked</li><li>the <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> summary was actually spoken</li><li>the chosen <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code> was actually justified</li><li>each component had an actual reason</li><li>the <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> named both sides</li><li>the <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a> had a mechanism, not just the word &quot;scale&quot;</li></ul>
+<p>That is why the mock rubric scores spoken behavior, not private understanding.</p>
+<p>Use the rubric this way:</p>
+<ul><li><code>1</code> means missing</li><li><code>2</code> means present but still soft</li><li><code>3</code> means clear, justified, and interviewer-ready</li></ul>
+<p>The score is seven dimensions, three points each:</p>
+<div class="table-wrap"><table><thead><tr><th>Dimension</th><th>What a <code>3</code> sounds like</th></tr></thead><tbody><tr><td>requirements opening</td><td>the <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code> is used to extract facts, not recited</td></tr><tr><td><a class="term-link" href="glossary.html#dominant-stress" title="The pressure that matters most for the first major design decisions.">dominant stress</a></td><td><a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a>, <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantees</a>, <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a>, and <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a> are prioritized</td></tr><tr><td><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> recognition</td><td>the label is earned from <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></td></tr><tr><td><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> ownership</td><td>write/read/path owners are explicit when needed</td></tr><tr><td>components</td><td>every component has a reason tied to stress or <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a></td></tr><tr><td><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a></td><td>both sides and the chosen side are named</td></tr><tr><td><a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a></td><td>the first break has a mechanism, not just a scary word</td></tr></tbody></table></div>
+<p>Anything below <code>15</code> usually means structural gaps are still visible. But even a higher score can hide one repeated weakness. If the same miss appears twice, treat it as a real repair target immediately.</p>
+<h2 id="difficulty-ladder-practice-decisions">Difficulty Ladder: Practice Decisions</h2>
+<h3 id="easy-one-concept-is-fuzzy">Easy: One Concept Is Fuzzy</h3>
+<p>You can say <code><a class="term-link" href="glossary.html#eventual-consistency" title="Reads may lag behind writes, but replicas converge over time.">eventual consistency</a></code>, but you cannot explain where it is safe.</p>
+<p>Do not run a full mock yet. Run Stage 1: explain one product state that can lag and one state that cannot. Use Airbnb search versus booking until the contrast is automatic.</p>
+<h3 id="medium-opening-keeps-collapsing-into-components">Medium: Opening Keeps Collapsing Into Components</h3>
+<p>You hear <code>Design Slack</code> and immediately say WebSockets, Kafka, and Redis.</p>
+<p>Do not memorize a better Slack architecture yet. Run Stage 2: three openings with a component ban. You only pass when you reach <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> before any component name appears.</p>
+<h3 id="hard-hybrid-product-becomes-a-blur-under-pressure">Hard: Hybrid Product Becomes A Blur Under Pressure</h3>
+<p>You can explain YouTube slowly, but in mocks you collapse upload, discovery, and playback into one path.</p>
+<p>Do not add more systems. Run Stage 4: repeat only the path split until ownership is audible: creator upload, viewer discovery, viewer playback. Then add a timer.</p>
+<h3 id="interview-mode-constraint-change-midway">Interview Mode: Constraint Change Midway</h3>
+<p>The interviewer says: &quot;Now assume one region fails during peak traffic.&quot;</p>
+<p>Do not throw away the answer. Feed the new fact back into the map: <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> changes, <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a> changes, <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a> <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a> get heavier, and the first <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure mode</a> may shift. Then continue from the current layer.</p>
+<h2 id="phrase-drill-diagnose-the-miss">Phrase Drill: Diagnose The Miss</h2>
+<p>Use this sentence when practice goes badly:</p>
+<blockquote>&quot;The miss was ___. The earliest layer that owns it is ___. I will repair it by ___, and I will close it when ___.&quot;</blockquote>
+<p>Examples:</p>
+<div class="table-wrap"><table><thead><tr><th>Bad note</th><th>Repair note</th></tr></thead><tbody><tr><td>&quot;Need better scalability.&quot;</td><td>&quot;The miss was vague peak-<a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> reading. The owning layer is Stage 2. I will run three <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> openings for Slack, YouTube, and Uber, and close it when I can name burst, <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, or <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> before components.&quot;</td></tr><tr><td>&quot;Need to know Kafka better.&quot;</td><td>&quot;The miss was not Kafka knowledge; I could not say what deferred work the <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> protected. The owning layer is Stage 1 + Stage 4. I will explain <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> purpose on YouTube upload and close it when I can name the response promise and backlog signal.&quot;</td></tr><tr><td>&quot;Bad at <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrids</a>.&quot;</td><td>&quot;The miss was path blur. The owning layer is Stage 4. I will split YouTube and Airbnb into owners out loud and close it when I can name what stays secondary.&quot;</td></tr></tbody></table></div>
+<h2 id="a-better-readiness-standard-than-i-did-many-mocks">A Better Readiness Standard Than &quot;I Did Many Mocks&quot;</h2>
+<p>Before calling yourself interview-ready, look for evidence like this:</p>
+<ul><li>you can explain five to ten core concepts cleanly without notes</li><li>you can run <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code> plus <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> for several systems without rushing into components</li><li>you can do one clean system from each major <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code></li><li>you can split <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> products by path without blur</li><li>you can survive constraint changes without abandoning structure</li><li>your last few mocks still contain stress, but not collapse</li></ul>
+<p>That is a much better signal than the raw number of systems you touched.</p>
+<h2 id="a-seven-day-ramp-after-the-course">A Seven-Day Ramp After The Course</h2>
+<p>Use the first week after reading to install the habits instead of starting random mocks.</p>
+<div class="table-wrap"><table><thead><tr><th>Day</th><th>Drill</th></tr></thead><tbody><tr><td>1</td><td>Stage 1: explain five concepts for one minute each, then repair the weakest one</td></tr><tr><td>2</td><td>Stage 2: run three component-ban openings for Slack, Stripe, and YouTube</td></tr><tr><td>3</td><td>Stage 3: do two clean <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> end to end, including <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> and first failure</td></tr><tr><td>4</td><td>Stage 3: do the remaining clean <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetypes</a> in shorter reps</td></tr><tr><td>5</td><td>Stage 4: split YouTube, Airbnb, Slack, and Uber by path and owner</td></tr><tr><td>6</td><td>Stage 5: run one 25-minute mock with two interruptions, then rerun only the broken slice</td></tr><tr><td>7</td><td>Run one scored mock, update the weak-spot ledger, and choose next week&#39;s repair target</td></tr></tbody></table></div>
+<p>The point is not to finish a schedule. The point is to make each miss create the next drill.</p>
+<h2 id="before-you-leave-the-course">Before You Leave The Course</h2>
+<p>The final operating rule is short: practice where the miss is born, then prove the repair by rerunning the broken slice.</p>
+<p>Your next move after finishing the course should be simple:</p>
+<ol><li>run concept drills</li><li>run framework-only openings</li><li>run one clean system per <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code></li><li>run <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> splits</li><li>run timed mocks</li><li>whenever something breaks, step back to the earliest owning layer and repair it</li></ol>
+<p>If you do that, the course stops being eight pages you read once. It becomes a practice system you can keep using until the interview feels normal.</p>
+    </article>
+
+
+    <section class="section-block chapter-intuition" id="chapter-intuition">
+      <div class="section-heading">
+        <p class="eyebrow">After Reading</p>
+        <h2>Now See The Concept Move</h2>
+        <p>You have the chapter vocabulary now. Use this as a moving picture, not a mini simulator. The chapter diagram teaches the concept; the Arena is where you will make and break systems.</p>
+      </div>
+      <section class="diagram-panel" id="chapter-diagram">
+        <div class="section-heading">
+          <p class="eyebrow">Animated Concept Diagram</p>
+          <h2>Practice Repairs The Earliest Miss</h2>
+          <p>Watch practice move from concept to opening to <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> to <a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a> to mock <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, stepping back whenever an earlier habit breaks.</p>
+        </div>
+        <div class="chapter-visual-shell" data-concept-diagram="08-drill-order-and-mock-interview-prep"></div>
+        <p class="concept-lab-note">
+          Want to test the physics by changing load, shape, scale, and failure? Use the
+          <a href="arena.html">Practice Arena</a>. Chapters stay focused on concept clarity.
+        </p>
+      </section>
+
+    <section class="course-map-panel" id="course-map">
+      <div class="section-heading">
+        <p class="eyebrow">Mind Map</p>
+        <h2>Where We Are In The Story</h2>
+        <p>Click a node to see what that chapter adds to the picture.</p>
+      </div>
+      <div class="course-map-shell" data-course-map>
+        <div class="course-map-track">
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Start Here: The Habit This Course Builds"
+          data-map-stage="Start Here"
+          data-map-summary="Understand why this course starts from pressure instead of components, and what habit of reasoning the later chapters are trying to build."
+        >
+          <span class="map-node-index">00</span>
+          <span class="map-node-label">Start Here: The Habit This Course Builds</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Load, Latency, and Data Shape"
+          data-map-stage="Layer 1 of 8"
+          data-map-summary="Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components."
+        >
+          <span class="map-node-index">01</span>
+          <span class="map-node-label">Load, Latency, and Data Shape</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Storage, Partitioning, and Replication"
+          data-map-stage="Layer 2 of 8"
+          data-map-summary="Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied."
+        >
+          <span class="map-node-index">02</span>
+          <span class="map-node-label">Storage, Partitioning, and Replication</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Consistency, Ordering, Idempotency, and Transactions"
+          data-map-stage="Layer 3 of 8"
+          data-map-summary="Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe."
+        >
+          <span class="map-node-index">03</span>
+          <span class="map-node-label">Consistency, Ordering, Idempotency, and Transactions</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Async, Caching, Failure Handling, and Operability"
+          data-map-stage="Layer 4 of 8"
+          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+        >
+          <span class="map-node-index">04</span>
+          <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="The Interview Framework: 7+1 and LGTC"
+          data-map-stage="Layer 5 of 8"
+          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+        >
+          <span class="map-node-index">05</span>
+          <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Archetypes and Component Maps"
+          data-map-stage="Layer 6 of 8"
+          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+        >
+          <span class="map-node-index">06</span>
+          <span class="map-node-label">Archetypes and Component Maps</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Hybrid Systems and Guided Walkthroughs"
+          data-map-stage="Layer 7 of 8"
+          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+        >
+          <span class="map-node-index">07</span>
+          <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
+        </button>
+
+        <button
+          class="map-node is-current"
+          type="button"
+          data-map-node
+          data-map-title="Drill Order and Mock Interview Prep"
+          data-map-stage="Layer 8 of 8"
+          data-map-summary="This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer."
+        >
+          <span class="map-node-index">08</span>
+          <span class="map-node-label">Drill Order and Mock Interview Prep</span>
+        </button>
+
+        </div>
+        <div class="map-detail" data-map-detail>
+          <p class="panel-label" data-map-detail-stage>Layer 8 of 8</p>
+          <h3 data-map-detail-title>Drill Order and Mock Interview Prep</h3>
+          <p data-map-detail-summary>This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer.</p>
+        </div>
+      </div>
+    </section>
+
+    </section>
+
+
+    <section class="chapter-summary" id="key-learnings">
+      <div class="section-heading">
+        <p class="eyebrow">Before You Move On</p>
+        <h2>Key Learnings</h2>
+        <p>These are the ideas that should stay in your head after you finish the chapter.</p>
+      </div>
+      <ul class="takeaway-list"><li><strong>Remember:</strong> The ladder is a dependency order, not just a syllabus order.</li><li><strong>Remember:</strong> Mocks expose weaknesses, but earlier drill layers usually repair them faster.</li><li><strong>Remember:</strong> Interview readiness comes from audible structure, justified choices, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> clarity, and <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure thinking</a> under <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</li><li><strong>Remember:</strong> Progressive overload works only when the previous layer is already audible.</li></ul>
+    </section>
+
+    <section class="quiz-panel" id="lesson-check" data-lesson-quiz="08-drill-order-and-mock-interview-prep">
+      <div class="section-heading">
+        <p class="eyebrow">Lesson Check</p>
+        <h2>Interactive Quiz</h2>
+        <p>Answer these before moving on. The goal is explanation-grade understanding, not lucky guesses.</p>
+      </div>
+      <div class="quiz-root"></div>
+    </section>
+    <section class="section-block chapter-coach-block" id="chapter-coach">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Coach</p>
+        <h2>Ask Questions And Prove The Chapter</h2>
+        <p>Use the left panel to clear doubts about this chapter in plain language. Use the right panel after the lesson check to keep answering chapter-specific probes until the main understanding is stable.</p>
+      </div>
+
+      <div class="chapter-coach-grid">
+        <div data-chapter-doubt-chat="08-drill-order-and-mock-interview-prep"></div>
+        <div data-chapter-mastery="08-drill-order-and-mock-interview-prep"></div>
+      </div>
+
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="07-hybrid-systems-and-guided-walkthroughs.html"><span>Previous</span><strong>07 - Hybrid Systems and Guided Walkthroughs</strong></a>
+      <span class="pager-card is-empty"><span>Next</span><strong>Final Lesson</strong></span>
+    </nav>
+
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#start-with-one-bad-week-of-preparation">Start With One Bad Week Of Preparation</a></li><li class="level-2"><a href="#what-practice-is-training">What Practice Is Training</a></li><li class="level-2"><a href="#stage-1-make-one-idea-speakable">Stage 1: Make One Idea Speakable</a></li><li class="level-2"><a href="#stage-2-make-the-opening-stable">Stage 2: Make The Opening Stable</a></li><li class="level-2"><a href="#stage-3-make-one-clean-archetype-feel-native">Stage 3: Make One Clean Archetype Feel Native</a></li><li class="level-2"><a href="#stage-4-learn-to-step-into-mixed-ownership">Stage 4: Learn To Step Into Mixed Ownership</a></li><li class="level-2"><a href="#stage-5-add-the-clock-only-after-structure-exists">Stage 5: Add The Clock Only After Structure Exists</a></li><li class="level-2"><a href="#three-session-modes-keep-practice-honest">Three Session Modes Keep Practice Honest</a></li><li class="level-2"><a href="#one-useful-45-minute-practice-session">One Useful 45-Minute Practice Session</a></li><li class="level-2"><a href="#production-case-files-borrowed-experience-not-passive-reading">Production Case Files: Borrowed Experience, Not Passive Reading</a></li><li class="level-2"><a href="#the-weak-spot-ledger-should-close-loops-not-decorate-them">The Weak-Spot Ledger Should Close Loops, Not Decorate Them</a></li><li class="level-2"><a href="#readiness-is-audible-not-internal">Readiness Is Audible, Not Internal</a></li><li class="level-2"><a href="#difficulty-ladder-practice-decisions">Difficulty Ladder: Practice Decisions</a></li><li class="level-2"><a href="#phrase-drill-diagnose-the-miss">Phrase Drill: Diagnose The Miss</a></li><li class="level-2"><a href="#a-better-readiness-standard-than-i-did-many-mocks">A Better Readiness Standard Than &quot;I Did Many Mocks&quot;</a></li><li class="level-2"><a href="#a-seven-day-ramp-after-the-course">A Seven-Day Ramp After The Course</a></li><li class="level-2"><a href="#before-you-leave-the-course">Before You Leave The Course</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+    <script src="assets/concept-diagrams.js"></script>
+  </body>
+</html>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>02 - Storage, Partitioning, and Replication | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/concept-diagrams.css" />
+  </head>
+  <body class="lesson-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link" href="labs.html">Labs</a>
+        <a class="topbar-link" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li class="is-active"><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-lesson">
+      <p class="eyebrow">Layer 2 of 8</p>
+      <h1>02 - Storage, Partitioning, and Replication</h1>
+      <p class="hero-copy">Now that you can read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, the next question is where each kind of data should live, how it should be split, and when it should be copied.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="labs.html">Practice This In Labs</a>
+        <a class="button button-secondary" href="index.html">Back To Overview</a>
+      </div>
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="01-load-latency-and-data-shape.html"><span>Previous</span><strong>01 - Load, Latency, and Data Shape</strong></a>
+      <a class="pager-card" href="03-consistency-ordering-idempotency-and-transactions.html"><span>Next</span><strong>03 - Consistency, Ordering, Idempotency, and Transactions</strong></a>
+    </nav>
+
+
+    <section class="chapter-frame" id="chapter-frame">
+      <div class="section-heading">
+        <p class="eyebrow">Layer 2 of 8</p>
+        <h2>This Chapter In The Story</h2>
+        <p>Now that you can read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, the next question is where each kind of data should live, how it should be split, and when it should be copied.</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Why This Chapter</p>
+          <p><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">Pressure</a> alone is not enough. Once you know what the system is being asked to do, you have to place each kind of data honestly: blobs, structured metadata, document-shaped records, per-channel ordered message histories, search views, graphs, and analytics paths do not naturally want the same <a class="term-link" href="glossary.html#storage-shape" title="The kind of storage model that best matches the data shape, query shape, and guarantees.">storage shape</a>.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Where We Are</p>
+          <p>You are now inside the system, looking at the physical life of data.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">How It Fits</p>
+          <p>This chapter turns traffic intuition into storage and scaling intuition.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Goals</p>
+          <ul class="framed-list"><li>Match storage patterns to <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> instead of product name</li><li>Recognize when document, <a class="term-link" href="glossary.html#wide-column-store" title="A store organized around a partition key with many ordered rows or cells inside that partition.">wide-column</a>, graph, search, or <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> families are the honest fit</li><li>Understand what <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> changes and what <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> solves</li><li>Avoid using brand names where reasoning should be</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <article class="prose">
+      <h1 id="02-storage-partitioning-and-replication">02 - Storage, Partitioning, and Replication</h1>
+<p>Now that you can read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, the next question is where each kind of data should live, how it should be split, and when it should be copied.</p>
+<p>The mistake this chapter is trying to prevent is also simple: people notice scale, then answer with a database brand. They say &quot;use PostgreSQL,&quot; &quot;use Cassandra,&quot; or &quot;use S3&quot; before they have said what kind of data they are storing, how it changes, or how the product needs to read it.</p>
+<p>This chapter trains the next move: pick storage as a response to <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a>, <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a>, and growth <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>.</p>
+<h2 id="start-with-one-honest-placement">Start With One Honest Placement</h2>
+<p>Imagine a creator uploads a video to YouTube.</p>
+<p>A shallow storage answer sounds like this:</p>
+<blockquote>&quot;Store the video in the database.&quot;</blockquote>
+<p>An honest storage reading is already more precise:</p>
+<ol><li>The raw video file is a giant blob. It is large, mostly immutable, and awkward to keep inside the kind of store that is best at small structured records and strict updates.</li><li>The video metadata is small structured state: title, owner, processing status, visibility, and timestamps.</li><li>Search and discovery need a different read shape from direct metadata lookup.</li><li>View analytics and watch-time reporting behave differently again: append-heavy and aggregation-heavy.</li></ol>
+<p>That one product already contains several different kinds of data. If you say only &quot;the video,&quot; you have already blurred several different storage problems together.</p>
+<p>You do not choose one store because the product has one name. You choose storage based on what each kind of data is and what each kind of read needs from it. That is the new layer this chapter adds on top of <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> reading: once you can see the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, you stop pretending all data in the product has the same job.</p>
+<h2 id="what-a-storage-choice-is-actually-answering">What A Storage Choice Is Actually Answering</h2>
+<p>In plain language, a storage choice is answering three questions:</p>
+<ul><li>what kind of thing is this data?</li><li>how does it change over time?</li><li>how does the product need to read it?</li></ul>
+<p>If you cannot answer those, the storage choice is probably branding rather than reasoning.</p>
+<h3 id="the-bridge-from-chapter-01-users-hit-owners-not-averages">The Bridge From Chapter 01: Users Hit Owners, Not Averages</h3>
+<p>Chapter 01 said a system can feel broken even when average traffic looks calm. This chapter explains one common reason: the user is often hitting one owner of the data, not the whole fleet.</p>
+<p>For now, owner simply means: the partition, shard, or region responsible for that slice of data. The formal <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> section comes later; this bridge only needs the intuition.</p>
+<p>Imagine a Slack-like system where each channel&#39;s recent messages are owned by one storage slice:</p>
+<pre class="code-block"><code class="language-text">channel ownership
+
+#incident      -&gt; partition A   very hot
+#random        -&gt; partition B   calm
+#pets          -&gt; partition C   calm
+#announcements -&gt; partition D   calm</code></pre>
+<p>If <code>#incident</code> is melting partition A, users reading that channel wait behind partition A&#39;s <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a>. The average across partitions can still look acceptable because B, C, and D are mostly idle.</p>
+<p>That is why storage placement is not just about where bytes sit. It decides which machine, shard, region, or ownership slice has to absorb the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> from a particular product path.</p>
+<p>The interview sentence is:</p>
+<blockquote>&quot;The fleet average is misleading here because the hot product object maps to one ownership slice; users on that slice feel <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> before the whole storage tier looks saturated.&quot;</blockquote>
+<h3 id="one-product-can-need-more-than-one-storage-family">One Product Can Need More Than One Storage Family</h3>
+<p>The YouTube example makes this easy to see:</p>
+<ul><li>raw media wants cheap <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> blob storage</li><li>metadata wants structured lookup and update</li><li>search wants <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> by text and ranking signals</li><li>analytics wants efficient range scans and aggregation</li></ul>
+<p>This is normal, not a smell.</p>
+<p>Real systems often need a mix of storage families because real products have several data shapes and query shapes living side by side.</p>
+<h3 id="storage-follows-shape-not-popularity">Storage Follows Shape, Not Popularity</h3>
+<p>The right question is not &quot;Which database is best?&quot;</p>
+<p>The right question is:</p>
+<p>What kind of storage behavior fits this data and this access pattern?</p>
+<p>Once you ask that, the common storage families stop feeling like trivia and start feeling like tools with clear jobs.</p>
+<h2 id="storage-families-and-query-views">Storage Families And Query Views</h2>
+<p>This section is not a vendor catalog. It is a set of natural fits.</p>
+<p>Read it in two layers:</p>
+<ul><li>some choices are common source-of-truth homes for product data</li><li>some choices are query-shaped <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexes</a> or views built to answer one kind of read quickly</li></ul>
+<p>In an interview, say which role the choice is playing. An <a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">inverted index</a> for search may be a derived copy of metadata. A <a class="term-link" href="glossary.html#geo-index" title="A structure optimized for nearby, within-radius, and other spatial queries.">geo-index</a> for nearby drivers may be a live query view over driver state. Those are not the same as saying &quot;all truth lives in the <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a>.&quot;</p>
+<p>The habit is the same for all of them: name the family only after you can say what read shape and write shape make it feel natural.</p>
+<h3 id="relational-store-structured-state-with-clear-relationships">Relational Store: Structured State With Clear Relationships</h3>
+<p>A relational store feels natural when:</p>
+<ul><li>the data is structured and changes in place</li><li>related records are queried together</li><li>the product cares about strong rules on that state</li></ul>
+<p>Typical fit:</p>
+<ul><li>account state</li><li>booking records</li><li>payment metadata</li><li>user profiles</li></ul>
+<p>What it buys you:</p>
+<ul><li>clear modeling of structured state</li><li>strong support for related queries</li><li>rules that help keep data sane</li></ul>
+<p>What it makes harder:</p>
+<ul><li>very large write scaling on one busy <a class="term-link" href="glossary.html#write-path" title="The path that creates or mutates source-of-truth state.">write path</a></li><li>large blobs</li><li>access patterns that do not look relational at all</li></ul>
+<p>In the YouTube story, metadata fits this shape much more naturally than raw video files do.</p>
+<h3 id="key-value-store-predictable-lookup-by-key">Key-Value Store: Predictable Lookup By Key</h3>
+<p>A key-value store feels natural when:</p>
+<ul><li>the main operation is fetch by key</li><li>the access pattern is narrow and predictable</li><li>throughput matters more than free-form querying across many fields</li></ul>
+<p>Typical fit:</p>
+<ul><li>session state</li><li>feature flags</li><li>per-user settings</li><li>fast lookup tables</li></ul>
+<p>What it buys you:</p>
+<ul><li>simple operational shape</li><li>predictable read and write paths</li><li>good fit for direct lookup workloads</li></ul>
+<p>What it makes harder:</p>
+<ul><li>wide analytical scans</li><li>rich filtering</li><li>complex joins or search-like access</li></ul>
+<h3 id="document-store-one-entity-carries-its-own-nested-shape">Document Store: One Entity Carries Its Own Nested Shape</h3>
+<p>A <a class="term-link" href="glossary.html#document-store" title="A store where one entity is usually read and written as one nested document.">document store</a> feels natural when:</p>
+<ul><li>one entity is usually read and written as one record</li><li>fields can be nested or vary a bit across records</li><li>joins and hard cross-record <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a> are not the dominant need</li></ul>
+<p>Typical fit:</p>
+<ul><li>product catalog entries</li><li>CMS records or posts</li><li>flexible user preference objects</li><li>content or profile documents</li></ul>
+<p>What it buys you:</p>
+<ul><li>natural storage for nested records</li><li>flexibility when record shape evolves over time</li><li>a good fit when whole-document reads are common</li></ul>
+<p>What it makes harder:</p>
+<ul><li>cross-document joins and strong relational <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a></li><li>global analytical scans</li><li>relationship-heavy multi-hop queries</li></ul>
+<p><a class="term-link" href="glossary.html#document-store" title="A store where one entity is usually read and written as one nested document.">Document stores</a> are often chosen too vaguely. The right reason is not &quot;JSON exists.&quot; The right reason is: the entity itself wants to live as one flexible nested document.</p>
+<h3 id="wide-column-store-one-partition-owns-many-ordered-rows">Wide-Column Store: One Partition Owns Many Ordered Rows</h3>
+<p>This family becomes easier to picture if you imagine one shelf per user, conversation, or device. You usually begin by naming that shelf, and then you read or write many ordered entries inside it.</p>
+<p>A <a class="term-link" href="glossary.html#wide-column-store" title="A store organized around a partition key with many ordered rows or cells inside that partition.">wide-column store</a> feels natural when:</p>
+<ul><li>access begins with one <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a></li><li>each partition owns many related rows or cells</li><li>reads often scan a local ordered range inside that partition more than they ask global free-form questions</li></ul>
+<p>Typical fit:</p>
+<ul><li>per-user or per-conversation timelines</li><li>device telemetry by device and time bucket</li><li>inbox or activity slices</li><li>large sparse per-entity datasets</li></ul>
+<p>What it buys you:</p>
+<ul><li>high write throughput when each partition mostly handles its own rows</li><li>natural reads over ordered rows inside one partition</li><li>a good fit for sparse wide records and denormalized query-shaped models</li></ul>
+<p>What it makes harder:</p>
+<ul><li>cross-partition joins</li><li>broad filtering across the whole dataset when the query does not start from the <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a></li><li>changing the primary access pattern later</li></ul>
+<p>If key-value feels too small and a relational model feels too cross-connected, <a class="term-link" href="glossary.html#wide-column-store" title="A store organized around a partition key with many ordered rows or cells inside that partition.">wide-column</a> is often the middle ground interviewers want you to hear.</p>
+<h3 id="append-only-log-history-is-the-product">Append-Only Log: History Is The Product</h3>
+<p>An append-only log feels natural when:</p>
+<ul><li>order matters locally</li><li>history matters</li><li>replay or audit is useful</li></ul>
+<p>Typical fit:</p>
+<ul><li>message history</li><li>ledgers</li><li>operation streams</li><li>event capture</li></ul>
+<p>What it buys you:</p>
+<ul><li>natural history</li><li>replay</li><li>a good fit for append-heavy write patterns</li></ul>
+<p>What it makes harder:</p>
+<ul><li>direct current-state lookup if you have no derived view</li><li>read paths that want a compact current snapshot</li></ul>
+<h3 id="object-storage-large-immutable-blobs">Object Storage: Large Immutable Blobs</h3>
+<p>Object storage feels natural when the data is:</p>
+<ul><li>large</li><li>binary</li><li>mostly immutable or versioned</li></ul>
+<p>Typical fit:</p>
+<ul><li>raw videos</li><li>images</li><li>audio files</li><li>attachments</li></ul>
+<p>What it buys you:</p>
+<ul><li>cheap <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> storage at huge scale</li><li>a natural fit for blob retrieval</li><li>separation between file storage and structured metadata</li></ul>
+<p>What it makes harder:</p>
+<ul><li>small in-place record updates</li><li>rich filtering on the blob contents themselves</li><li>relational queries over the object body</li></ul>
+<p>This is why the YouTube raw file belongs here much more naturally than in a relational table.</p>
+<h3 id="search-inverted-index-retrieval-by-terms-and-ranking">Search / Inverted Index: Retrieval By Terms And Ranking</h3>
+<p>This is usually a query-shaped copy, not the only source of truth.</p>
+<p>An <a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">inverted index</a> feels natural when:</p>
+<ul><li>the product asks keyword or text retrieval questions</li><li>ranking or relevance matters</li><li>the search copy does not need to match the main stored record exactly</li></ul>
+<p>Typical fit:</p>
+<ul><li>document or product search</li><li>history search in messaging tools</li><li>search bars over large text-heavy corpora</li></ul>
+<p>What it buys you:</p>
+<ul><li>fast term-based retrieval</li><li>ranking-friendly structures</li><li>a natural fit for search-specific query operators</li></ul>
+<p>What it makes harder:</p>
+<ul><li>being the only place where the product keeps its core mutable records</li><li>immediate <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> on every write</li><li>rich non-search business <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a></li></ul>
+<h3 id="time-series-columnar-store-window-reads-and-rollups">Time-Series / Columnar Store: Window Reads And Rollups</h3>
+<p>This heading groups two families because this chapter is focusing on the shared workload shape: append-heavy writes plus window or aggregate reads. They are not identical technologies.</p>
+<p>A <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> or <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">columnar store</a> feels natural when:</p>
+<ul><li>writes are append-heavy</li><li>reads ask for time windows, rollups, or aggregates</li><li>compression and scan efficiency matter more than row-by-row mutation</li></ul>
+<p>Typical fit:</p>
+<ul><li>metrics</li><li>observability data</li><li>sensor streams</li><li>analytical event summaries</li></ul>
+<p>What it buys you:</p>
+<ul><li>efficient time-window scans</li><li>strong compression and aggregation behavior</li><li>a natural fit for rollups and retention policies</li></ul>
+<p>What it makes harder:</p>
+<ul><li>frequent per-record updates under strict rules</li><li>rich cross-record <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a></li><li>low-<a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> point mutations as the dominant path</li></ul>
+<h3 id="graph-store-relationships-are-the-query">Graph Store: Relationships Are The Query</h3>
+<p>A <a class="term-link" href="glossary.html#graph-store" title="A store optimized for traversing relationships between connected entities.">graph store</a> feels natural when:</p>
+<ul><li>the hard question is about edges and traversal, not just entity lookup</li><li>multi-hop paths, reachability, or neighborhood expansion matter</li><li>the product keeps asking who connects to whom</li></ul>
+<p>Typical fit:</p>
+<ul><li>social graph exploration</li><li>fraud-ring analysis</li><li>permission ancestry</li><li>dependency or lineage traversal</li></ul>
+<p>What it buys you:</p>
+<ul><li>natural relationship traversal</li><li>a good fit for variable-depth path queries</li><li>direct modeling of nodes and edges when the relationship is first-class</li></ul>
+<p>What it makes harder:</p>
+<ul><li>flat high-throughput lookup workloads that do not need traversal</li><li>simple aggregate scans over huge raw event streams</li><li>pretending every query is a graph when it is not</li></ul>
+<h3 id="geo-index-location-is-the-query">Geo-Index: Location Is The Query</h3>
+<p>A <a class="term-link" href="glossary.html#geo-index" title="A structure optimized for nearby, within-radius, and other spatial queries.">geo-index</a> is usually a specialized access path over live or stored entities, not the only record of those entities.</p>
+<p>A <a class="term-link" href="glossary.html#geo-index" title="A structure optimized for nearby, within-radius, and other spatial queries.">geo-index</a> feels natural when:</p>
+<ul><li>nearby lookup is the dominant read</li><li>location and distance shape the product answer</li><li>nearest-neighbor or within-radius queries matter more than rich joins</li></ul>
+<p>Typical fit:</p>
+<ul><li>driver lookup</li><li>nearby restaurants or stores</li><li>asset or device proximity search</li></ul>
+<p>What it buys you:</p>
+<ul><li>location-aware retrieval</li><li>fast spatial filtering</li><li>a natural fit for nearest-entity questions</li></ul>
+<p>What it makes harder:</p>
+<ul><li>acting as the only place where the product keeps its main mutable records</li><li>purely non-spatial access patterns</li><li>avoiding hot geo cells when demand is uneven</li></ul>
+<p>The important habit is not to memorize a bigger list. It is to notice when the read shape is so specific that a general-purpose store will fight the workload.</p>
+<h2 id="similar-names-different-jobs">Similar Names, Different Jobs</h2>
+<p>Some storage choices sound close enough that learners blur them together. Use the product question to separate them.</p>
+<div class="table-wrap"><table><thead><tr><th>Product question</th><th>Natural shape</th><th>Why</th></tr></thead><tbody><tr><td>&quot;Fetch this user&#39;s current settings by ID.&quot;</td><td>key-value</td><td>one key points to one current value</td></tr><tr><td>&quot;Read the latest messages in this conversation.&quot;</td><td><a class="term-link" href="glossary.html#wide-column-store" title="A store organized around a partition key with many ordered rows or cells inside that partition.">wide-column</a> / ordered-row layout</td><td>one conversation owns many ordered rows</td></tr><tr><td>&quot;Keep the permanent sequence of accepted messages or money movements.&quot;</td><td>append-only log</td><td>history and replay are part of <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a></td></tr><tr><td>&quot;Search old messages containing a word.&quot;</td><td><a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">inverted index</a></td><td>the read starts from terms, not from conversation ID</td></tr><tr><td>&quot;Find drivers near this rider.&quot;</td><td><a class="term-link" href="glossary.html#geo-index" title="A structure optimized for nearby, within-radius, and other spatial queries.">geo-index</a></td><td>the read starts from spatial proximity</td></tr></tbody></table></div>
+<p>The same product can use several of these at once. For a chat product, recent conversation history and old-message search are not the same <a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a>. The first starts from a conversation and asks for a time-ordered range. The second starts from words and asks for matching messages.</p>
+<p>That also answers a common confusion: Discord-style message history can be append-only in product meaning while using a <a class="term-link" href="glossary.html#wide-column-store" title="A store organized around a partition key with many ordered rows or cells inside that partition.">wide-column</a>-shaped layout for efficient local range reads. Those are not contradictory. One describes what the data means; the other describes how the common read is laid out.</p>
+<p>If you treat both as &quot;message reads,&quot; you lose the reason storage choices diverge.</p>
+<h2 id="indexes-are-extra-structure-not-free-speed">Indexes Are Extra Structure, Not Free Speed</h2>
+<p>An <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> is extra organized data that makes a specific query faster.</p>
+<p>That sounds wonderful until you remember the bill:</p>
+<ul><li>every useful <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> costs write work</li><li>every useful <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> costs storage</li><li>every useful <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> has to be maintained as the data changes</li></ul>
+<p>So the interview-standard question is always:</p>
+<p>What exact query is this <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> accelerating, and what write penalty am I accepting for it?</p>
+<p>If you cannot answer both sides, the <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> has not earned its place yet.</p>
+<p>An <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> is often a derived view, not the product&#39;s only truth. For example:</p>
+<pre class="code-block"><code class="language-text">metadata store       search index
+source of truth  -&gt;  query-shaped copy
+video exists         video can be found by title or keywords</code></pre>
+<p>If the <a class="term-link" href="glossary.html#inverted-index" title="A search structure that maps terms to the documents or records that contain them.">search index</a> is late, the video may still exist and be playable by direct link. The failure is search <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a>, not necessarily data loss. That distinction matters because Chapter 03 will ask which truths must be strict and which views can lag.</p>
+<h2 id="partitioning-means-splitting-ownership">Partitioning Means Splitting Ownership</h2>
+<p>Once one machine is no longer enough to store or serve the workload comfortably, you stop asking only &quot;what store fits?&quot; and start asking &quot;how is ownership split?&quot;</p>
+<p>That is <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a>.</p>
+<h3 id="why-partition">Why Partition</h3>
+<p>You partition because one machine is no longer enough for:</p>
+<ul><li>dataset size</li><li>write throughput</li><li>read throughput on hot ranges</li><li>isolation of independent slices of work</li></ul>
+<p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> is about splitting <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> and ownership. It is not the same thing as making copies.</p>
+<p>The picture is:</p>
+<pre class="code-block"><code class="language-text">before partitioning
+
+all channel history -&gt; one owner
+
+after partitioning
+
+channel A history -&gt; shard 1
+channel B history -&gt; shard 2
+channel C history -&gt; shard 3</code></pre>
+<p>Each shard owns a slice of the data. That is why one hot channel can still hurt badly: <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> spreads ownership, but it does not magically make one hot owner cold.</p>
+<h3 id="a-partition-key-should-match-the-work-that-wants-to-stay-together">A Partition Key Should Match The Work That Wants To Stay Together</h3>
+<p>This is the main instinct.</p>
+<p>A good <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> aligns with:</p>
+<ul><li>the dominant lookup pattern</li><li>the main chunk of work that usually wants to stay together</li><li>the local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> or history boundary</li></ul>
+<p>Examples:</p>
+<ul><li>chat messages -&gt; <code>conversation_id</code></li><li>metrics -&gt; metric key plus time bucket</li><li>bookings -&gt; often <code>listing_id</code>, region, or another key tied to the hot contention path</li></ul>
+<p>The rule is practical: keep the reads and writes that most want to stay together on the same shard whenever possible. In plain language, choose a key so the system usually stays inside one machine for the common path instead of scattering one request everywhere.</p>
+<p>There is always a tension:</p>
+<ul><li>if the key keeps related data together, common reads are cheap</li><li>if one related group becomes extremely hot, that same locality can concentrate pain</li></ul>
+<p>For Slack-like history, <code>conversation_id</code> is natural because recent reads usually ask for one conversation. But a company-wide incident channel can make that exact conversation slice hot. That does not make the key wrong automatically. It means the design must admit the <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> risk and have a later answer for hot channels.</p>
+<p>This is the causal loop from Chapter 01: the same key that keeps normal conversation reads local is also why one incident channel can melt one shard while average fleet traffic still looks calm.</p>
+<h3 id="bad-keys-create-predictable-pain">Bad Keys Create Predictable Pain</h3>
+<p>Bad partition keys usually create one or more of these:</p>
+<ul><li>one shard becoming much hotter than the rest</li><li>scattered reads</li><li>expensive <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fan-out</a> queries</li><li>awkward resharding later</li></ul>
+<p>That is why strong answers do not stop at &quot;we will shard it.&quot; They say what the key is and why that key matches the workload.</p>
+<h3 id="repartitioning-is-easy-to-say-and-hard-to-live-through">Repartitioning Is Easy To Say And Hard To Live Through</h3>
+<p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> decisions become expensive to change once the system is large.</p>
+<p>If you expect growth or <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, mention ideas such as:</p>
+<ul><li>virtual shards</li><li>consistent hashing</li><li>background resharding</li></ul>
+<p><code>Virtual shards</code> simply means starting with more logical slices than physical machines, so you can move slices around later without redesigning the whole key.</p>
+<p>The point is not to deep-dive implementation here. The point is to show you know a <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> is an early design decision with long consequences.</p>
+<h2 id="replication-means-copies-not-splits">Replication Means Copies, Not Splits</h2>
+<p><a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">Replication</a> is different.</p>
+<p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> splits ownership across machines. <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">Replication</a> makes copies of owned data.</p>
+<p>That means <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> helps different things.</p>
+<p>Keep the two pictures separate:</p>
+<pre class="code-block"><code class="language-text">partitioning splits ownership
+
+conversation A -&gt; shard 1
+conversation B -&gt; shard 2
+
+replication copies ownership
+
+shard 1 primary -&gt; shard 1 follower
+shard 2 primary -&gt; shard 2 follower</code></pre>
+<p>If shard 1 is the only place allowed to accept writes for conversation A, adding followers may help reads and failure recovery. It does not remove the fact that writes for conversation A still <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> behind shard 1&#39;s write owner.</p>
+<h3 id="why-replicate">Why Replicate</h3>
+<p>You replicate to:</p>
+<ul><li>survive node failure</li><li>reduce read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> on one primary owner</li><li>place copies closer to readers</li></ul>
+<h3 id="leader-follower-is-the-first-intuition">Leader-Follower Is The First Intuition</h3>
+<p>The simplest useful mental model is:</p>
+<ul><li>one machine accepts writes first</li><li>one or more follower copies stay in sync and may serve some reads</li></ul>
+<p>What it buys you:</p>
+<ul><li>simpler write coordination</li><li>better read scaling</li><li>better failure tolerance than one single node with no copy</li></ul>
+<p>What it does not buy you:</p>
+<ul><li>relief from a machine that still has to accept every write</li><li>perfectly fresh copies everywhere at all times</li></ul>
+<p>That is the line many candidates blur. <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">Replication</a> is not a fix for one write owner staying overloaded.</p>
+<h3 id="multi-region-adds-reach-and-complexity">Multi-Region Adds Reach And Complexity</h3>
+<p>Multi-region copies can help with:</p>
+<ul><li>disaster recovery</li><li>reader <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> for global users</li><li>locality or regulatory needs</li></ul>
+<p>But they also raise harder questions about:</p>
+<ul><li>failover behavior</li><li>reads from copies that have not caught up yet</li><li>which region should accept writes</li><li>operational complexity</li></ul>
+<p>You do not need to solve all of that in chapter 02. You only need to see that copies across regions are powerful and costly at the same time.</p>
+<h2 id="a-few-more-quick-placements">A Few More Quick Placements</h2>
+<p>Once the YouTube example is clear, the same instinct transfers quickly.</p>
+<h3 id="whatsapp">WhatsApp</h3>
+<p>The main message history looks much more like append-heavy conversation data than mutable account state. Media attachments look like blobs. Search, if present, is a separate read shape again.</p>
+<p>Already you can see why &quot;use one database for all of WhatsApp&quot; is not a serious storage answer. A simple key-value read for &quot;message by ID&quot; is not enough to explain recent ordered history, offline replay, attachments, and search.</p>
+<h3 id="metrics-platform">Metrics Platform</h3>
+<p>Raw metric events look append-heavy. Dashboard reads often look like range scans plus aggregation. One hot metric can make <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> strategy matter early.</p>
+<p>That reading already tells you why a <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> or <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">columnar</a> shape can fit better than a generic row store for the analytics path. A generic row store may hold metadata about a metric, but the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a> is usually &quot;give me this window and rollup fast,&quot; not &quot;update one business row.&quot;</p>
+<h3 id="product-catalog-or-cms">Product Catalog Or CMS</h3>
+<p>If one item is usually read and written as one nested record, with fields that vary a bit across item types, a document shape becomes natural early.</p>
+<p>That does not automatically ban relational storage. It only means the first honest storage read is about document-shaped ownership, not joins. The wrong shortcut is &quot;it is JSON, so use a <a class="term-link" href="glossary.html#document-store" title="A store where one entity is usually read and written as one nested document.">document store</a>.&quot; The better reason is &quot;the product usually reads and writes this whole nested item together.&quot;</p>
+<h3 id="fraud-or-permission-graph">Fraud Or Permission Graph</h3>
+<p>If the hard question is who connects to whom, which nodes are two or three hops away, or whether suspicious entities share neighbors, the relationship itself becomes the <a class="term-link" href="glossary.html#read-path" title="The path that serves queries, views, or retrieval from existing state.">read path</a>.</p>
+<p>That is when a <a class="term-link" href="glossary.html#graph-store" title="A store optimized for traversing relationships between connected entities.">graph store</a> or graph-shaped <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a> earns attention early instead of being treated as an afterthought.</p>
+<h2 id="production-lab-same-stories-now-data-placement">Production Lab: Same Stories, Now Data Placement</h2>
+<p>Chapter 01 only let you read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>. Now you are allowed to ask where the data lives and how the access pattern makes that placement painful or useful.</p>
+<h3 id="discord-channel-local-history-is-fast-until-one-channel-gets-hot">Discord: Channel-Local History Is Fast Until One Channel Gets Hot</h3>
+<p>The source here is Discord Engineering&#39;s public article, <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">&quot;How Discord Stores Trillions of Messages&quot;</a>. When this course says &quot;Discord&#39;s message-storage article,&quot; it means that article about how Discord stored and migrated message history at very large scale. It does not mean &quot;Discord has one database trick you should copy.&quot;</p>
+<p>At this chapter&#39;s depth, the article is useful because it shows a <a class="term-link" href="glossary.html#storage-shape" title="The kind of storage model that best matches the data shape, query shape, and guarantees.">storage shape</a>: messages can be organized around the channel they belong to and the time period they were written in. The lesson is to see why that shape fits the read.</p>
+<p>Imagine a user opens <code>#incident</code> and the app loads the latest 50 messages. That read is not asking:</p>
+<blockquote>&quot;Search every message in Discord.&quot;</blockquote>
+<p>It is asking:</p>
+<blockquote>&quot;Give me the newest messages for this one channel, in time order.&quot;</blockquote>
+<p>That query naturally wants nearby data:</p>
+<pre class="code-block"><code class="language-text">channel_id = #incident
+time range = now backwards
+        |
+        v
+recent #incident messages in order</code></pre>
+<p>This is what &quot;channel-local timeline&quot; means here:</p>
+<ul><li><code>channel-local</code> means scoped to one channel, such as <code>#incident</code>, not all Discord messages globally</li><li><code>timeline</code> means the messages are read as a time-ordered sequence, newest-to-older or older-to-newer</li><li><code>channel-local timeline</code> therefore means &quot;the ordered message history for one channel&quot;</li></ul>
+<p>Keeping that channel&#39;s recent messages close together means reading recent history does not scatter across the whole storage fleet.</p>
+<p>That locality is useful because the common read is cheap. The product often asks for &quot;recent history in this channel,&quot; so the storage layout matches that access pattern.</p>
+<p>But the same locality creates the danger. If <code>#incident</code> becomes a huge live channel during an outage, many users read the same recent history while many users also write new messages into that same channel-local timeline. The owner of that channel-time slice can become overloaded even if most other channels are calm.</p>
+<p>So the <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> is not:</p>
+<blockquote>&quot;channel-local timeline good or bad?&quot;</blockquote>
+<p>The <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> is:</p>
+<blockquote>&quot;Keep the normal read cheap by clustering one channel&#39;s recent history, while admitting that a very large channel can concentrate reads and writes on the same ownership slice.&quot;</blockquote>
+<p>Decision simulation:</p>
+<p>You are designing message history. If most reads ask for recent messages in one channel, what <a class="term-link" href="glossary.html#storage-shape" title="The kind of storage model that best matches the data shape, query shape, and guarantees.">storage shape</a> does that suggest, and what risk does it create?</p>
+<p>Interview-ready answer:</p>
+<blockquote>&quot;The data wants a per-channel ordered history shape, but that also means a very large channel can create a hot ownership slice, so the <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> choice has to be made with <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> in mind.&quot;</blockquote>
+<p>Source: <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Discord Engineering, &quot;How Discord Stores Trillions of Messages&quot;</a></p>
+<h3 id="slack-a-product-feature-broke-the-old-placement-assumption">Slack: A Product Feature Broke The Old Placement Assumption</h3>
+<p>Slack&#39;s shared-channels writeup describes a product change that crossed workspace boundaries. The old assumption was that channel data belonged cleanly inside one workspace&#39;s shard. Shared channels made that assumption weaker because members from different workspaces needed to interact with the same channel.</p>
+<p>Wrong instinct:</p>
+<blockquote>&quot;Keep every channel under the workspace that created it.&quot;</blockquote>
+<p>That may have worked before the product boundary changed. The Chapter 02 lesson is:</p>
+<blockquote>&quot;A storage boundary that matches the old product can become wrong when the product boundary changes.&quot;</blockquote>
+<p>If a channel is shared between two workspaces, do you duplicate the channel data into both places, or keep one owner and route requests there?</p>
+<p>The <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoff</a> starts here:</p>
+<ul><li>duplication keeps reads local but risks inconsistent copies and higher write cost</li><li>single ownership avoids duplicate truth but requires cross-boundary routing</li></ul>
+<p>Source: <a href="https://slack.engineering/how-slack-built-shared-channels/">Slack Engineering, &quot;How Slack Built Shared Channels&quot;</a></p>
+<h3 id="uber-h3-location-is-not-a-generic-lookup">Uber H3: Location Is Not A Generic Lookup</h3>
+<p>Uber&#39;s H3 writeup describes a spatial <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> system based on hexagonal cells. For this chapter, the lesson is narrow: nearby lookup is a specialized <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a>. If the product keeps asking &quot;what is near this point?&quot;, a generic key lookup is not enough.</p>
+<p>Failure-mode check:</p>
+<p>A dispatch system needs nearby drivers quickly. What is the storage/query-shape read? What goes wrong if you store latitude and longitude as ordinary fields but have no spatial access path?</p>
+<p>Short answer:</p>
+<blockquote>&quot;The <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> is spatial proximity, so I need a geo-indexed view of live entities instead of treating location as just another field in a generic record.&quot;</blockquote>
+<p>Source: <a href="https://www.uber.com/blog/h3/">Uber Engineering, &quot;H3: Uber&#39;s Hexagonal Hierarchical Spatial Index&quot;</a></p>
+<h3 id="google-bigtable-layout-matters-because-access-patterns-differ">Google Bigtable: Layout Matters Because Access Patterns Differ</h3>
+<p>Google&#39;s Bigtable paper is a more advanced wrinkle, so do not treat it as required background yet. It is useful here for one narrow reason: the paper says one storage system served very different Google workloads, including web <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a>, Google Earth, and Google Finance. Those workloads did not become identical just because they used the same storage family.</p>
+<p>For this chapter, layout means the shape you choose inside the storage family:</p>
+<ul><li>what the row key starts with</li><li>which rows end up near each other</li><li>which columns are grouped together</li><li>whether time is part of the key</li><li>which common read becomes cheap because of that arrangement</li></ul>
+<p>Think of it as shelf placement in a huge warehouse. Two products may use the same warehouse, but one may put items by <code>web page</code>, another by <code>location tile</code>, and another by <code>financial object</code>. The warehouse is shared. The shelf order is not.</p>
+<p>That is the lesson:</p>
+<blockquote>&quot;A storage family tells you the kind of warehouse you are using. The layout tells you which product read you are making cheap.&quot;</blockquote>
+<p>Now apply it to the paper without needing to know Bigtable internals:</p>
+<div class="table-wrap"><table><thead><tr><th>Workload</th><th>The layout question</th></tr></thead><tbody><tr><td>web <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a></td><td>&quot;Should nearby rows follow page, URL, domain, crawl, or <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> access?&quot;</td></tr><tr><td>map or earth imagery</td><td>&quot;Should nearby rows follow spatial tiles or another location-shaped read?&quot;</td></tr><tr><td>finance-style serving</td><td>&quot;Should nearby rows follow the entity and time range users or jobs read together?&quot;</td></tr></tbody></table></div>
+<p>So the interview question is not:</p>
+<blockquote>&quot;Would Bigtable work?&quot;</blockquote>
+<p>The better question is:</p>
+<blockquote>&quot;If this <a class="term-link" href="glossary.html#wide-column-store" title="A store organized around a partition key with many ordered rows or cells inside that partition.">wide-column</a>-style store is the family, what row key and locality make the main read cheap without creating a hot slice?&quot;</blockquote>
+<p>Layout answer:</p>
+<blockquote>&quot;The storage family may be shared, but the layout is still product-specific. I would choose the row key and locality around the main <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a>, then check whether that choice scatters common reads or concentrates too much heat on one range.&quot;</blockquote>
+<p>Source: <a href="https://research.google/pubs/bigtable-a-distributed-storage-system-for-structured-data/">Google Research, &quot;Bigtable: A Distributed Storage System for Structured Data&quot;</a></p>
+<h2 id="repair-the-first-minute">Repair The First Minute</h2>
+<p>Suppose your first minute starts like this:</p>
+<blockquote>&quot;I would use PostgreSQL and add <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">sharding</a> later.&quot;</blockquote>
+<p>Repair it by separating the data before naming the store:</p>
+<blockquote>&quot;Before naming a store, I want to separate the data types. The raw blob, structured metadata, search view, and analytics path do not all want the same <a class="term-link" href="glossary.html#storage-shape" title="The kind of storage model that best matches the data shape, query shape, and guarantees.">storage shape</a>. Then I want to ask which reads and writes most want to stay on one machine so the <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> matches the common path. <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">Replication</a> can help with <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a> and read scale after that, but it will not remove write <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> if one machine still has to accept every write first.&quot;</blockquote>
+<p>The repaired version works because it changes the unit of reasoning:</p>
+<ul><li>it separated the data by storage needs</li><li>it made the <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> earn its place</li><li>it named what <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> helps and what it does not</li></ul>
+<p>The voice is not &quot;I know more database names.&quot; The voice is &quot;I know what each piece of data is trying to survive.&quot;</p>
+<h2 id="mini-drill-place-youtube-data-without-naming-vendors">Mini Drill: Place YouTube Data Without Naming Vendors</h2>
+<p>Run this as a placement exercise. For each item, say the storage behavior first and the technology name last, if at all:</p>
+<ul><li>where should the raw uploaded file live, and why?</li><li>where should the small structured metadata live, and why?</li><li>what path needs a search-oriented shape rather than plain lookup?</li><li>what data is append-heavy enough to make analytics storage look different?</li><li>if one part gets hot first, what would you partition by?</li><li>what would <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> help here, and what would it not help?</li></ul>
+<p>Expected direction:</p>
+<p>Raw video wants blob storage, metadata wants a structured store, search wants an <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">index</a>-shaped access pattern, analytics wants an append-heavy aggregation-friendly shape, <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> should follow the dominant ownership and access path for each part, and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> helps failure tolerance and read scale rather than removing write <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> from the machine that still accepts all writes first.</p>
+<p>If your answer collapses back to one database for the whole product, rerun only the part where the data shapes first split apart.</p>
+<h2 id="before-you-move-to-lesson-03">Before You Move To Lesson 03</h2>
+<p>The exit check for this chapter is simple. Replace:</p>
+<blockquote>&quot;We should use a scalable database.&quot;</blockquote>
+<p>with a placement read that says:</p>
+<ul><li>what kind of data this is</li><li>what kind of reads it needs</li><li>which storage family fits that shape</li><li>what a good <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> might be</li><li>what <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> helps</li><li>what <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> does not solve</li></ul>
+<p>Lesson <code>03</code> adds the next layer to the map: once you know where data lives, you need to decide what promises the system must keep when that data changes.</p>
+    </article>
+
+
+    <section class="section-block chapter-intuition" id="chapter-intuition">
+      <div class="section-heading">
+        <p class="eyebrow">After Reading</p>
+        <h2>Now See The Concept Move</h2>
+        <p>You have the chapter vocabulary now. Use this as a moving picture, not a mini simulator. The chapter diagram teaches the concept; the Arena is where you will make and break systems.</p>
+      </div>
+      <section class="diagram-panel" id="chapter-diagram">
+        <div class="section-heading">
+          <p class="eyebrow">Animated Concept Diagram</p>
+          <h2>Data Shape Narrows Storage Choices</h2>
+          <p>Watch one product split into different data shapes. Each shape pulls toward a different storage discussion before any database brand is named.</p>
+        </div>
+        <div class="chapter-visual-shell" data-concept-diagram="02-storage-partitioning-and-replication"></div>
+        <p class="concept-lab-note">
+          Want to test the physics by changing load, shape, scale, and failure? Use the
+          <a href="arena.html">Practice Arena</a>. Chapters stay focused on concept clarity.
+        </p>
+      </section>
+
+    <section class="course-map-panel" id="course-map">
+      <div class="section-heading">
+        <p class="eyebrow">Mind Map</p>
+        <h2>Where We Are In The Story</h2>
+        <p>Click a node to see what that chapter adds to the picture.</p>
+      </div>
+      <div class="course-map-shell" data-course-map>
+        <div class="course-map-track">
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Start Here: The Habit This Course Builds"
+          data-map-stage="Start Here"
+          data-map-summary="Understand why this course starts from pressure instead of components, and what habit of reasoning the later chapters are trying to build."
+        >
+          <span class="map-node-index">00</span>
+          <span class="map-node-label">Start Here: The Habit This Course Builds</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Load, Latency, and Data Shape"
+          data-map-stage="Layer 1 of 8"
+          data-map-summary="Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components."
+        >
+          <span class="map-node-index">01</span>
+          <span class="map-node-label">Load, Latency, and Data Shape</span>
+        </button>
+
+        <button
+          class="map-node is-current"
+          type="button"
+          data-map-node
+          data-map-title="Storage, Partitioning, and Replication"
+          data-map-stage="Layer 2 of 8"
+          data-map-summary="Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied."
+        >
+          <span class="map-node-index">02</span>
+          <span class="map-node-label">Storage, Partitioning, and Replication</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Consistency, Ordering, Idempotency, and Transactions"
+          data-map-stage="Layer 3 of 8"
+          data-map-summary="Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe."
+        >
+          <span class="map-node-index">03</span>
+          <span class="map-node-label">Consistency, Ordering, Idempotency, and Transactions</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Async, Caching, Failure Handling, and Operability"
+          data-map-stage="Layer 4 of 8"
+          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+        >
+          <span class="map-node-index">04</span>
+          <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="The Interview Framework: 7+1 and LGTC"
+          data-map-stage="Layer 5 of 8"
+          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+        >
+          <span class="map-node-index">05</span>
+          <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Archetypes and Component Maps"
+          data-map-stage="Layer 6 of 8"
+          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+        >
+          <span class="map-node-index">06</span>
+          <span class="map-node-label">Archetypes and Component Maps</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Hybrid Systems and Guided Walkthroughs"
+          data-map-stage="Layer 7 of 8"
+          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+        >
+          <span class="map-node-index">07</span>
+          <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Drill Order and Mock Interview Prep"
+          data-map-stage="Layer 8 of 8"
+          data-map-summary="This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer."
+        >
+          <span class="map-node-index">08</span>
+          <span class="map-node-label">Drill Order and Mock Interview Prep</span>
+        </button>
+
+        </div>
+        <div class="map-detail" data-map-detail>
+          <p class="panel-label" data-map-detail-stage>Layer 2 of 8</p>
+          <h3 data-map-detail-title>Storage, Partitioning, and Replication</h3>
+          <p data-map-detail-summary>Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied.</p>
+        </div>
+      </div>
+    </section>
+
+    </section>
+
+
+    <section class="chapter-summary" id="key-learnings">
+      <div class="section-heading">
+        <p class="eyebrow">Before You Move On</p>
+        <h2>Key Learnings</h2>
+        <p>These are the ideas that should stay in your head after you finish the chapter.</p>
+      </div>
+      <ul class="takeaway-list"><li><strong>Remember:</strong> One product can legitimately need multiple storage families when its data shapes differ.</li><li><strong>Remember:</strong> Storage choice is driven by <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a>, not by popularity.</li><li><strong>Remember:</strong> Some storage families are specialized because the dominant read is specialized, such as traversal, full-text search, or time-window aggregation.</li><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> solve different problems.</li><li><strong>Remember:</strong> A <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> should align with the access pattern and the work that most wants to stay local.</li></ul>
+    </section>
+
+    <section class="quiz-panel" id="lesson-check" data-lesson-quiz="02-storage-partitioning-and-replication">
+      <div class="section-heading">
+        <p class="eyebrow">Lesson Check</p>
+        <h2>Interactive Quiz</h2>
+        <p>Answer these before moving on. The goal is explanation-grade understanding, not lucky guesses.</p>
+      </div>
+      <div class="quiz-root"></div>
+    </section>
+    <section class="section-block chapter-coach-block" id="chapter-coach">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Coach</p>
+        <h2>Ask Questions And Prove The Chapter</h2>
+        <p>Use the left panel to clear doubts about this chapter in plain language. Use the right panel after the lesson check to keep answering chapter-specific probes until the main understanding is stable.</p>
+      </div>
+
+      <div class="chapter-coach-grid">
+        <div data-chapter-doubt-chat="02-storage-partitioning-and-replication"></div>
+        <div data-chapter-mastery="02-storage-partitioning-and-replication"></div>
+      </div>
+
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="01-load-latency-and-data-shape.html"><span>Previous</span><strong>01 - Load, Latency, and Data Shape</strong></a>
+      <a class="pager-card" href="03-consistency-ordering-idempotency-and-transactions.html"><span>Next</span><strong>03 - Consistency, Ordering, Idempotency, and Transactions</strong></a>
+    </nav>
+
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#start-with-one-honest-placement">Start With One Honest Placement</a></li><li class="level-2"><a href="#what-a-storage-choice-is-actually-answering">What A Storage Choice Is Actually Answering</a></li><li class="level-2"><a href="#storage-families-and-query-views">Storage Families And Query Views</a></li><li class="level-2"><a href="#similar-names-different-jobs">Similar Names, Different Jobs</a></li><li class="level-2"><a href="#indexes-are-extra-structure-not-free-speed">Indexes Are Extra Structure, Not Free Speed</a></li><li class="level-2"><a href="#partitioning-means-splitting-ownership">Partitioning Means Splitting Ownership</a></li><li class="level-2"><a href="#replication-means-copies-not-splits">Replication Means Copies, Not Splits</a></li><li class="level-2"><a href="#a-few-more-quick-placements">A Few More Quick Placements</a></li><li class="level-2"><a href="#production-lab-same-stories-now-data-placement">Production Lab: Same Stories, Now Data Placement</a></li><li class="level-2"><a href="#repair-the-first-minute">Repair The First Minute</a></li><li class="level-2"><a href="#mini-drill-place-youtube-data-without-naming-vendors">Mini Drill: Place YouTube Data Without Naming Vendors</a></li><li class="level-2"><a href="#before-you-move-to-lesson-03">Before You Move To Lesson 03</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+    <script src="assets/concept-diagrams.js"></script>
+  </body>
+</html>

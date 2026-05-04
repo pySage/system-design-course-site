@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Labs | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body class="labs-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link is-current" href="labs.html">Labs</a>
+        <a class="topbar-link" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-labs">
+      <p class="eyebrow">Interactive Practice</p>
+      <h1>Use live drills to strengthen the mental picture you are building, not just your recall.</h1>
+      <p class="hero-copy">
+        These labs sit beside the lessons. They help you feel dominant stress, see the consequences of
+        guarantees, and separate hot-path work from deferred work.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#stress-mapper">Open Stress Mapper</a>
+        <a class="button button-secondary" href="00-study-method.html">Back To Lessons</a>
+      </div>
+    </section>
+
+    <section class="lab-section" id="stress-mapper">
+      <div class="section-heading">
+        <p class="eyebrow">Lab 01</p>
+        <h2>Archetype Stress Mapper</h2>
+        <p>Move the system pressures and watch which archetype becomes dominant.</p>
+      </div>
+      <div class="lab-grid">
+        <form class="control-card" id="stress-form">
+          <label>
+            <span>Fanout pressure</span>
+            <input type="range" min="0" max="4" value="2" name="fanout" data-live-value="fanout-value" />
+            <strong id="fanout-value">2</strong>
+          </label>
+          <label>
+            <span>Blob and media weight</span>
+            <input type="range" min="0" max="4" value="1" name="blob" data-live-value="blob-value" />
+            <strong id="blob-value">1</strong>
+          </label>
+          <label>
+            <span>Correctness criticality</span>
+            <input type="range" min="0" max="4" value="3" name="correctness" data-live-value="correctness-value" />
+            <strong id="correctness-value">3</strong>
+          </label>
+          <label>
+            <span>Concurrent shared editing</span>
+            <input type="range" min="0" max="4" value="0" name="concurrency" data-live-value="concurrency-value" />
+            <strong id="concurrency-value">0</strong>
+          </label>
+          <label>
+            <span>Search and ranking pressure</span>
+            <input type="range" min="0" max="4" value="1" name="search" data-live-value="search-value" />
+            <strong id="search-value">1</strong>
+          </label>
+          <label>
+            <span>Ingestion and analytics volume</span>
+            <input type="range" min="0" max="4" value="1" name="ingestion" data-live-value="ingestion-value" />
+            <strong id="ingestion-value">1</strong>
+          </label>
+          <label>
+            <span>Geo-matching urgency</span>
+            <input type="range" min="0" max="4" value="0" name="geo" data-live-value="geo-value" />
+            <strong id="geo-value">0</strong>
+          </label>
+          <label>
+            <span>Latency sensitivity</span>
+            <input type="range" min="0" max="4" value="3" name="latency" data-live-value="latency-value" />
+            <strong id="latency-value">3</strong>
+          </label>
+        </form>
+        <div class="result-card">
+          <p class="panel-label">Likely Archetype</p>
+          <div id="stress-primary" class="result-headline"></div>
+          <p id="stress-explanation" class="result-copy"></p>
+          <div id="stress-bars" class="bar-stack"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-section" id="guarantee-builder">
+      <div class="section-heading">
+        <p class="eyebrow">Lab 02</p>
+        <h2>Guarantee Builder</h2>
+        <p>Pick the guarantees and see which design consequences become mandatory.</p>
+      </div>
+      <div class="lab-grid">
+        <form class="control-card" id="guarantee-form">
+          <label>
+            <span>Consistency requirement</span>
+            <select name="consistency">
+              <option value="eventual">Eventual is fine</option>
+              <option value="bounded">Bounded staleness</option>
+              <option value="strong" selected>Strong consistency on core state</option>
+            </select>
+          </label>
+          <label>
+            <span>Ordering requirement</span>
+            <select name="ordering">
+              <option value="none">No ordering</option>
+              <option value="per-key" selected>Per-key ordering</option>
+              <option value="causal">Causal ordering</option>
+              <option value="total">Total ordering</option>
+            </select>
+          </label>
+          <label>
+            <span>Will clients or workers retry?</span>
+            <select name="retries">
+              <option value="yes" selected>Yes, retries happen</option>
+              <option value="no">No meaningful retry path</option>
+            </select>
+          </label>
+          <label>
+            <span>Money / trust / legal risk</span>
+            <select name="risk">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <label>
+            <span>Async side effects after commit</span>
+            <select name="sideEffects">
+              <option value="yes" selected>Yes</option>
+              <option value="no">No</option>
+            </select>
+          </label>
+        </form>
+        <div class="result-card">
+          <p class="panel-label">Design Consequences</p>
+          <div id="guarantee-family" class="result-headline"></div>
+          <p id="guarantee-summary" class="result-copy"></p>
+          <ul id="guarantee-actions" class="insight-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-section" id="critical-path-studio">
+      <div class="section-heading">
+        <p class="eyebrow">Lab 03</p>
+        <h2>Critical Path Studio</h2>
+        <p>Classify work as synchronous or asynchronous, then check the reasoning.</p>
+      </div>
+      <div class="control-strip">
+        <label class="select-inline">
+          <span>Scenario</span>
+          <select id="path-system">
+            <option value="stripe">Stripe payments</option>
+            <option value="youtube">YouTube upload</option>
+            <option value="whatsapp">WhatsApp messaging</option>
+            <option value="airbnb">Airbnb booking</option>
+          </select>
+        </label>
+        <button class="button button-secondary" type="button" id="path-check">Check Answers</button>
+        <button class="button button-ghost" type="button" id="path-reset">Reset</button>
+      </div>
+      <div class="result-card scenario-card">
+        <p class="panel-label">Scenario framing</p>
+        <div id="path-description" class="result-copy"></div>
+      </div>
+      <div id="path-tasks" class="task-grid"></div>
+      <div class="result-card" id="path-score-card">
+        <p class="panel-label">Result</p>
+        <div id="path-score" class="result-headline">Pick a classification for each task.</div>
+        <p id="path-feedback" class="result-copy">
+          The goal is not to memorize. It is to justify why a task must be in or out of the user-facing path.
+        </p>
+      </div>
+    </section>
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#stress-mapper">Archetype Stress Mapper</a></li><li class="level-2"><a href="#guarantee-builder">Guarantee Builder</a></li><li class="level-2"><a href="#critical-path-studio">Critical Path Studio</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

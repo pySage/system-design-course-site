@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>01 - Load, Latency, and Data Shape | System Design Course</title>
+    <meta
+      name="description"
+      content="A structured system design course with hyperlinks, lesson navigation, and interactive labs."
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/concept-diagrams.css" />
+  </head>
+  <body class="lesson-body">
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Primary">
+        <a class="topbar-link" href="index.html">Course Home</a>
+        <a class="topbar-link" href="labs.html">Labs</a>
+        <a class="topbar-link" href="arena.html">Arena</a>
+        <a class="topbar-link" href="glossary.html">Glossary</a>
+        <a class="topbar-link" href="00-study-method.html">Start Here</a>
+      </nav>
+      <div class="topbar-utility" data-topbar-personalization></div>
+    </header>
+
+    <div class="page-shell">
+
+    <aside class="sidebar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">SD</span>
+        <span class="brand-copy">
+          <strong>System Design Course</strong>
+          <small>Interview-grade fundamentals and drills</small>
+        </span>
+      </a>
+      <nav class="sidebar-nav" aria-label="Course lessons">
+        <p class="sidebar-label">Read In Order</p>
+        <ol><li><a href="00-study-method.html"><span class="lesson-index">00</span><span>00 - Start Here: The Habit This Course Builds</span></a></li><li class="is-active"><a href="01-load-latency-and-data-shape.html"><span class="lesson-index">01</span><span>01 - Load, Latency, and Data Shape</span></a></li><li><a href="02-storage-partitioning-and-replication.html"><span class="lesson-index">02</span><span>02 - Storage, Partitioning, and Replication</span></a></li><li><a href="03-consistency-ordering-idempotency-and-transactions.html"><span class="lesson-index">03</span><span>03 - Consistency, Ordering, Idempotency, and Transactions</span></a></li><li><a href="04-async-caching-failure-handling-and-operability.html"><span class="lesson-index">04</span><span>04 - Async, Caching, Failure Handling, and Operability</span></a></li><li><a href="05-the-interview-framework-7-plus-1-and-lgtc.html"><span class="lesson-index">05</span><span>05 - The Interview Framework: 7+1 and LGTC</span></a></li><li><a href="06-archetypes-and-component-maps.html"><span class="lesson-index">06</span><span>06 - Archetypes and Component Maps</span></a></li><li><a href="07-hybrid-systems-and-guided-walkthroughs.html"><span class="lesson-index">07</span><span>07 - Hybrid Systems and Guided Walkthroughs</span></a></li><li><a href="08-drill-order-and-mock-interview-prep.html"><span class="lesson-index">08</span><span>08 - Drill Order and Mock Interview Prep</span></a></li></ol>
+      </nav>
+      <div class="sidebar-card">
+        <p class="sidebar-label">Practice</p>
+        <a class="sidebar-link" href="labs.html">Interactive Intuition Labs</a>
+        <p>Use labs and quizzes to stabilize the mental map as each lesson adds a new layer.</p>
+        <a class="sidebar-link" href="arena.html">Practice Arena</a>
+        <p>Use adaptive circuits when you want repeated transfer, pressure, and interviewer-style pushback on the ideas you have already studied.</p>
+        <a class="sidebar-link" href="glossary.html">Contextual Glossary</a>
+      </div>
+      <div class="sidebar-card learner-sidebar-card" data-learner-sidebar>
+        <p class="sidebar-label">Learner Context</p>
+        <p>Use the top-right profile menu to sign in, save progress, and unlock coaching once you have started the course.</p>
+        <a class="sidebar-link" href="index.html#personal-coach">Open Personal Coach</a>
+      </div>
+    </aside>
+
+      <main class="main-content">
+
+    <section class="hero hero-lesson">
+      <p class="eyebrow">Layer 1 of 8</p>
+      <h1>01 - Load, Latency, and Data Shape</h1>
+      <p class="hero-copy">Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="labs.html">Practice This In Labs</a>
+        <a class="button button-secondary" href="index.html">Back To Overview</a>
+      </div>
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="00-study-method.html"><span>Previous</span><strong>00 - Start Here: The Habit This Course Builds</strong></a>
+      <a class="pager-card" href="02-storage-partitioning-and-replication.html"><span>Next</span><strong>02 - Storage, Partitioning, and Replication</strong></a>
+    </nav>
+
+
+    <section class="chapter-frame" id="chapter-frame">
+      <div class="section-heading">
+        <p class="eyebrow">Layer 1 of 8</p>
+        <h2>This Chapter In The Story</h2>
+        <p>Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components.</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Why This Chapter</p>
+          <p>If you cannot feel where the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is coming from, every later design choice becomes decorative. This chapter teaches you to read burst <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a>, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> amplification, tail pain, <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a>, and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> by first grounding them in a real system read instead of a headline number.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Where We Are</p>
+          <p>You are starting with the outside force hitting the system: traffic, timing, and access pattern.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">How It Fits</p>
+          <p>This is the foundation layer. Storage, <a class="term-link" href="glossary.html#consistency" title="What a reader is allowed to assume about data after writes happen.">consistency</a>, and <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a> only make sense after the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is visible.</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Goals</p>
+          <ul class="framed-list"><li>Read one visible action in terms of hidden work, peaks, tails, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, and <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> instead of one headline number</li><li>Separate the underlying <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> from the downstream symptom it creates</li><li>Distinguish <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> from <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> with concrete system examples</li><li>Build the instinct to ask what actually makes the system hard before choosing components</li><li>Practice saying the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read in short interview-ready language</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <article class="prose">
+      <h1 id="01-load-latency-and-data-shape">01 - Load, Latency, and Data Shape</h1>
+<p>If Chapter 00 gave you the lens, this is the first chapter where you use it on a moving system instead of on course philosophy.</p>
+<p>The story begins with a mistake almost everyone makes the first time they answer a system-design question. They hear the product name, they feel some vague sense of scale, and then they jump straight to tools:</p>
+<blockquote>&quot;We probably need a scalable database, a <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a>, and a <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a>.&quot;</blockquote>
+<p>That answer feels like progress because it sounds technical. But it is weak for a simple reason: the system has not been read yet.</p>
+<p>This chapter slows that moment down. It teaches one habit that the rest of the course will keep using:</p>
+<p>before you name architecture, read what is making the system hard.</p>
+<h2 id="start-with-one-honest-read">Start With One Honest Read</h2>
+<p>Imagine you are on-call during an incident. Someone posts a message into a huge company-wide Slack channel. People are already watching that channel because production is on fire.</p>
+<p>The shallow reading is:</p>
+<blockquote>&quot;That is one message write in a chat system.&quot;</blockquote>
+<p>The honest reading is already richer:</p>
+<ol><li>The visible user action is one send, but the backend work is larger than one write.</li><li>The sender is sensitive to <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>. If the send spinner hangs, the product already feels broken.</li><li>A giant channel can create <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>. One hot conversation can stress one partition, one <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a>, or one downstream path far ahead of the fleet average.</li><li>Delivery and notifications can create <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> after the first <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> accept.</li><li>The core <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> looks like append-heavy message history.</li><li>The core <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> is not just &quot;read by ID.&quot; It includes recent channel history now, and search over old messages later.</li></ol>
+<p>That is Chapter 01 in miniature.</p>
+<p>No database has been named yet. No <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a> has been chosen yet. No storage family has been selected yet.</p>
+<p>But the problem already looks sharper.</p>
+<p>That is the point of this whole chapter.</p>
+<h2 id="one-user-action-many-hidden-pressures">One User Action, Many Hidden Pressures</h2>
+<p>The first thing Chapter 01 is trying to install in your mind is this:</p>
+<p>one user action is almost never one unit of system difficulty.</p>
+<p>The user sees:</p>
+<pre class="code-block"><code class="language-text">tap send</code></pre>
+<p>The system may see:</p>
+<pre class="code-block"><code class="language-text">accept write
+-&gt; order it in a conversation
+-&gt; fan out delivery work
+-&gt; update unread state
+-&gt; trigger push notifications
+-&gt; refresh live readers
+-&gt; update future search/index paths</code></pre>
+<p>That is why this chapter talks about <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, not just traffic.</p>
+<p><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">Pressure</a> means the force that is making the system difficult right now. Sometimes that force is raw arrival rate. Sometimes it is one hot entity. Sometimes it is one action exploding into many downstream actions. Sometimes it is the fact that the slowest normal requests hurt the product before the average metrics look scary.</p>
+<p>The rest of this chapter simply teaches you to notice the main kinds of <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> hiding inside that one action.</p>
+<h2 id="load-and-burst-pressure">Load And Burst Pressure</h2>
+<p>In plain language, <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> means how much work arrives and how unevenly it hits the system.</p>
+<p>That sounds obvious until you notice how often people reduce it to one average request number and stop there.</p>
+<h3 id="one-number-can-lie">One Number Can Lie</h3>
+<p>Imagine two systems:</p>
+<ul><li>System A does <code>50k <a class="term-link" href="glossary.html#qps" title="Queries per second, used as a shorthand for request rate.">QPS</a></code> of steady point reads against evenly spread keys.</li><li>System B does <code>1k <a class="term-link" href="glossary.html#qps" title="Queries per second, used as a shorthand for request rate.">QPS</a></code> on average, but one action can trigger many downstream operations, traffic arrives in bursts, and a few hot entities dominate the hardest moments.</li></ul>
+<p>Which one is harder?</p>
+<p>The point is not that one answer is always correct. The point is that average <code><a class="term-link" href="glossary.html#qps" title="Queries per second, used as a shorthand for request rate.">QPS</a></code> alone cannot tell you.</p>
+<p>If you only carry request count in your head, System B can look small. If you also carry <a class="term-link" href="glossary.html#burstiness" title="Traffic arriving in spikes rather than smoothly.">burstiness</a>, hidden work, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, and <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, System B starts to look dangerous very quickly.</p>
+<p>That is why this chapter comes before storage. Before you can ask where data should live, you need an honest reading of what the system is being asked to endure.</p>
+<h3 id="average-is-only-the-calmest-number">Average Is Only The Calmest Number</h3>
+<p>Average traffic matters, but it is one of the least trustworthy numbers when used alone.</p>
+<p>You also need to ask:</p>
+<ul><li>what is the peak?</li><li>how sharp are the spikes?</li><li>do reads and writes spike together?</li><li>does traffic arrive smoothly, or in shocks?</li></ul>
+<p>Real systems often fail in short ugly windows: a ticket drop, a viral post, a flash sale, a market open, an outage-driven query surge.</p>
+<p>When an answer stops at &quot;the system does 10k <a class="term-link" href="glossary.html#qps" title="Queries per second, used as a shorthand for request rate.">QPS</a>,&quot; it usually sounds unfinished because the real question is still missing:</p>
+<p>What kind of <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> is that number hiding?</p>
+<p>When this chapter says <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> shape, it means the character of the work, not only the amount. Ask:</p>
+<ul><li>did it arrive gradually or all at once?</li><li>did one visible action multiply into many internal actions?</li><li>did the work spread evenly or concentrate on one hot thing?</li><li>did the painful user action need an immediate answer?</li></ul>
+<p>That is why &quot;traffic went up&quot; is usually too vague. A better first read says what changed about the traffic.</p>
+<h3 id="easy-example-ticket-drop">Easy Example: Ticket Drop</h3>
+<p>A concert ticket system can look simple if you say, &quot;many users are hitting buy at once.&quot;</p>
+<p>The stronger read is:</p>
+<ul><li>traffic arrives in one violent burst, not as a smooth average</li><li>many users want the same tiny set of seats</li><li><a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> and <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> both matter because delay changes the outcome</li></ul>
+<p>Even before architecture, that already sounds much more like the real problem.</p>
+<p>The move to notice here is simple: <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> is not just quantity. It is also shape.</p>
+<h2 id="fanout-pressure">Fanout Pressure</h2>
+<p><a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">Fanout</a> means one accepted action expands into many downstream actions.</p>
+<p>This is one of the most useful interview words in the whole chapter because it helps you stop describing only the button click.</p>
+<h3 id="one-send-can-become-many-jobs">One Send Can Become Many Jobs</h3>
+<p>In a large messaging system, one sent message can create:</p>
+<ul><li>one <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> write</li><li>many recipient deliveries</li><li>unread counter updates</li><li>push notifications</li><li>analytics events</li><li>search or <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> updates</li></ul>
+<p>So when you say, &quot;this is one write,&quot; you are usually describing only the front edge of the work, not the real workload.</p>
+<h3 id="why-fanout-matters-early">Why Fanout Matters Early</h3>
+<p><a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">Fanout</a> matters early because it changes the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read before any component choice appears.</p>
+<p>If one user action multiplies into thousands of downstream actions, then:</p>
+<ul><li>average request count understates the real work</li><li><a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> can blow up even when the visible input rate looks modest</li><li><a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> can multiply the work further</li><li>one hot conversation can punish the system much earlier than the fleet average suggests</li></ul>
+<p>That is why messaging, feeds, notifications, and collaboration systems are often harder than their headline traffic suggests.</p>
+<h3 id="medium-example-breaking-news-feed">Medium Example: Breaking-News Feed</h3>
+<p>A social feed sees one celebrity post.</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;The system has high traffic.&quot;</blockquote>
+<p>A stronger answer says:</p>
+<blockquote>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> amplification. One write now explodes into many deliveries and refreshes, so the downstream work grows much faster than the visible write rate.&quot;</blockquote>
+<p>Notice how that second version already sounds more interview-ready. It is not more complicated. It is just more honest.</p>
+<h2 id="skew-and-hotspots">Skew And Hotspots</h2>
+<p>The second big way averages lie is distribution.</p>
+<p>Even if total capacity looks healthy, a few keys, groups, regions, or time windows can become much hotter than the rest.</p>
+<h3 id="hot-things-break-first">Hot Things Break First</h3>
+<p>One celebrity account. One giant group chat. One trending search term. One city center in rush hour. One dashboard query during an incident.</p>
+<p>This is <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>.</p>
+<p>The important intuition is that systems often fail locally before they fail globally.</p>
+<p>You can have enough total machines, enough total storage, and enough total network capacity and still have a bad incident because one partition, one group, one shard, or one dependency is overloaded far ahead of the average.</p>
+<h3 id="viral-moments-do-not-arrive-fairly">Viral Moments Do Not Arrive Fairly</h3>
+<p>Real traffic is not polite.</p>
+<p>It clusters. It surges. It fixates on the same hot thing.</p>
+<p>That is why &quot;well distributed on paper&quot; is not the same as &quot;safe under real use.&quot;</p>
+<p>Strong answers name <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> explicitly because it shows you are thinking about how the system breaks, not only how it looks when everything is evenly spread.</p>
+<h3 id="diagram-healthy-average-unhealthy-hotspot">Diagram: Healthy Average, Unhealthy Hotspot</h3>
+<pre class="code-block"><code class="language-text">fleet average:      looks calm
+hot key / hot room: already melting
+
+global graph:       acceptable
+local graph:        overloaded</code></pre>
+<p>That simple picture is enough for the Chapter 01 lesson:</p>
+<p>do not let the fleet average hide the first thing that breaks.</p>
+<h2 id="tail-latency-pressure">Tail-Latency Pressure</h2>
+<p><a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">Load</a> tells you how much work is arriving. <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">Latency</a> tells you how that waiting is felt.</p>
+<p>The easiest mistake here is to treat <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> as one average comfort number.</p>
+<h3 id="tail-latency-is-where-production-pain-lives">Tail Latency Is Where Production Pain Lives</h3>
+<p>Average <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> is useful, but users and on-call engineers often suffer at the tail.</p>
+<p><code><a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">p95</a></code> and <code><a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">p99</a></code> are asking:</p>
+<p>How bad are the slow requests that still happen often enough to matter?</p>
+<p>That is where overloaded dependencies, long <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a>, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, and cross-service amplification usually show up first.</p>
+<p>A system can have:</p>
+<ul><li>acceptable average <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a></li><li>healthy-looking dashboards</li><li>a bad real user experience</li></ul>
+<p>all at the same time.</p>
+<p>Users do not remember your average. They remember when the product felt broken.</p>
+<h3 id="latency-sensitivity-depends-on-the-user-moment">Latency Sensitivity Depends On The User Moment</h3>
+<p>Not every slow path hurts equally.</p>
+<p>In the Slack example:</p>
+<ul><li>sending a message is <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive</li><li>opening recent channel history is also <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive</li><li>full-history search can often tolerate more work than live send</li><li>exports and offline analysis can usually tolerate much more delay</li></ul>
+<p>That distinction matters because later chapters will ask what belongs on the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a> and what can happen later.</p>
+<p>For now, the key idea is simpler:</p>
+<p>when you say &quot;<a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> matters,&quot; the next sentence should be &quot;Which action is sensitive, and how sensitive is it?&quot;</p>
+<h2 id="retry-amplification">Retry Amplification</h2>
+<p><a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">Retry</a> amplification belongs in this chapter in a light but important way.</p>
+<p>You do not need a full <a class="term-link" href="glossary.html#async" title="Work that can happen later instead of blocking the user-visible result.">async</a> architecture lesson yet. You only need the intuition that <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> are not free.</p>
+<p>When a path is already under stress, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> can multiply the same work that was already struggling.</p>
+<p>That means:</p>
+<ul><li>more requests land on the same user-visible path</li><li>internal backlog can grow faster</li><li><a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> stretches further</li><li>symptoms can look like &quot;delay&quot; while the real problem is repeated work</li></ul>
+<p>This is especially important in systems with:</p>
+<ul><li>users who are not connected right now</li><li>flaky mobile networks</li><li>confirmations from other systems or devices</li><li>apps or users trying again because the first attempt still has not clearly finished</li></ul>
+<p>A plain example is enough here:</p>
+<p>The first send attempt is still in flight, but it feels slow. Before that first attempt clearly finishes, either the user taps send again or the app <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> on its own. Now the system may have to carry the original attempt and the repeated attempt at the same time.</p>
+<p>In this chapter, do not jump yet to duplicate-message <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>. That is a later lesson. The Chapter 01 point is narrower: slowness can create overlapping work, and overlapping work adds <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> to the same path that was already slow.</p>
+<h3 id="pressure-before-mechanism">Pressure Before Mechanism</h3>
+<p>When a system hurts, you may notice the internal symptom first:</p>
+<blockquote>&quot;A <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> is filling up.&quot;</blockquote>
+<p>That can be true, but it is not always the best first sentence.</p>
+<p>Use this order:</p>
+<ol><li>What changed in the workload?</li><li>What multiplier or concentration made it worse?</li><li>What user-visible pain appeared?</li><li>Which internal mechanism might be showing the symptom?</li></ol>
+<p>For the first line of an interview answer, usually stop at the first three. The mechanism matters later, but the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read should come first.</p>
+<p>So if your instinct is &quot;the <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> is full,&quot; repair it into:</p>
+<blockquote>&quot;The <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty write <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> on one <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive path; the growing <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> is the symptom.&quot;</blockquote>
+<h3 id="hard-example-large-group-messaging">Hard Example: Large Group Messaging</h3>
+<p>A WhatsApp-like group suddenly becomes extremely active during a release. Hundreds of people are typing and reading at once. A new message is supposed to feel instant, but active members now see the latest messages arriving several seconds late.</p>
+<p>A weak opening answer would be:</p>
+<blockquote>&quot;Some internal backlog is growing.&quot;</blockquote>
+<p>That might become true, but it is still something an engineer might discover later inside the system. It does not name what changed in the workload itself. It is like walking into a traffic jam and saying, &quot;the road is crowded,&quot; without first noticing that one small bridge is forcing thousands of cars through a narrow point. The jam is visible. The <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> that created it came earlier.</p>
+<p>A stronger opening answer would be:</p>
+<blockquote>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty write <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> on a <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive path, so the newest messages can feel delayed even while fleet-wide averages still look normal.&quot;</blockquote>
+<p>Why is that better?</p>
+<ul><li>Start with what actually changed. One user action is no longer &quot;one message.&quot; In a large active group, one send now creates delivery work for many recipients at once.</li><li>Add the user moment. Seeing the newest group messages is <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive, so even a few seconds of delay is felt as breakage.</li><li>Now the visible pain makes sense. If each new message creates work for many active readers at once, the slow edge stretches first. People see the latest messages arrive late even if the whole fleet does not look overloaded yet.</li><li>Only after that should you talk about which worker pool, backlog, or storage path is struggling. Those are internal mechanisms and later consequences. The first job in this chapter is to name the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> honestly.</li></ul>
+<p>So the difference is:</p>
+<ul><li>&quot;Some internal backlog is growing&quot; starts with what you might later observe inside the system.</li><li>&quot;Bursty write <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> on a <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive path&quot; starts with the workload change that is creating the pain.</li></ul>
+<p>That is exactly the habit this chapter wants.</p>
+<h2 id="production-echoes-read-only-the-pressure">Production Echoes: Read Only The Pressure</h2>
+<p>These are not full case studies yet. At this point in the course, you are allowed to notice only the Chapter 01 layer: <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>, and access shape. The deeper storage, <a class="term-link" href="glossary.html#consistency" title="What a reader is allowed to assume about data after writes happen.">consistency</a>, and operations details will appear later.</p>
+<h3 id="discord-one-place-gets-hot-before-the-whole-fleet-looks-hot">Discord: One Place Gets Hot Before The Whole Fleet Looks Hot</h3>
+<p>Discord&#39;s engineering writeup on storing trillions of messages describes how some channels and time windows could receive far more traffic than ordinary ones. For Chapter 01, do not worry yet about the specific database machinery. Read only this much: one local slice of message history can get much hotter than the rest, and that local heat can create <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> pain even while fleet-wide average traffic still looks harmless.</p>
+<p>Decision simulation:</p>
+<p>You are on-call. A large community server has one announcement channel where everyone opens the app after a major update. What do you name first?</p>
+<p>A weak answer says:</p>
+<blockquote>&quot;The database is slow.&quot;</blockquote>
+<p>A stronger Chapter 01 answer says:</p>
+<blockquote>&quot;The first <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> on one hot message history path, so <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> can appear locally before fleet-average traffic looks scary.&quot;</blockquote>
+<p>Source: <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Discord Engineering, &quot;How Discord Stores Trillions of Messages&quot;</a></p>
+<h3 id="cloudflare-request-count-was-not-the-only-pressure">Cloudflare: Request Count Was Not The Only Pressure</h3>
+<p>Cloudflare&#39;s July 2019 outage writeup describes a global WAF rule change that exhausted CPU on machines serving HTTP traffic. For Chapter 01, ignore rollout process and rollback mechanics. The <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read is simpler: the limiting resource was CPU work per request, not merely request count.</p>
+<p>Decision simulation:</p>
+<p>Traffic volume has not changed enough to explain the pain, but every request now costs far more CPU than before. What should your opening name?</p>
+<p>A stronger Chapter 01 answer says:</p>
+<blockquote>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is CPU saturation from heavier per-request work, so <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and errors can spike even if headline traffic is not the whole story.&quot;</blockquote>
+<p>Source: <a href="https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/">Cloudflare, &quot;Details of the Cloudflare outage on July 2, 2019&quot;</a></p>
+<h3 id="google-sre-overload-feeds-on-itself">Google SRE: Overload Feeds On Itself</h3>
+<p>Google&#39;s SRE chapter on cascading failures explains that overload can create positive feedback: slow work creates more in-flight work, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> add more <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a>, and resource exhaustion spreads. For Chapter 01, the useful lesson is not the whole recovery playbook. It is this <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> sentence:</p>
+<blockquote>&quot;When a path is near the edge, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> and slower responses can multiply the same <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> that caused the slowdown.&quot;</blockquote>
+<p>Source: <a href="https://sre.google/sre-book/addressing-cascading-failures/">Google SRE Book, &quot;Addressing Cascading Failures&quot;</a></p>
+<h2 id="hidden-work-per-user-action">Hidden Work Per User Action</h2>
+<p>By now, several ideas are starting to rhyme:</p>
+<ul><li><a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> is not just average request count</li><li><a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> can hide inside one action</li><li><a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> can make one local path fail first</li><li><a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> can multiply existing work</li><li><a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> is where the pain becomes visible</li></ul>
+<p>All of them point to the same deeper instinct:</p>
+<p>one user action often creates much more backend work than it first appears to.</p>
+<p>That is why weak sizing begins with sentences like:</p>
+<blockquote>&quot;A group message is one write.&quot;</blockquote>
+<p>The better question is:</p>
+<p>What work does this action create besides the first obvious write?</p>
+<p>Once you ask that question, you start hearing the system more honestly.</p>
+<h2 id="data-shape-and-query-shape-complete-the-read">Data Shape And Query Shape Complete The Read</h2>
+<p>So far you have read how work hits the system. Now you need to read what kind of data that work is acting on.</p>
+<p>This is the bridge into Chapter 02, but it is still part of <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> reading.</p>
+<h3 id="data-shape-what-kind-of-thing-exists">Data Shape: What Kind Of Thing Exists</h3>
+<p><a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">Data shape</a> asks:</p>
+<p>What does the stored thing actually look like, and how does it live over time?</p>
+<p>Examples:</p>
+<ul><li>mutable records</li><li>append-only history</li><li>blobs</li><li><a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> points</li><li>documents</li><li>graph-like relationships</li></ul>
+<p>This is about the form and lifecycle of the data itself. Does it update in place? Does it mostly grow by append? Is history part of the product? Are the payloads tiny or enormous?</p>
+<p>In the Slack example, the core message path looks like append-heavy conversation history.</p>
+<h3 id="query-shape-what-the-product-needs-from-that-data">Query Shape: What The Product Needs From That Data</h3>
+<p><a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">Query shape</a> asks:</p>
+<p>How does the product need to read, filter, rank, or aggregate that data?</p>
+<p>Examples:</p>
+<ul><li>point lookup by ID</li><li>recent range by time</li><li>full-text search</li><li>aggregation across many rows</li><li>top-N ranking</li><li>geo lookup</li></ul>
+<p>This is not the same as <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a>. The stored thing and the read pattern are related, but they are not interchangeable.</p>
+<p>In the Slack example, recent history reads and message search are different query shapes even though they touch related data.</p>
+<h3 id="the-pair-matters-more-than-either-one-alone">The Pair Matters More Than Either One Alone</h3>
+<p>Two systems can both store documents and still need very different designs if one mainly does point lookup and the other does full-text search.</p>
+<p>Two systems can both be append-heavy and still differ if one reads recent history by entity while the other aggregates across huge time windows.</p>
+<p>That is the key lesson:</p>
+<p><a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">Data shape</a> tells you what exists. <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">Query shape</a> tells you what the product needs from it.</p>
+<p>The next storage discussion is only credible when both are visible.</p>
+<h3 id="comparison-table">Comparison Table</h3>
+<div class="table-wrap"><table><thead><tr><th>Situation</th><th><a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">Data shape</a></th><th><a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">Query shape</a></th></tr></thead><tbody><tr><td>Slack message history</td><td>append-heavy conversation timeline</td><td>recent range reads, search later</td></tr><tr><td>Metrics platform</td><td><a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a> points</td><td>time-window scans and aggregation</td></tr><tr><td>YouTube video metadata</td><td>structured document plus blob pointer</td><td>object fetch now, discovery/search later</td></tr></tbody></table></div>
+<p>The point of the table is not storage selection yet. The point is to train your eye to say two different true things about the same system.</p>
+<h2 id="practice-the-same-move-at-three-difficulty-levels">Practice The Same Move At Three Difficulty Levels</h2>
+<p>Now the chapter starts repeating the same habit under different amounts of mess.</p>
+<h3 id="easy-ticket-drop">Easy: Ticket Drop</h3>
+<p>Scenario:</p>
+<p>A ticketing site opens sales for one major concert. The first minute is a rush of buyers trying to reserve the same small set of seats.</p>
+<p><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">Pressure</a> read:</p>
+<ul><li>bursty <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a></li><li>intense hotspot/<a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> on the same inventory</li><li><a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> both matter</li></ul>
+<p>Interview-ready line:</p>
+<blockquote>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty demand on the same tiny seat pool, so many buyers are competing to update the same scarce inventory and the slowest reservation attempts get painful first.&quot;</blockquote>
+<p>If you later hear the phrase localized write contention, this is all it means here: the write <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is concentrated on one small hot place, not spread across the whole system.</p>
+<h3 id="medium-slack-incident-channel">Medium: Slack Incident Channel</h3>
+<p>Scenario:</p>
+<p>A previously quiet incident channel suddenly becomes the center of a company outage. Hundreds of people post, refresh history, and search old messages at the same time.</p>
+<p><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">Pressure</a> read:</p>
+<ul><li>bursty writes</li><li>one channel becoming much hotter than the rest</li><li>recent-read <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></li><li>different <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> for live history versus search</li></ul>
+<p>Interview-ready line:</p>
+<blockquote>&quot;The most important thing to say first is that one channel has suddenly become much hotter than the rest, with both writes and recent reads surging, so I would name <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> and tail-<a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> risk before any architecture.&quot;</blockquote>
+<h3 id="hard-large-group-messaging">Hard: Large Group Messaging</h3>
+<p>Scenario:</p>
+<p>A WhatsApp-like group jumps from calm traffic to thousands of recipients actively posting during a release. New messages are supposed to feel instant, but the latest messages now arrive late for active readers.</p>
+<p><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">Pressure</a> read:</p>
+<ul><li>bursty write <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a></li><li>large-group <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a></li><li>one group becoming much hotter than the rest</li><li>tail-<a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> pain</li></ul>
+<p>Interview-ready line:</p>
+<blockquote>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty write <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> on one suddenly hot group, so the system first risks long delays on the newest messages even if overall traffic still looks moderate.&quot;</blockquote>
+<h2 id="voice-rehearsal-cause-before-remedy">Voice Rehearsal: Cause Before Remedy</h2>
+<p>This chapter is not asking you to sound fancy. It is asking you to say the cause before the remedy.</p>
+<p>If your opening is:</p>
+<blockquote>&quot;This probably needs a scalable database and some background processing.&quot;</blockquote>
+<p>repair it into:</p>
+<blockquote>&quot;Before choosing components, I want to read the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> honestly. Is the hard part burst <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a>, hidden <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, repeated <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, or <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a>? I also want to know whether the core data is append-only history, mutable records, blobs, or <a class="term-link" href="glossary.html#time-series-store" title="A store optimized for append-heavy time-window reads, scans, and aggregates.">time-series</a>, and whether the main reads are recent ranges, point lookups, search-like queries, or wide aggregation.&quot;</blockquote>
+<p>Keep a few sentence stems ready, but use them as scaffolding, not as memorized lines:</p>
+<ul><li>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> here is...&quot;</li><li>&quot;The visible symptom is..., but the underlying <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is...&quot;</li><li>&quot;One user action is hiding more backend work than it looks like.&quot;</li><li>&quot;The first concrete pain is <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> on...&quot;</li><li>&quot;This is likely to fail locally before it fails globally.&quot;</li><li>&quot;The <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> is..., while the <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> is...&quot;</li></ul>
+<p>Now use those stems to repair three shallow answers:</p>
+<div class="table-wrap"><table><thead><tr><th>Shallow answer</th><th><a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">Pressure</a>-first repair</th></tr></thead><tbody><tr><td>&quot;The system is overloaded.&quot;</td><td>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty write <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> with hidden <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, so <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> can spike before the average tells the truth.&quot;</td></tr><tr><td>&quot;Some internal backlog is growing.&quot;</td><td>&quot;Growing internal backlogs may be the symptom, but the most important thing to say first is that bursty write <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> is hitting the main path users feel directly.&quot;</td></tr><tr><td>&quot;We should shard the database.&quot;</td><td>&quot;Before naming <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a>, I want to know whether the real stress is <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> on one hot entity or broad fleet-wide <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a>.&quot;</td></tr></tbody></table></div>
+<h2 id="timed-opener-drill">Timed Opener Drill</h2>
+<p>Do not solve the whole system. Give yourself 45 seconds and practice this opening shape:</p>
+<pre class="code-block"><code class="language-text">The dominant pressure is &lt;what changed in the workload&gt;,
+so &lt;where the user first feels pain&gt;.</code></pre>
+<p>For each scenario below, answer in one short line first. Then add one sentence of reasoning. Stop before architecture.</p>
+<ol><li>A giant Slack incident channel is exploding with messages.</li><li>A metrics dashboard query is slow only during outages.</li><li>A viral post causes one feed item to dominate reads.</li><li>A ticket drop sends everyone to the same small seat block.</li></ol>
+<p>The four scenarios are not random:</p>
+<ul><li>Slack tests bursty writes plus <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> on one hot channel.</li><li>The metrics dashboard tests read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> that appears during outage windows.</li><li>The viral post tests hot-key read <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>.</li><li>The ticket drop tests bursty demand on scarce hot inventory.</li></ul>
+<p>What should the one line do?</p>
+<ul><li>name the dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></li><li>say why it comes before components</li><li>hint at the first concrete pain</li></ul>
+<p>If your first line still starts with a tool, start again.</p>
+<h2 id="mini-drill-read-pressure-before-symptoms">Mini Drill: Read Pressure Before Symptoms</h2>
+<p>For each statement, ask yourself whether it is naming a <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> or only a symptom.</p>
+<ul><li>&quot;Some internal backlog is growing.&quot;</li><li>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty write <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> on the main user-visible path.&quot;</li><li>&quot;Search feels stale.&quot;</li><li>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is one incident channel becoming much hotter than the rest.&quot;</li><li>&quot;Message delivery is delayed.&quot;</li><li>&quot;The dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is bursty writes plus <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>-sensitive reads on the same <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a>.&quot;</li></ul>
+<p>The habit you are building is this:</p>
+<p>do not stop at the symptom if the cause can be spoken more honestly.</p>
+<h2 id="mini-drill-read-slack-without-naming-components">Mini Drill: Read Slack Without Naming Components</h2>
+<p>Use this as a final <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read for Slack:</p>
+<ul><li>what is the real <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a>, not just the average request count?</li><li>where does <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> appear?</li><li>which actions are most sensitive to <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a>?</li><li>what could go hot first under <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>?</li><li>where can <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> multiply already-stressed work?</li><li>what is the <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> of message history?</li><li>what is the <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> for recent channel reads versus old-message search?</li></ul>
+<p>Expected direction:</p>
+<p>Slack is not just &quot;chat.&quot; The core message path is append-heavy, recent-history reads matter, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> appears in delivery and notifications, large channels can become hot, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> can amplify pain once delivery starts struggling, and message search introduces a different <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> from the live conversation path.</p>
+<p>If tools appear first, rerun just the first three questions until the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> is audible before any component appears.</p>
+<h2 id="before-you-move-to-lesson-02">Before You Move To Lesson 02</h2>
+<p>The checkpoint is the ability to replace:</p>
+<blockquote>&quot;This system has a lot of traffic.&quot;</blockquote>
+<p>with a <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read that names:</p>
+<ul><li>what kind of <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> it has</li><li>where <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> pain lives</li><li>whether one action causes hidden <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a></li><li>whether <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> multiply the same work</li><li>whether <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> is likely to dominate before average capacity does</li><li>what the <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> is</li><li>what the <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> is</li><li>what an interview-ready <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> read sounds like in one line</li></ul>
+<p>Lesson <code>02</code> asks the next natural question: now that you can feel the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> and describe the access shape honestly, where should the data live, and how should it spread as the system scales?</p>
+    </article>
+
+
+    <section class="section-block chapter-intuition" id="chapter-intuition">
+      <div class="section-heading">
+        <p class="eyebrow">After Reading</p>
+        <h2>Now See The Concept Move</h2>
+        <p>You have the chapter vocabulary now. Use this as a moving picture, not a mini simulator. The chapter diagram teaches the concept; the Arena is where you will make and break systems.</p>
+      </div>
+      <section class="diagram-panel" id="chapter-diagram">
+        <div class="section-heading">
+          <p class="eyebrow">Animated Concept Diagram</p>
+          <h2>One Action Becomes System Pressure</h2>
+          <p>Watch the causal path: a visible product action turns into hidden work, the hidden work concentrates somewhere, and the user finally feels the slowest path.</p>
+        </div>
+        <div class="chapter-visual-shell" data-concept-diagram="01-load-latency-and-data-shape"></div>
+        <p class="concept-lab-note">
+          Want to test the physics by changing load, shape, scale, and failure? Use the
+          <a href="arena.html">Practice Arena</a>. Chapters stay focused on concept clarity.
+        </p>
+      </section>
+
+    <section class="course-map-panel" id="course-map">
+      <div class="section-heading">
+        <p class="eyebrow">Mind Map</p>
+        <h2>Where We Are In The Story</h2>
+        <p>Click a node to see what that chapter adds to the picture.</p>
+      </div>
+      <div class="course-map-shell" data-course-map>
+        <div class="course-map-track">
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Start Here: The Habit This Course Builds"
+          data-map-stage="Start Here"
+          data-map-summary="Understand why this course starts from pressure instead of components, and what habit of reasoning the later chapters are trying to build."
+        >
+          <span class="map-node-index">00</span>
+          <span class="map-node-label">Start Here: The Habit This Course Builds</span>
+        </button>
+
+        <button
+          class="map-node is-current"
+          type="button"
+          data-map-node
+          data-map-title="Load, Latency, and Data Shape"
+          data-map-stage="Layer 1 of 8"
+          data-map-summary="Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components."
+        >
+          <span class="map-node-index">01</span>
+          <span class="map-node-label">Load, Latency, and Data Shape</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Storage, Partitioning, and Replication"
+          data-map-stage="Layer 2 of 8"
+          data-map-summary="Now that you can read pressure, the next question is where each kind of data should live, how it should be split, and when it should be copied."
+        >
+          <span class="map-node-index">02</span>
+          <span class="map-node-label">Storage, Partitioning, and Replication</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Consistency, Ordering, Idempotency, and Transactions"
+          data-map-stage="Layer 3 of 8"
+          data-map-summary="Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe."
+        >
+          <span class="map-node-index">03</span>
+          <span class="map-node-label">Consistency, Ordering, Idempotency, and Transactions</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Async, Caching, Failure Handling, and Operability"
+          data-map-stage="Layer 4 of 8"
+          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+        >
+          <span class="map-node-index">04</span>
+          <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="The Interview Framework: 7+1 and LGTC"
+          data-map-stage="Layer 5 of 8"
+          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+        >
+          <span class="map-node-index">05</span>
+          <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Archetypes and Component Maps"
+          data-map-stage="Layer 6 of 8"
+          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+        >
+          <span class="map-node-index">06</span>
+          <span class="map-node-label">Archetypes and Component Maps</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Hybrid Systems and Guided Walkthroughs"
+          data-map-stage="Layer 7 of 8"
+          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+        >
+          <span class="map-node-index">07</span>
+          <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
+        </button>
+
+        <button
+          class="map-node"
+          type="button"
+          data-map-node
+          data-map-title="Drill Order and Mock Interview Prep"
+          data-map-stage="Layer 8 of 8"
+          data-map-summary="This lesson turns the map you built into a repair loop, so practice stops being random and starts fixing the right weakness at the right layer."
+        >
+          <span class="map-node-index">08</span>
+          <span class="map-node-label">Drill Order and Mock Interview Prep</span>
+        </button>
+
+        </div>
+        <div class="map-detail" data-map-detail>
+          <p class="panel-label" data-map-detail-stage>Layer 1 of 8</p>
+          <h3 data-map-detail-title>Load, Latency, and Data Shape</h3>
+          <p data-map-detail-summary>Every design starts by reading one user action honestly: hidden work, waiting pain, hotspots, and access shape before naming components.</p>
+        </div>
+      </div>
+    </section>
+
+    </section>
+
+
+    <section class="chapter-summary" id="key-learnings">
+      <div class="section-heading">
+        <p class="eyebrow">Before You Move On</p>
+        <h2>Key Learnings</h2>
+        <p>These are the ideas that should stay in your head after you finish the chapter.</p>
+      </div>
+      <ul class="takeaway-list"><li><strong>Remember:</strong> Average <a class="term-link" href="glossary.html#qps" title="Queries per second, used as a shorthand for request rate.">QPS</a> is rarely the full story; peaks, <a class="term-link" href="glossary.html#burstiness" title="Traffic arriving in spikes rather than smoothly.">burstiness</a>, <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a>, and <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">hot spots</a> often dominate.</li><li><strong>Remember:</strong> One user action is often much larger than one backend operation.</li><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">Latency</a> needs tail thinking and user-tolerance thinking, not just average thinking.</li><li><strong>Remember:</strong> A visible symptom like <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> growth or delayed delivery is weaker than naming the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> that created it.</li><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">Data shape</a> and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a> are the bridge into later storage and <a class="term-link" href="glossary.html#topology" title="How data and work move through space and time in the system.">topology</a> choices.</li></ul>
+    </section>
+
+    <section class="quiz-panel" id="lesson-check" data-lesson-quiz="01-load-latency-and-data-shape">
+      <div class="section-heading">
+        <p class="eyebrow">Lesson Check</p>
+        <h2>Interactive Quiz</h2>
+        <p>Answer these before moving on. The goal is explanation-grade understanding, not lucky guesses.</p>
+      </div>
+      <div class="quiz-root"></div>
+    </section>
+    <section class="section-block chapter-coach-block" id="chapter-coach">
+      <div class="section-heading">
+        <p class="eyebrow">Chapter Coach</p>
+        <h2>Ask Questions And Prove The Chapter</h2>
+        <p>Use the left panel to clear doubts about this chapter in plain language. Use the right panel after the lesson check to keep answering chapter-specific probes until the main understanding is stable.</p>
+      </div>
+
+      <div class="chapter-coach-grid">
+        <div data-chapter-doubt-chat="01-load-latency-and-data-shape"></div>
+        <div data-chapter-mastery="01-load-latency-and-data-shape"></div>
+      </div>
+
+    </section>
+
+    <nav class="lesson-pager" aria-label="Lesson navigation">
+      <a class="pager-card" href="00-study-method.html"><span>Previous</span><strong>00 - Start Here: The Habit This Course Builds</strong></a>
+      <a class="pager-card" href="02-storage-partitioning-and-replication.html"><span>Next</span><strong>02 - Storage, Partitioning, and Replication</strong></a>
+    </nav>
+
+
+      </main>
+
+    <aside class="toc">
+      <p class="toc-label">On This Page</p>
+      <ul>
+        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#start-with-one-honest-read">Start With One Honest Read</a></li><li class="level-2"><a href="#one-user-action-many-hidden-pressures">One User Action, Many Hidden Pressures</a></li><li class="level-2"><a href="#load-and-burst-pressure">Load And Burst Pressure</a></li><li class="level-2"><a href="#fanout-pressure">Fanout Pressure</a></li><li class="level-2"><a href="#skew-and-hotspots">Skew And Hotspots</a></li><li class="level-2"><a href="#tail-latency-pressure">Tail-Latency Pressure</a></li><li class="level-2"><a href="#retry-amplification">Retry Amplification</a></li><li class="level-2"><a href="#production-echoes-read-only-the-pressure">Production Echoes: Read Only The Pressure</a></li><li class="level-2"><a href="#hidden-work-per-user-action">Hidden Work Per User Action</a></li><li class="level-2"><a href="#data-shape-and-query-shape-complete-the-read">Data Shape And Query Shape Complete The Read</a></li><li class="level-2"><a href="#practice-the-same-move-at-three-difficulty-levels">Practice The Same Move At Three Difficulty Levels</a></li><li class="level-2"><a href="#voice-rehearsal-cause-before-remedy">Voice Rehearsal: Cause Before Remedy</a></li><li class="level-2"><a href="#timed-opener-drill">Timed Opener Drill</a></li><li class="level-2"><a href="#mini-drill-read-pressure-before-symptoms">Mini Drill: Read Pressure Before Symptoms</a></li><li class="level-2"><a href="#mini-drill-read-slack-without-naming-components">Mini Drill: Read Slack Without Naming Components</a></li><li class="level-2"><a href="#before-you-move-to-lesson-02">Before You Move To Lesson 02</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
+      </ul>
+    </aside>
+
+    </div>
+    <script src="assets/app.js"></script>
+    <script src="assets/concept-diagrams.js"></script>
+  </body>
+</html>

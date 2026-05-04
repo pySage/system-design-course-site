@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": "reader-one",
+      "name": "Reader One",
+      "username": "reader-one",
+      "password": "replace-with-local-password"
+    },
+    {
+      "id": "reader-two",
+      "name": "Reader Two",
+      "username": "reader-two",
+      "password": "replace-with-local-password"
+    },
+    {
+      "id": "reader-three",
+      "name": "Reader Three",
+      "username": "reader-three",
+      "password": "replace-with-local-password"
+    },
+    {
+      "id": "reader-four",
+      "name": "Reader Four",
+      "username": "reader-four",
+      "password": "replace-with-local-password"
+    },
+    {
+      "id": "dev-reader",
+      "name": "Dev Reader",
+      "username": "dev-reader",
+      "password": "replace-with-local-password"
+    }
+  ]
+}
