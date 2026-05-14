@@ -1,18 +1,34 @@
 # 03 - Consistency, Ordering, Idempotency, and Transactions
 
-Once data has a shape and a home, the next question is what cannot be allowed to go wrong.
-
-The mistake this chapter is trying to prevent is familiar by now: people hear "correctness matters" and answer with slogans. They say "use strong consistency," "make it exactly once," or "put everything in a transaction" before they have said what can actually go wrong in the product.
-
-This chapter trains the next move:
-draw a narrow correctness boundary before you name guarantees.
-
-## Start With One Correctness Story
-
 Imagine there is one last room left for a popular weekend on Airbnb.
 
 Two users try to book the same dates within seconds.
 One of them sees a timeout and retries.
+
+Do not name a database feature yet.
+Just look at what would be unacceptable to the product:
+
+- both users are told they got the room
+- one user is charged twice because they retried
+- the host calendar says one thing while the guest confirmation says another
+- search still showing the room for a few minutes is annoying, but it is not the same kind of failure as selling the room twice
+
+That is the doorway into this chapter.
+Before the course uses words like `correctness`, `consistency`, `idempotency`, or `transaction`, give them this plain meaning:
+
+- `correctness` means the product does the thing that must be true, even when requests overlap, retry, or fail halfway
+- `consistency` asks what a reader is allowed to believe after data changes
+- `ordering` asks where sequence changes the meaning of the result
+- `idempotency` asks whether repeating the same logical request repeats the business effect
+- `transaction` asks which state changes must succeed or fail together
+
+You do not learn those words by memorizing definitions first.
+You learn them by pointing to the exact product damage they prevent.
+
+This chapter trains the next move:
+name the smallest product truth that must be protected before you name the mechanism.
+
+## Start With One Room That Must Not Be Sold Twice
 
 A shallow answer sounds like this:
 

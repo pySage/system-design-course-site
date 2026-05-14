@@ -397,14 +397,15 @@ const lessonMeta = {
   },
   "03-consistency-ordering-idempotency-and-transactions": {
     stage: "Layer 3 of 8",
-    teaser: "Once data has a shape and a home, the next question is what truth must stay fresh, what sequence matters, and how retries stay safe.",
-    why: "Many architectures sound fine until stale reads, duplicate requests, and conflicting writes show up. This chapter teaches you to draw a narrow correctness boundary first, then choose consistency, ordering, idempotency, and transaction scope as responses to that product risk.",
-    where: "You are at the promise layer of the map: what readers may assume, what writers may retry, and what updates must stay atomic.",
-    fit: "This chapter is where correctness enters the picture in a concrete way.",
+    teaser: "Once data has a shape and a home, the next question is what product truth must stay protected when data changes.",
+    why: "A booking flow can look well-designed until the last room is sold twice, a retry creates two charges, or the host and guest see contradictory facts. This chapter starts from that product damage, then names the narrow promise that prevents it.",
+    where: "You are at the promise layer of the map: what readers may safely believe, what repeated requests must not repeat, and what updates must move together.",
+    fit: "This chapter turns storage placement into a protection question: which small truth must survive races, retries, and partial failure?",
     goals: [
-      "Differentiate strong and eventual consistency by product impact",
+      "Explain the product failure before using terms like consistency or transaction",
+      "Differentiate fresh-truth needs from reads that can safely lag",
       "Scope ordering to the smallest place where sequence changes meaning",
-      "See idempotency and narrow transaction boundaries as practical answers to retries and partial failure",
+      "See retry-safe identity and narrow all-or-nothing boundaries as practical answers to partial failure",
       "Tie every guarantee word to the product risk or state boundary it protects",
     ],
     takeaways: [
