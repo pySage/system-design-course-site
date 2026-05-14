@@ -222,10 +222,14 @@ Indexes trade write cost and storage space for faster reads. A useful index is j
     term: "Partitioning",
     group: "data-placement",
     aliases: ["partitioning", "partitioned", "sharding", "sharded"],
-    summary: "Splitting data or work across partitions so the system can scale.",
+    summary: "Splitting data or work across logical ownership slices so the system can scale.",
     body: `Partitioning divides data or traffic across independent logical ownership slices so one machine does not own everything.
 
-In this course, a partition is the logical slice; a shard is the physical serving unit, often a node or replica group, that owns one or more partitions. A hot partition can make its owning shard hot.
+In this course, a partition is the logical slice. A shard is the primary physical serving owner for one or more partitions, usually a node or storage process. A shard can own many partitions.
+
+If the same partition exists on several machines, those are replicas. If the primary data for one partition is split across several machines, the cleaner explanation is that it has been divided into smaller partitions or sub-partitions. A hot partition can make its owning shard hot.
+
+Vendor documentation may use the words at different levels. For example, CrateDB calls a partition a table segment that itself contains shards. In interviews, define the level you mean before reasoning about hot spots.
 
 Partitioning mainly helps scale and isolation. It does not automatically solve correctness, availability, or ordering on its own.`,
   },
@@ -234,8 +238,8 @@ Partitioning mainly helps scale and isolation. It does not automatically solve c
     term: "Partition Key",
     group: "data-placement",
     aliases: ["partition key", "shard key"],
-    summary: "The value used to decide which partition owns a piece of data or work.",
-    body: `A partition key routes writes and reads to a logical partition. A later mapping places that partition on a shard or node. Good partition keys spread load while still matching the access pattern.
+    summary: "The value used to decide which logical partition owns a piece of data or work.",
+    body: `A partition key routes writes and reads to a logical partition. A later mapping places that partition on a primary shard, node, or storage process. Good partition keys spread load while still matching the access pattern.
 
 In this course, a strong partition key often aligns with the ordering boundary, consistency boundary, or user-visible unit of work.`,
   },

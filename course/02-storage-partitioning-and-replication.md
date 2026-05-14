@@ -478,11 +478,18 @@ It is not the same thing as making copies.
 Keep two words separate:
 
 - a `partition` is a logical ownership slice
-- a `shard` is a physical serving unit, often a node or replica group, that owns one or more partitions
+- a `shard` is the physical serving owner for one or more partitions, usually a primary node or storage process
 
 People often use the words loosely in interviews, but the distinction matters when you explain hot spots.
 A hot partition is the data slice or key range receiving too much work.
-A hot shard is the machine or replica group suffering because it owns that hot partition.
+A hot shard is the physical owner suffering because it serves that hot partition.
+
+One shard can own many partitions.
+That is normal: the system may create many logical slices, then place several of them on the same physical server until load says otherwise.
+
+A partition should not mean "one logical slice whose primary data is scattered across unrelated machines."
+If the same partition appears on several machines, those are replicas.
+If the primary data for that partition is split across several machines, then the cleaner explanation is that you have divided it into smaller partitions or sub-partitions.
 
 The picture is:
 
@@ -496,12 +503,41 @@ after partitioning
 channel A history -> partition P1 -> shard 1
 channel B history -> partition P2 -> shard 2
 channel C history -> partition P3 -> shard 3
+channel D history -> partition P4 -> shard 1
 ```
 
 Each partition is a logical slice.
-Each shard is where one or more of those slices are served.
+Each shard can serve one or more logical slices.
 That is why one hot channel can still hurt badly:
 partitioning spreads ownership, but it does not magically make one hot partition cold.
+
+The interview-safe sentence is:
+
+> "I am using partition to mean the logical ownership slice and shard to mean the primary physical serving owner. A shard may serve many partitions; a partition has one primary owner unless I am talking about replicas or a further split into smaller partitions."
+
+One warning: database products do not always use these words at the same level.
+CrateDB is a useful example because its documentation says a partitioned table is a virtual table made of partitions, and each partition consists of one or more shards.
+Its sharding guide also says every table partition is split into a configured number of shards that are distributed across the cluster.
+So in CrateDB vocabulary, a monthly partition can contain multiple shards, and those shards can be spread across machines.
+That does not make our course sentence wrong; it means the words are being used at different abstraction levels.
+
+Translate it like this:
+
+```text
+course language:
+partition = logical ownership slice
+shard = primary physical serving owner for one or more logical slices
+
+CrateDB language:
+partition = table segment created from partition-column values, such as one month
+shard = lower-level data/index slice inside that partition, distributed across nodes
+```
+
+The habit to keep is not memorizing one vendor's vocabulary.
+The habit is to say what you mean:
+which slice is logical, which slice is physically served somewhere, and which copies are replicas.
+
+Sources: [CrateDB partitioned tables](https://cratedb.com/docs/crate/reference/en/latest/general/ddl/partitioned-tables.html), [CrateDB sharding](https://cratedb.com/docs/crate/reference/en/latest/general/ddl/sharding.html)
 
 ### A Partition Key Should Match The Work That Wants To Stay Together
 
@@ -535,7 +571,7 @@ It means the design must admit the skew risk and have a later answer for hot cha
 
 This is the causal loop from Chapter 01:
 the same key that keeps normal conversation reads local is also why one incident channel can create a hot partition.
-If that partition is owned by one shard, that shard can melt while average fleet traffic still looks calm.
+If that partition's primary owner is one shard, that shard can melt while average fleet traffic still looks calm.
 
 ### Bad Keys Create Predictable Pain
 
@@ -562,6 +598,7 @@ If you expect growth or skew, mention ideas such as:
 
 `Virtual shards` are better understood here as virtual partitions:
 start with more logical slices than physical machines, then move those slices between shards later without redesigning the whole key.
+That works because a shard can hold many small logical slices today and hand some of them to another shard tomorrow.
 
 The point is not to deep-dive implementation here.
 The point is to show you know a partition key is an early design decision with long consequences.

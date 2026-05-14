@@ -389,6 +389,7 @@ const lessonMeta = {
       "Storage choice is driven by data shape and query shape, not by popularity.",
       "Some storage families are specialized because the dominant read is specialized, such as traversal, full-text search, or time-window aggregation.",
       "Partitioning and replication solve different problems.",
+      "Partition and shard vocabulary changes across products, so define which level is logical ownership, physical serving, and replication.",
       "A partition key should align with the access pattern and the work that most wants to stay local.",
     ],
     visualTitle: "Data Shape Narrows Storage Choices",

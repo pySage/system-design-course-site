@@ -272,8 +272,10 @@ video exists         video can be found by title or keywords</code></pre>
 <ul><li>dataset size</li><li>write throughput</li><li>read throughput on hot ranges</li><li>isolation of independent slices of work</li></ul>
 <p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> is about splitting <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> and ownership. It is not the same thing as making copies.</p>
 <p>Keep two words separate:</p>
-<ul><li>a <code>partition</code> is a logical ownership slice</li><li>a <code>shard</code> is a physical serving unit, often a node or replica group, that owns one or more partitions</li></ul>
-<p>People often use the words loosely in interviews, but the distinction matters when you explain hot spots. A hot partition is the data slice or key range receiving too much work. A hot shard is the machine or replica group suffering because it owns that hot partition.</p>
+<ul><li>a <code>partition</code> is a logical ownership slice</li><li>a <code>shard</code> is the physical serving owner for one or more partitions, usually a primary node or storage process</li></ul>
+<p>People often use the words loosely in interviews, but the distinction matters when you explain hot spots. A hot partition is the data slice or key range receiving too much work. A hot shard is the physical owner suffering because it serves that hot partition.</p>
+<p>One shard can own many partitions. That is normal: the system may create many logical slices, then place several of them on the same physical server until <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> says otherwise.</p>
+<p>A partition should not mean &quot;one logical slice whose primary data is scattered across unrelated machines.&quot; If the same partition appears on several machines, those are replicas. If the primary data for that partition is split across several machines, then the cleaner explanation is that you have divided it into smaller partitions or sub-partitions.</p>
 <p>The picture is:</p>
 <pre class="code-block"><code class="language-text">before partitioning
 
@@ -283,8 +285,22 @@ after partitioning
 
 channel A history -&gt; partition P1 -&gt; shard 1
 channel B history -&gt; partition P2 -&gt; shard 2
-channel C history -&gt; partition P3 -&gt; shard 3</code></pre>
-<p>Each partition is a logical slice. Each shard is where one or more of those slices are served. That is why one hot channel can still hurt badly: <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> spreads ownership, but it does not magically make one hot partition cold.</p>
+channel C history -&gt; partition P3 -&gt; shard 3
+channel D history -&gt; partition P4 -&gt; shard 1</code></pre>
+<p>Each partition is a logical slice. Each shard can serve one or more logical slices. That is why one hot channel can still hurt badly: <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> spreads ownership, but it does not magically make one hot partition cold.</p>
+<p>The interview-safe sentence is:</p>
+<blockquote>&quot;I am using partition to mean the logical ownership slice and shard to mean the primary physical serving owner. A shard may serve many partitions; a partition has one primary owner unless I am talking about replicas or a further split into smaller partitions.&quot;</blockquote>
+<p>One warning: database products do not always use these words at the same level. CrateDB is a useful example because its documentation says a partitioned table is a virtual table made of partitions, and each partition consists of one or more shards. Its sharding guide also says every table partition is split into a configured number of shards that are distributed across the cluster. So in CrateDB vocabulary, a monthly partition can contain multiple shards, and those shards can be spread across machines. That does not make our course sentence wrong; it means the words are being used at different abstraction levels.</p>
+<p>Translate it like this:</p>
+<pre class="code-block"><code class="language-text">course language:
+partition = logical ownership slice
+shard = primary physical serving owner for one or more logical slices
+
+CrateDB language:
+partition = table segment created from partition-column values, such as one month
+shard = lower-level data/index slice inside that partition, distributed across nodes</code></pre>
+<p>The habit to keep is not memorizing one vendor&#39;s vocabulary. The habit is to say what you mean: which slice is logical, which slice is physically served somewhere, and which copies are replicas.</p>
+<p>Sources: <a href="https://cratedb.com/docs/crate/reference/en/latest/general/ddl/partitioned-tables.html">CrateDB partitioned tables</a>, <a href="https://cratedb.com/docs/crate/reference/en/latest/general/ddl/sharding.html">CrateDB sharding</a></p>
 <h3 id="a-partition-key-should-match-the-work-that-wants-to-stay-together">A Partition Key Should Match The Work That Wants To Stay Together</h3>
 <p>This is the main instinct.</p>
 <p>A good <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> aligns with:</p>
@@ -295,7 +311,7 @@ channel C history -&gt; partition P3 -&gt; shard 3</code></pre>
 <p>There is always a tension:</p>
 <ul><li>if the key keeps related data together, common reads are cheap</li><li>if one related group becomes extremely hot, that same locality can concentrate pain</li></ul>
 <p>For Slack-like history, <code>conversation_id</code> is natural because recent reads usually ask for one conversation. But a company-wide incident channel can make that exact conversation slice hot. That does not make the key wrong automatically. It means the design must admit the <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> risk and have a later answer for hot channels.</p>
-<p>This is the causal loop from Chapter 01: the same key that keeps normal conversation reads local is also why one incident channel can create a hot partition. If that partition is owned by one shard, that shard can melt while average fleet traffic still looks calm.</p>
+<p>This is the causal loop from Chapter 01: the same key that keeps normal conversation reads local is also why one incident channel can create a hot partition. If that partition&#39;s primary owner is one shard, that shard can melt while average fleet traffic still looks calm.</p>
 <h3 id="bad-keys-create-predictable-pain">Bad Keys Create Predictable Pain</h3>
 <p>Bad partition keys usually create one or more of these:</p>
 <ul><li>one logical partition becoming much hotter than the rest</li><li>one physical shard becoming hot because it owns that partition</li><li>scattered reads</li><li>expensive <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fan-out</a> queries</li><li>awkward resharding later</li></ul>
@@ -304,7 +320,7 @@ channel C history -&gt; partition P3 -&gt; shard 3</code></pre>
 <p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> decisions become expensive to change once the system is large.</p>
 <p>If you expect growth or <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, mention ideas such as:</p>
 <ul><li>virtual partitions, sometimes called virtual shards</li><li>consistent hashing</li><li>background resharding</li></ul>
-<p><code>Virtual shards</code> are better understood here as virtual partitions: start with more logical slices than physical machines, then move those slices between shards later without redesigning the whole key.</p>
+<p><code>Virtual shards</code> are better understood here as virtual partitions: start with more logical slices than physical machines, then move those slices between shards later without redesigning the whole key. That works because a shard can hold many small logical slices today and hand some of them to another shard tomorrow.</p>
 <p>The point is not to deep-dive implementation here. The point is to show you know a <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> is an early design decision with long consequences.</p>
 <h2 id="replication-means-copies-not-splits">Replication Means Copies, Not Splits</h2>
 <p><a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">Replication</a> is different.</p>
@@ -591,7 +607,7 @@ recent #incident messages in order</code></pre>
         <h2>Key Learnings</h2>
         <p>These are the ideas that should stay in your head after you finish the chapter.</p>
       </div>
-      <ul class="takeaway-list"><li><strong>Remember:</strong> One product can legitimately need multiple storage families when its data shapes differ.</li><li><strong>Remember:</strong> Storage choice is driven by <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a>, not by popularity.</li><li><strong>Remember:</strong> Some storage families are specialized because the dominant read is specialized, such as traversal, full-text search, or time-window aggregation.</li><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> solve different problems.</li><li><strong>Remember:</strong> A <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> should align with the access pattern and the work that most wants to stay local.</li></ul>
+      <ul class="takeaway-list"><li><strong>Remember:</strong> One product can legitimately need multiple storage families when its data shapes differ.</li><li><strong>Remember:</strong> Storage choice is driven by <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a> and <a class="term-link" href="glossary.html#query-shape" title="How the system needs to read, write, filter, rank, or aggregate data.">query shape</a>, not by popularity.</li><li><strong>Remember:</strong> Some storage families are specialized because the dominant read is specialized, such as traversal, full-text search, or time-window aggregation.</li><li><strong>Remember:</strong> <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> solve different problems.</li><li><strong>Remember:</strong> Partition and shard vocabulary changes across products, so define which level is logical ownership, physical serving, and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a>.</li><li><strong>Remember:</strong> A <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> should align with the access pattern and the work that most wants to stay local.</li></ul>
     </section>
 
     <section class="quiz-panel" id="lesson-check" data-lesson-quiz="02-storage-partitioning-and-replication">
