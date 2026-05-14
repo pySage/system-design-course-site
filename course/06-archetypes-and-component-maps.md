@@ -1,19 +1,11 @@
 # 06 - Archetypes and Component Maps
 
-You now know how to open a design ask, extract the real pressure, and compress it into `LGTC`.
-
-The next question is:
-what kind of system are you actually looking at?
-
-This chapter teaches the next speed-up:
-stop seeing only product names and start hearing recurring system shapes.
-
-That does not mean memorizing labels.
-It means recognizing that different design asks keep producing the same kind of pain, the same kind of default components, the same kind of tradeoff, and the same kind of first failure.
-
-## Start With Three Cold Reads
-
 Imagine you have already done the Chapter 05 opening on three design asks.
+
+Do not label them yet.
+Just read what kind of pain each product moment creates.
+
+## Three Cold Reads Before Any Label
 
 ### WhatsApp
 
@@ -37,6 +29,11 @@ Bandwidth and edge delivery matter.
 The hot path and the discovery path do not have the same pressure.
 
 If those three design asks already feel like different kinds of systems before you draw any boxes, that instinct is the beginning of archetype recognition.
+
+Before the course uses words like `archetype` or `component map`, give them a practical meaning:
+
+- an `archetype` is a recurring kind of system pain that you have already described in plain language
+- a `component map` is memory of the usual parts that often follow from that pain, not proof that those parts are correct here
 
 The important part is what your ear noticed:
 

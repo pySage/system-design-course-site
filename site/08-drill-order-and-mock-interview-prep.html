@@ -275,7 +275,7 @@ close when:
 <p><a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">Tradeoff</a>:</p>
 <ul><li>Keeping recent channel history local makes common reads simple and fast.</li><li>But the same locality can concentrate pain when one channel becomes huge or suddenly active.</li></ul>
 <p>Interview line to keep:</p>
-<blockquote>&quot;This is not just database scale; it is a skewed ordered-history workload where the hottest channel slices dominate <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> and force careful <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> plus runtime shielding.&quot;</blockquote>
+<blockquote>&quot;This is not just database scale; it is a skewed ordered-history workload where the hottest channel slices dominate <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> and force careful <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across logical ownership slices so the system can scale.">partitioning</a> plus runtime shielding.&quot;</blockquote>
 <p>Now use the remaining case files the same way:</p>
 <ol><li>name the first <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></li><li>name the shape or <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> that explains it</li><li>name one runtime or migration risk</li><li>compress the lesson into one interview-ready sentence</li></ol>
 <p>Source: <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Discord Engineering, &quot;How Discord Stores Trillions of Messages&quot;</a></p>
@@ -456,7 +456,7 @@ close when:
           data-map-node
           data-map-title="Async, Caching, Failure Handling, and Operability"
           data-map-stage="Layer 4 of 8"
-          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+          data-map-summary="A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs."
         >
           <span class="map-node-index">04</span>
           <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
@@ -468,7 +468,7 @@ close when:
           data-map-node
           data-map-title="The Interview Framework: 7+1 and LGTC"
           data-map-stage="Layer 5 of 8"
-          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+          data-map-summary="When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them."
         >
           <span class="map-node-index">05</span>
           <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
@@ -480,7 +480,7 @@ close when:
           data-map-node
           data-map-title="Archetypes and Component Maps"
           data-map-stage="Layer 6 of 8"
-          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+          data-map-summary="After you can read a system clearly, repeated kinds of pain start to sound familiar before any boxes are drawn."
         >
           <span class="map-node-index">06</span>
           <span class="map-node-label">Archetypes and Component Maps</span>
@@ -492,7 +492,7 @@ close when:
           data-map-node
           data-map-title="Hybrid Systems and Guided Walkthroughs"
           data-map-stage="Layer 7 of 8"
-          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+          data-map-summary="Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns."
         >
           <span class="map-node-index">07</span>
           <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>

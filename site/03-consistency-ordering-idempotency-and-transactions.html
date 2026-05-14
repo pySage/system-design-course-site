@@ -95,7 +95,7 @@
         </article>
         <article class="frame-card">
           <p class="panel-label">Goals</p>
-          <ul class="framed-list"><li>Explain the product failure before using terms like <a class="term-link" href="glossary.html#consistency" title="What a reader is allowed to assume about data after writes happen.">consistency</a> or <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a></li><li>Differentiate fresh-truth needs from reads that can safely lag</li><li>Scope <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> to the smallest place where sequence changes meaning</li><li>See retry-safe identity and narrow all-or-nothing boundaries as practical answers to partial failure</li><li>Tie every <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> word to the product risk or state boundary it protects</li></ul>
+          <ul class="framed-list"><li>Explain the product failure before using terms like <a class="term-link" href="glossary.html#consistency" title="What a reader is allowed to assume about data after writes happen.">consistency</a> or <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a></li><li>Differentiate fresh-truth needs from reads that can safely lag</li><li>Scope <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> to the smallest place where sequence changes meaning</li><li>See <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a>-safe identity and narrow all-or-nothing boundaries as practical answers to partial failure</li><li>Tie every <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantee</a> word to the product risk or state boundary it protects</li></ul>
         </article>
       </div>
     </section>
@@ -164,18 +164,18 @@ can be late without selling the room twice</code></pre>
 <p>The word <code>strong</code> is not precise enough by itself. Strong over what? One row? One booking workflow? The whole world?</p>
 <p>Imagine two guests try to book the same listing for the same nights. The product failure you are trying to prevent is simple: both guests should not walk away believing they own the same room.</p>
 <p>That failure lives in a small place first. It lives around the scarce inventory fact:</p>
-<blockquote>listing <code>L</code> is either available or reserved for nights <code>D1-D3</code>.</blockquote>
+<blockquote>listing <code>L</code> is either <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">available</a> or reserved for nights <code>D1-D3</code>.</blockquote>
 <p>If that fact is wrong, the product is broken. So the first answer is not &quot;make Airbnb strongly consistent globally.&quot; The first answer is:</p>
 <blockquote>&quot;The strong boundary is the listing-date reservation decision. For one listing and one date range, only one booking should win.&quot;</blockquote>
 <p>Now widen the scope one step. After the reservation decision, a few related facts must not contradict it:</p>
 <ul><li>the host calendar should not still show those nights as open</li><li>the booking record should not say confirmed while payment says failed without a repair path</li><li>the guest confirmation should not be sent for a booking that did not actually reserve the room</li></ul>
-<p>That is still not global truth. It is one booking workflow. It may require a local <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a>, idempotent payment attempt, outbox event, or compensation path, but the reason is still explainable: all facts around this one booking should tell the same story.</p>
-<p>The expensive version is much wider: every search result, every region, every cache, and every user everywhere sees the newest booking state immediately. That would reduce stale search results, but it forces far more coordination into read paths that usually do not need it. A common design is cheaper and more honest: search may lag, but the final booking commit checks the scarce listing-date truth before accepting the reservation.</p>
+<p>That is still not global truth. It is one booking workflow. It may require a local <a class="term-link" href="glossary.html#transaction" title="A set of changes that should succeed or fail as one unit.">transaction</a>, <a class="term-link" href="glossary.html#idempotency" title="Repeating the same request should not create a different final effect.">idempotent</a> payment attempt, <a class="term-link" href="glossary.html#outbox" title="A pattern for atomically recording a state change and the event that should be published.">outbox</a> event, or compensation path, but the reason is still explainable: all facts around this one booking should tell the same story.</p>
+<p>The expensive version is much wider: every search result, every region, every <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a>, and every user everywhere sees the newest booking state immediately. That would reduce stale search results, but it forces far more coordination into read paths that usually do not need it. A common design is cheaper and more honest: search may lag, but the final booking commit checks the scarce listing-date truth before accepting the reservation.</p>
 <p>Use this ladder:</p>
-<div class="table-wrap"><table><thead><tr><th>Scope</th><th>What it means in the booking story</th><th>What it protects</th><th>Cost shape</th></tr></thead><tbody><tr><td>local scarce state</td><td>one listing and one date range decides the winner</td><td>the room is sold only once</td><td>narrowest <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundary; easiest to defend</td></tr><tr><td>bounded booking workflow</td><td>reservation, host calendar, payment attempt, and confirmation agree around one booking</td><td>the user does not see contradictory booking facts</td><td>more coordination, but still tied to one business action</td></tr><tr><td>global fresh truth</td><td>every region, search result, cache, and user reads the latest booking immediately</td><td>nobody anywhere sees stale availability</td><td>highest <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and coordination cost; rarely the first requirement</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Scope</th><th>What it means in the booking story</th><th>What it protects</th><th>Cost shape</th></tr></thead><tbody><tr><td>local scarce state</td><td>one listing and one date range decides the winner</td><td>the room is sold only once</td><td>narrowest <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundary; easiest to defend</td></tr><tr><td>bounded booking workflow</td><td>reservation, host calendar, payment attempt, and confirmation agree around one booking</td><td>the user does not see contradictory booking facts</td><td>more coordination, but still tied to one business action</td></tr><tr><td>global fresh truth</td><td>every region, search result, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a>, and user reads the latest booking immediately</td><td>nobody anywhere sees stale <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a></td><td>highest <a class="term-link" href="glossary.html#latency" title="How long a request, read, or write takes before a result is seen.">latency</a> and coordination cost; rarely the first requirement</td></tr></tbody></table></div>
 <p>Most strong interview answers do not jump to the third row. They start with the smallest state that can create a real <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> failure, then expand only when the product forces it.</p>
 <p>An interview-ready sentence:</p>
-<blockquote>&quot;I need <a class="term-link" href="glossary.html#strong-consistency" title="Relevant reads should reflect the latest acknowledged write.">strong consistency</a> for the scarce listing-date reservation decision, not global fresh truth for every Airbnb read. Search can be slightly stale as long as the final booking commit checks the authoritative availability and rejects the loser safely.&quot;</blockquote>
+<blockquote>&quot;I need <a class="term-link" href="glossary.html#strong-consistency" title="Relevant reads should reflect the latest acknowledged write.">strong consistency</a> for the scarce listing-date reservation decision, not global fresh truth for every Airbnb read. Search can be slightly stale as long as the final booking commit checks the authoritative <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a> and rejects the loser safely.&quot;</blockquote>
 <h2 id="ordering-means-sequence-only-where-sequence-changes-meaning">Ordering Means Sequence Only Where Sequence Changes Meaning</h2>
 <p><a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">Ordering</a> is one of the most over-requested <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantees</a> in system design.</p>
 <p>The useful question is not &quot;Do I need <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a>?&quot; The useful question is &quot;Where does sequence actually matter?&quot;</p>
@@ -412,7 +412,7 @@ can be late without selling the room twice</code></pre>
           data-map-node
           data-map-title="Async, Caching, Failure Handling, and Operability"
           data-map-stage="Layer 4 of 8"
-          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+          data-map-summary="A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs."
         >
           <span class="map-node-index">04</span>
           <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
@@ -424,7 +424,7 @@ can be late without selling the room twice</code></pre>
           data-map-node
           data-map-title="The Interview Framework: 7+1 and LGTC"
           data-map-stage="Layer 5 of 8"
-          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+          data-map-summary="When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them."
         >
           <span class="map-node-index">05</span>
           <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
@@ -436,7 +436,7 @@ can be late without selling the room twice</code></pre>
           data-map-node
           data-map-title="Archetypes and Component Maps"
           data-map-stage="Layer 6 of 8"
-          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+          data-map-summary="After you can read a system clearly, repeated kinds of pain start to sound familiar before any boxes are drawn."
         >
           <span class="map-node-index">06</span>
           <span class="map-node-label">Archetypes and Component Maps</span>
@@ -448,7 +448,7 @@ can be late without selling the room twice</code></pre>
           data-map-node
           data-map-title="Hybrid Systems and Guided Walkthroughs"
           data-map-stage="Layer 7 of 8"
-          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+          data-map-summary="Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns."
         >
           <span class="map-node-index">07</span>
           <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>

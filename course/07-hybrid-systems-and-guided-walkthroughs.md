@@ -1,11 +1,5 @@
 # 07 - Hybrid Systems and Guided Walkthroughs
 
-At the end of Chapter 06, one rule started to break.
-
-You learned to hear one dominant `archetype`.
-That was correct.
-But now real product design asks start pushing back.
-
 Imagine the interviewer says:
 
 > Design YouTube.
@@ -20,6 +14,17 @@ But you have not yet explained durable upload acceptance, blob storage, or trans
 
 The product is not confused.
 The answer is.
+
+Chapter 06 taught you to earn a label from the pain.
+That was correct.
+This chapter adds the next rule:
+sometimes one earned label still cannot explain the whole product.
+
+Before the course uses words like `hybrid`, `path`, or `owner`, give them a practical meaning:
+
+- a `path` is one user-visible journey, such as upload, playback, search, or recommendation
+- an `owner` is the pressure or system shape that explains that path, not necessarily a team or service name
+- a `hybrid` product is one where important paths have different pressures, guarantees, tradeoffs, and first failures
 
 This chapter teaches the move that fixes that:
 separate the product by path, then ask who owns each path.

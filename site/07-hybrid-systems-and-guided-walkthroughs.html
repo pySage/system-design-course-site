@@ -61,7 +61,7 @@
     <section class="hero hero-lesson">
       <p class="eyebrow">Layer 7 of 8</p>
       <h1>07 - Hybrid Systems and Guided Walkthroughs</h1>
-      <p class="hero-copy">Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+      <p class="hero-copy">Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> each path owns.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="labs.html">Practice This In Labs</a>
         <a class="button button-secondary" href="index.html">Back To Overview</a>
@@ -78,12 +78,12 @@
       <div class="section-heading">
         <p class="eyebrow">Layer 7 of 8</p>
         <h2>This Chapter In The Story</h2>
-        <p>Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+        <p>Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> each path owns.</p>
       </div>
       <div class="chapter-frame-grid">
         <article class="frame-card">
           <p class="panel-label">Why This Chapter</p>
-          <p>Real product <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> such as YouTube, Airbnb, and Slack stop making sense when collapsed into one <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a>. This chapter teaches path ownership so different stresses, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a>, and <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure modes</a> can be explained cleanly.</p>
+          <p>Real products such as YouTube, Airbnb, and Slack stop making sense when flattened into one <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">system shape</a>. This chapter teaches path ownership so different stresses, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a>, and <a class="term-link" href="glossary.html#failure-mode" title="The specific way a system is most likely to break first.">failure modes</a> can be explained cleanly.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">Where We Are</p>
@@ -102,8 +102,6 @@
 
     <article class="prose">
       <h1 id="07-hybrid-systems-and-guided-walkthroughs">07 - Hybrid Systems and Guided Walkthroughs</h1>
-<p>At the end of Chapter 06, one rule started to break.</p>
-<p>You learned to hear one dominant <code><a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></code>. That was correct. But now real product <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design asks</a> start pushing back.</p>
 <p>Imagine the interviewer says:</p>
 <blockquote>Design YouTube.</blockquote>
 <p>If you answer, &quot;This is a media system,&quot; you are right about upload, storage, transcoding, and playback delivery.</p>
@@ -111,6 +109,9 @@
 <p>If you answer, &quot;This is a discovery system,&quot; you are right about search and recommendations.</p>
 <p>But you have not yet explained <a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">durable</a> upload acceptance, blob storage, or transcoding backlog.</p>
 <p>The product is not confused. The answer is.</p>
+<p>Chapter 06 taught you to earn a label from the pain. That was correct. This chapter adds the next rule: sometimes one earned label still cannot explain the whole product.</p>
+<p>Before the course uses words like <code><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a></code>, <code>path</code>, or <code>owner</code>, give them a practical meaning:</p>
+<ul><li>a <code>path</code> is one user-visible journey, such as upload, playback, search, or recommendation</li><li>an <code>owner</code> is the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> or <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">system shape</a> that explains that path, not necessarily a team or service name</li><li>a <code><a class="term-link" href="glossary.html#hybrid" title="A product that combines multiple archetypes in different paths.">hybrid</a></code> product is one where important paths have different <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressures</a>, <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantees</a>, <a class="term-link" href="glossary.html#tradeoff" title="A choice that improves one dimension by paying in another.">tradeoffs</a>, and first failures</li></ul>
 <p>This chapter teaches the move that fixes that: separate the product by path, then ask who owns each path.</p>
 <p>The shape of the move is:</p>
 <pre class="code-block"><code class="language-text">one product name
@@ -434,7 +435,7 @@ viewer playback -&gt; media owner      -&gt; CDN, segments, buffering, origin pr
           data-map-node
           data-map-title="Async, Caching, Failure Handling, and Operability"
           data-map-stage="Layer 4 of 8"
-          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+          data-map-summary="A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs."
         >
           <span class="map-node-index">04</span>
           <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
@@ -446,7 +447,7 @@ viewer playback -&gt; media owner      -&gt; CDN, segments, buffering, origin pr
           data-map-node
           data-map-title="The Interview Framework: 7+1 and LGTC"
           data-map-stage="Layer 5 of 8"
-          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+          data-map-summary="When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them."
         >
           <span class="map-node-index">05</span>
           <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
@@ -458,7 +459,7 @@ viewer playback -&gt; media owner      -&gt; CDN, segments, buffering, origin pr
           data-map-node
           data-map-title="Archetypes and Component Maps"
           data-map-stage="Layer 6 of 8"
-          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+          data-map-summary="After you can read a system clearly, repeated kinds of pain start to sound familiar before any boxes are drawn."
         >
           <span class="map-node-index">06</span>
           <span class="map-node-label">Archetypes and Component Maps</span>
@@ -470,7 +471,7 @@ viewer playback -&gt; media owner      -&gt; CDN, segments, buffering, origin pr
           data-map-node
           data-map-title="Hybrid Systems and Guided Walkthroughs"
           data-map-stage="Layer 7 of 8"
-          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+          data-map-summary="Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns."
         >
           <span class="map-node-index">07</span>
           <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
@@ -492,7 +493,7 @@ viewer playback -&gt; media owner      -&gt; CDN, segments, buffering, origin pr
         <div class="map-detail" data-map-detail>
           <p class="panel-label" data-map-detail-stage>Layer 7 of 8</p>
           <h3 data-map-detail-title>Hybrid Systems and Guided Walkthroughs</h3>
-          <p data-map-detail-summary>Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.</p>
+          <p data-map-detail-summary>Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns.</p>
         </div>
       </div>
     </section>

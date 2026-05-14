@@ -61,7 +61,7 @@
     <section class="hero hero-lesson">
       <p class="eyebrow">Layer 4 of 8</p>
       <h1>04 - Async, Caching, Failure Handling, and Operability</h1>
-      <p class="hero-copy">You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline.</p>
+      <p class="hero-copy">A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="labs.html">Practice This In Labs</a>
         <a class="button button-secondary" href="index.html">Back To Overview</a>
@@ -78,38 +78,39 @@
       <div class="section-heading">
         <p class="eyebrow">Layer 4 of 8</p>
         <h2>This Chapter In The Story</h2>
-        <p>You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline.</p>
+        <p>A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs.</p>
       </div>
       <div class="chapter-frame-grid">
         <article class="frame-card">
           <p class="panel-label">Why This Chapter</p>
-          <p>Many shallow answers pick reasonable components but place them in the wrong order. This chapter teaches what the response is allowed to promise, what can move behind the response, and how overload or failure changes the plan.</p>
+          <p>A video upload can be accepted before every thumbnail, search update, recommendation refresh, and <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a> warmup is finished. This chapter teaches what must be true before the response and what can safely lag after it.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">Where We Are</p>
-          <p>You are at the runtime layer: <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a>, deferred work, <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a>, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a>, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a>, <a class="term-link" href="glossary.html#degradation" title="Reduced behavior that keeps the most important path alive under stress.">degradation</a>, and the signals that tell you the design is drifting.</p>
+          <p>You are deciding the response line: what must finish before success is honest, what can happen later, and what signals show that later work is falling behind.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">How It Fits</p>
-          <p>This is where a whiteboard architecture starts sounding like a real production system.</p>
+          <p>This chapter turns a static design into a timeline of promises, delayed work, and visible failure.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">Goals</p>
-          <ul class="framed-list"><li>Define what success means before the response leaves the system</li><li>Use <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a> and <a class="term-link" href="glossary.html#backpressure" title="A system slowing or limiting incoming work because it cannot safely keep up.">backpressure</a> to move work without hiding overload</li><li>Use <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a> only when reuse, <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a>, and expiry are all explicit</li><li>Treat <a class="term-link" href="glossary.html#operability" title="How easy the system is to observe, debug, change, and keep healthy in production.">operability</a> and <a class="term-link" href="glossary.html#degradation" title="Reduced behavior that keeps the most important path alive under stress.">degradation</a> as design choices, not cleanup work</li><li>Explain the obligations created by deferred work: lag, <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retry</a> safety, priority, and visible failure</li></ul>
+          <ul class="framed-list"><li>Explain the response promise before naming <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a>, <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a>, or workers</li><li>Move work after the response only when the product can tolerate that lag</li><li>Use <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queues</a> and <a class="term-link" href="glossary.html#backpressure" title="A system slowing or limiting incoming work because it cannot safely keep up.">backpressure</a> without pretending overload disappeared</li><li>Use <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a> only when reuse, <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a>, and expiry are explicit</li><li>Explain how the system bends under failure and how humans would notice</li></ul>
         </article>
       </div>
     </section>
 
     <article class="prose">
       <h1 id="04-async-caching-failure-handling-and-operability">04 - Async, Caching, Failure Handling, and Operability</h1>
-<p>You now know how to read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, choose where data lives, and draw a narrow <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundary.</p>
-<p>That still leaves a question many shallow answers skip: even if the state model is right, what is the system actually allowed to do before it responds, what can wait, and how does it stay sane when the world gets noisy?</p>
-<p>This chapter is trying to build one new habit: read a design as a timeline, not just as a box diagram.</p>
-<h2 id="start-with-one-honest-timeline">Start With One Honest Timeline</h2>
 <p>Imagine a creator uploads a breaking-news clip to YouTube just as millions of viewers are starting to search for it.</p>
 <p>A shallow answer sounds productive:</p>
 <blockquote>&quot;Store it, transcode it, update search, warm <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caches</a>, send notifications, and record analytics.&quot;</blockquote>
 <p>But that answer only lists work. It does not say when each piece must happen, which means it still has not decided what &quot;upload succeeded&quot; really means.</p>
+<p>This chapter starts with one plain question: when the system says &quot;upload succeeded,&quot; what must already be true, and what can still be unfinished?</p>
+<p>Before the course uses words like <code><a class="term-link" href="glossary.html#async" title="Work that can happen later instead of blocking the user-visible result.">async</a></code>, <code><a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a></code>, <code><a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a></code>, or <code><a class="term-link" href="glossary.html#operability" title="How easy the system is to observe, debug, change, and keep healthy in production.">operability</a></code>, give them a practical meaning:</p>
+<ul><li><code><a class="term-link" href="glossary.html#async" title="Work that can happen later instead of blocking the user-visible result.">async</a></code> means work that is allowed to happen after the response, while the system still owns responsibility for finishing it</li><li><code><a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a></code> means a waiting room for later work, not a place where overload disappears</li><li><code><a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cache</a></code> means a faster copy used when reuse is worth the <a class="term-link" href="glossary.html#freshness" title="How up-to-date a read must be to be acceptable.">freshness</a> risk</li><li><code><a class="term-link" href="glossary.html#operability" title="How easy the system is to observe, debug, change, and keep healthy in production.">operability</a></code> means the system leaves enough signals and controls for humans to notice lag, failure, and overload before users are surprised</li></ul>
+<p>This chapter is trying to build one new habit: read a design as a timeline of promises, delayed work, and failure signals.</p>
+<h2 id="start-with-one-honest-timeline">Start With One Honest Timeline</h2>
 <p>An honest reading is more useful:</p>
 <ol><li>The platform must not say &quot;upload succeeded&quot; until the original file and core metadata are durably stored.</li><li>The creator does not need every rendition, thumbnail, search update, and recommendation refresh to finish before the upload becomes trustworthy.</li><li>Viewers do need some playable path soon, but they do not need every quality level immediately.</li><li>Popular watch paths will benefit from <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">caching</a>, but the upload commit itself cannot be <a class="term-link" href="glossary.html#cache" title="A faster copy of data used to reduce latency or load.">cached</a> into <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>.</li><li>When a big event creates a spike, the real question becomes whether deferred work is buffered and controlled or whether it quietly turns into runaway lag.</li></ol>
 <p>Chapter 03 protected the truth that must not be wrong. This chapter protects the timeline: which promise becomes true now, which work can safely lag, and which lag would eventually become a product failure.</p>
@@ -390,7 +391,7 @@ what users see when it falls behind</code></pre>
           data-map-node
           data-map-title="Async, Caching, Failure Handling, and Operability"
           data-map-stage="Layer 4 of 8"
-          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+          data-map-summary="A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs."
         >
           <span class="map-node-index">04</span>
           <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
@@ -402,7 +403,7 @@ what users see when it falls behind</code></pre>
           data-map-node
           data-map-title="The Interview Framework: 7+1 and LGTC"
           data-map-stage="Layer 5 of 8"
-          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+          data-map-summary="When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them."
         >
           <span class="map-node-index">05</span>
           <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
@@ -414,7 +415,7 @@ what users see when it falls behind</code></pre>
           data-map-node
           data-map-title="Archetypes and Component Maps"
           data-map-stage="Layer 6 of 8"
-          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+          data-map-summary="After you can read a system clearly, repeated kinds of pain start to sound familiar before any boxes are drawn."
         >
           <span class="map-node-index">06</span>
           <span class="map-node-label">Archetypes and Component Maps</span>
@@ -426,7 +427,7 @@ what users see when it falls behind</code></pre>
           data-map-node
           data-map-title="Hybrid Systems and Guided Walkthroughs"
           data-map-stage="Layer 7 of 8"
-          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+          data-map-summary="Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns."
         >
           <span class="map-node-index">07</span>
           <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
@@ -448,7 +449,7 @@ what users see when it falls behind</code></pre>
         <div class="map-detail" data-map-detail>
           <p class="panel-label" data-map-detail-stage>Layer 4 of 8</p>
           <h3 data-map-detail-title>Async, Caching, Failure Handling, and Operability</h3>
-          <p data-map-detail-summary>You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline.</p>
+          <p data-map-detail-summary>A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs.</p>
         </div>
       </div>
     </section>

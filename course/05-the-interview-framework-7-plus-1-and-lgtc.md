@@ -1,17 +1,5 @@
 # 05 - The Interview Framework: 7+1 and LGTC
 
-You now know how to read pressure, storage shape, correctness boundaries, and runtime movement.
-
-That is necessary, but it is still not enough for an interview.
-
-In an interview, the hard part is not only knowing the ideas.
-The hard part is recalling them in the right order while the design ask is fresh and the urge to draw boxes is strong.
-
-This chapter builds one new habit:
-turn the first two minutes of an answer into a controlled extraction step.
-
-## Start With One Interview Moment
-
 Imagine the interviewer says:
 
 > "Design Slack."
@@ -28,6 +16,15 @@ A stronger start sounds slower for about ten seconds, and then much faster after
 > "Before I pick components, I want to clarify the dominant pressures, guarantees, and constraints."
 
 That pause is the whole point of this chapter.
+It is not hesitation.
+It is the moment where you prevent the answer from becoming a memorized box diagram.
+
+Before the course uses words like `framework`, `7+1`, or `LGTC`, give them a practical meaning:
+
+- a `design ask` is the one-line system-design request you are trying to open up, such as "Design Slack"
+- `7+1` is the small set of opening questions that pulls out the facts hidden inside that request
+- `LGTC` is a short four-bucket summary of those facts after you have extracted them
+- a `framework` is a guardrail that keeps your first two minutes in the right order, not a script to recite
 
 In this course, that one-line instruction from the interviewer is the design ask.
 Some older interview material uses different wording for the same idea.
@@ -35,6 +32,9 @@ This course uses design ask because it keeps the focus on the system-design ques
 
 The framework is not a ritual.
 It is a guardrail against premature architecture.
+
+This chapter builds one new habit:
+turn the first two minutes of an answer into a controlled extraction step.
 
 ## The Framework Is An Extraction Step, Not A Ceremony
 

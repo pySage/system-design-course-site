@@ -17,6 +17,10 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function stripTrailingWhitespace(value) {
+  return value.replace(/[ \t]+$/gm, "");
+}
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -420,16 +424,16 @@ const lessonMeta = {
   },
   "04-async-caching-failure-handling-and-operability": {
     stage: "Layer 4 of 8",
-    teaser: "You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline.",
-    why: "Many shallow answers pick reasonable components but place them in the wrong order. This chapter teaches what the response is allowed to promise, what can move behind the response, and how overload or failure changes the plan.",
-    where: "You are at the runtime layer: hot path, deferred work, queues, caches, retries, degradation, and the signals that tell you the design is drifting.",
-    fit: "This is where a whiteboard architecture starts sounding like a real production system.",
+    teaser: "A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs.",
+    why: "A video upload can be accepted before every thumbnail, search update, recommendation refresh, and cache warmup is finished. This chapter teaches what must be true before the response and what can safely lag after it.",
+    where: "You are deciding the response line: what must finish before success is honest, what can happen later, and what signals show that later work is falling behind.",
+    fit: "This chapter turns a static design into a timeline of promises, delayed work, and visible failure.",
     goals: [
-      "Define what success means before the response leaves the system",
-      "Use queues and backpressure to move work without hiding overload",
-      "Use caches only when reuse, freshness, and expiry are all explicit",
-      "Treat operability and degradation as design choices, not cleanup work",
-      "Explain the obligations created by deferred work: lag, retry safety, priority, and visible failure",
+      "Explain the response promise before naming queues, caches, or workers",
+      "Move work after the response only when the product can tolerate that lag",
+      "Use queues and backpressure without pretending overload disappeared",
+      "Use caches only when reuse, freshness, and expiry are explicit",
+      "Explain how the system bends under failure and how humans would notice",
     ],
     takeaways: [
       "Async is about truth versus delay, not importance versus unimportance.",
@@ -443,15 +447,15 @@ const lessonMeta = {
   },
   "05-the-interview-framework-7-plus-1-and-lgtc": {
     stage: "Layer 5 of 8",
-    teaser: "You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture.",
-    why: "Interviews punish unordered knowledge. This chapter teaches how to resist box-drawing, ask questions that actually change the design, and compress the answers into one stable opening structure.",
-    where: "You are at the organizing layer: 7+1 questions, LGTC compression, and the spoken opening that makes later archetype and component choices defensible.",
-    fit: "This is the first chapter that turns understanding into method.",
+    teaser: "When someone says \"Design Slack,\" this chapter teaches the first two minutes before boxes: extract facts, then summarize them.",
+    why: "When the interviewer says something broad like \"Design Slack,\" the dangerous move is drawing boxes before you know the workload, wrong-data risk, slowness pain, peak shape, delayed work, obligations, and data shape.",
+    where: "You are turning the first two minutes into fact finding before architecture, so later component choices have reasons.",
+    fit: "This chapter turns the ideas from earlier chapters into a repeatable opening move.",
     goals: [
-      "Use the 7+1 questions as extraction moves, not interview ceremony",
-      "Compress raw answers into an LGTC summary before naming an archetype",
-      "Build a first-two-minute answer that sounds like reasoning under pressure",
-      "Keep the flow design ask -> 7+1 -> LGTC -> archetype -> components",
+      "Open a broad system-design request before drawing components",
+      "Ask the opening questions as fact extraction, not ceremony",
+      "Compress the extracted facts into a short summary after the facts exist",
+      "Build a first-two-minute answer that sounds like reasoning, not recall",
     ],
     takeaways: [
       "The framework exists to stop premature architecture and force justified reading first.",
@@ -464,15 +468,15 @@ const lessonMeta = {
   },
   "06-archetypes-and-component-maps": {
     stage: "Layer 6 of 8",
-    teaser: "Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain.",
-    why: "Interview speed improves when recurring system shapes become recognizable. This chapter teaches how to justify an archetype by dominant stress and how that label pulls in expected components, tradeoffs, and first failures.",
-    where: "You are at the shape-recognition layer of the map: recurring system families, their component pull, and the failure modes they tend to bring with them.",
-    fit: "This chapter converts a good description of a system into a fast architectural starting point.",
+    teaser: "After you can read a system clearly, repeated kinds of pain start to sound familiar before any boxes are drawn.",
+    why: "WhatsApp, Stripe, and YouTube feel different before you name databases or queues. This chapter teaches how to hear that difference first, then use labels and component memory only after the pain has been earned.",
+    where: "You are at the recognition layer: repeated product pains, the usual parts those pains pull in, and the first failures they tend to create.",
+    fit: "This chapter converts a clear system read into a faster architectural starting point without turning labels into shortcuts.",
     goals: [
-      "Recognize the main system archetypes from concrete design-ask reads",
-      "Associate each justified label with its usual component map, tradeoff, and first failure",
-      "Avoid brand-name pattern matching by grounding archetypes in dominant stress",
-      "Give a reason for every component pulled from an archetype map",
+      "Recognize recurring system pain from concrete product reads",
+      "Use a label only after the plain-language pain is clear",
+      "Connect each expected component to the stress or failure it answers",
+      "Avoid brand-name pattern matching and memorized box lists",
     ],
     takeaways: [
       "Archetypes compress repeated kinds of system pain, not product branding.",
@@ -485,8 +489,8 @@ const lessonMeta = {
   },
   "07-hybrid-systems-and-guided-walkthroughs": {
     stage: "Layer 7 of 8",
-    teaser: "Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice.",
-    why: "Real product design asks such as YouTube, Airbnb, and Slack stop making sense when collapsed into one archetype. This chapter teaches path ownership so different stresses, tradeoffs, and failure modes can be explained cleanly.",
+    teaser: "Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns.",
+    why: "Real products such as YouTube, Airbnb, and Slack stop making sense when flattened into one system shape. This chapter teaches path ownership so different stresses, tradeoffs, and failure modes can be explained cleanly.",
     where: "You are at the composition layer of the map: one product, several meaningful paths, and different archetypes owning different slices.",
     fit: "This chapter is where single-shape intuition turns into real-product reasoning.",
     goals: [
@@ -1572,21 +1576,23 @@ for (const [index, file] of lessonFiles.entries()) {
 }
 
 await fs.mkdir(assetsDir, { recursive: true });
-await fs.copyFile(path.join(webDir, "style.css"), path.join(assetsDir, "style.css"));
-await fs.copyFile(path.join(webDir, "app.js"), path.join(assetsDir, "app.js"));
-await fs.copyFile(path.join(webDir, "concept-diagrams.css"), path.join(assetsDir, "concept-diagrams.css"));
-await fs.copyFile(path.join(webDir, "concept-diagrams.js"), path.join(assetsDir, "concept-diagrams.js"));
-await fs.copyFile(path.join(webDir, "favicon.svg"), path.join(assetsDir, "favicon.svg"));
+if (process.env.SKIP_ASSET_COPY !== "1") {
+  await fs.copyFile(path.join(webDir, "style.css"), path.join(assetsDir, "style.css"));
+  await fs.copyFile(path.join(webDir, "app.js"), path.join(assetsDir, "app.js"));
+  await fs.copyFile(path.join(webDir, "concept-diagrams.css"), path.join(assetsDir, "concept-diagrams.css"));
+  await fs.copyFile(path.join(webDir, "concept-diagrams.js"), path.join(assetsDir, "concept-diagrams.js"));
+  await fs.copyFile(path.join(webDir, "favicon.svg"), path.join(assetsDir, "favicon.svg"));
+}
 
-await fs.writeFile(path.join(siteDir, "index.html"), renderIndexPage(), "utf8");
-await fs.writeFile(path.join(siteDir, "labs.html"), renderLabsPage(), "utf8");
-await fs.writeFile(path.join(siteDir, "glossary.html"), renderGlossaryPage(), "utf8");
-await fs.writeFile(path.join(siteDir, "arena.html"), renderArenaPage(), "utf8");
+await fs.writeFile(path.join(siteDir, "index.html"), stripTrailingWhitespace(renderIndexPage()), "utf8");
+await fs.writeFile(path.join(siteDir, "labs.html"), stripTrailingWhitespace(renderLabsPage()), "utf8");
+await fs.writeFile(path.join(siteDir, "glossary.html"), stripTrailingWhitespace(renderGlossaryPage()), "utf8");
+await fs.writeFile(path.join(siteDir, "arena.html"), stripTrailingWhitespace(renderArenaPage()), "utf8");
 
 for (const lesson of lessons) {
   const parsed = parseMarkdown(lesson.markdown);
   const page = renderLessonPage(lesson, lesson.index, parsed);
-  await fs.writeFile(path.join(siteDir, `${lesson.slug}.html`), page, "utf8");
+  await fs.writeFile(path.join(siteDir, `${lesson.slug}.html`), stripTrailingWhitespace(page), "utf8");
 }
 
 console.log(`Built ${lessons.length + 4} pages into ${siteDir}`);

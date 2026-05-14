@@ -61,7 +61,7 @@
     <section class="hero hero-lesson">
       <p class="eyebrow">Layer 5 of 8</p>
       <h1>05 - The Interview Framework: 7+1 and LGTC</h1>
-      <p class="hero-copy">You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture.</p>
+      <p class="hero-copy">When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="labs.html">Practice This In Labs</a>
         <a class="button button-secondary" href="index.html">Back To Overview</a>
@@ -78,35 +78,30 @@
       <div class="section-heading">
         <p class="eyebrow">Layer 5 of 8</p>
         <h2>This Chapter In The Story</h2>
-        <p>You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture.</p>
+        <p>When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them.</p>
       </div>
       <div class="chapter-frame-grid">
         <article class="frame-card">
           <p class="panel-label">Why This Chapter</p>
-          <p>Interviews punish unordered knowledge. This chapter teaches how to resist box-drawing, ask questions that actually change the design, and compress the answers into one stable opening structure.</p>
+          <p>When the interviewer says something broad like &quot;Design Slack,&quot; the dangerous move is drawing boxes before you know the workload, wrong-data risk, slowness pain, peak shape, delayed work, obligations, and <a class="term-link" href="glossary.html#data-shape" title="The structure and lifecycle of the data itself.">data shape</a>.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">Where We Are</p>
-          <p>You are at the organizing layer: <a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1 questions</a>, <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a> compression, and the spoken opening that makes later <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> and component choices defensible.</p>
+          <p>You are turning the first two minutes into fact finding before architecture, so later component choices have reasons.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">How It Fits</p>
-          <p>This is the first chapter that turns understanding into method.</p>
+          <p>This chapter turns the ideas from earlier chapters into a repeatable opening move.</p>
         </article>
         <article class="frame-card">
           <p class="panel-label">Goals</p>
-          <ul class="framed-list"><li>Use the <a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1 questions</a> as extraction moves, not interview ceremony</li><li>Compress raw answers into an <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a> summary before naming an <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a></li><li>Build a first-two-minute answer that sounds like reasoning under <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a></li><li>Keep the flow <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> -&gt; <a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a> -&gt; <a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a> -&gt; <a class="term-link" href="glossary.html#archetype" title="A recurring family of system problems with familiar dominant stresses and components.">archetype</a> -&gt; components</li></ul>
+          <ul class="framed-list"><li>Open a broad system-design request before drawing components</li><li>Ask the opening questions as fact extraction, not ceremony</li><li>Compress the extracted facts into a short summary after the facts exist</li><li>Build a first-two-minute answer that sounds like reasoning, not recall</li></ul>
         </article>
       </div>
     </section>
 
     <article class="prose">
       <h1 id="05-the-interview-framework-71-and-lgtc">05 - The Interview Framework: 7+1 and LGTC</h1>
-<p>You now know how to read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a>, <a class="term-link" href="glossary.html#storage-shape" title="The kind of storage model that best matches the data shape, query shape, and guarantees.">storage shape</a>, <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a> boundaries, and runtime movement.</p>
-<p>That is necessary, but it is still not enough for an interview.</p>
-<p>In an interview, the hard part is not only knowing the ideas. The hard part is recalling them in the right order while the <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> is fresh and the urge to draw boxes is strong.</p>
-<p>This chapter builds one new habit: turn the first two minutes of an answer into a controlled extraction step.</p>
-<h2 id="start-with-one-interview-moment">Start With One Interview Moment</h2>
 <p>Imagine the interviewer says:</p>
 <blockquote>&quot;Design Slack.&quot;</blockquote>
 <p>A weak start sounds busy:</p>
@@ -114,9 +109,12 @@
 <p>It sounds architectural, but it is still mostly theater. Nothing in that answer has been justified yet.</p>
 <p>A stronger start sounds slower for about ten seconds, and then much faster after that:</p>
 <blockquote>&quot;Before I pick components, I want to clarify the dominant <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressures</a>, <a class="term-link" href="glossary.html#guarantee" title="A promise the system must keep even when load or failure shows up.">guarantees</a>, and <a class="term-link" href="glossary.html#constraints" title="The non-negotiable real-world limits that shape the design.">constraints</a>.&quot;</blockquote>
-<p>That pause is the whole point of this chapter.</p>
+<p>That pause is the whole point of this chapter. It is not hesitation. It is the moment where you prevent the answer from becoming a memorized box diagram.</p>
+<p>Before the course uses words like <code>framework</code>, <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code>, or <code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code>, give them a practical meaning:</p>
+<ul><li>a <code><a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a></code> is the one-line system-design request you are trying to open up, such as &quot;Design Slack&quot;</li><li><code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code> is the small set of opening questions that pulls out the facts hidden inside that request</li><li><code><a class="term-link" href="glossary.html#lgtc" title="The course&#39;s four-bucket summary: Load, Guarantees, Topology, Constraints.">LGTC</a></code> is a short four-bucket summary of those facts after you have extracted them</li><li>a <code>framework</code> is a guardrail that keeps your first two minutes in the right order, not a script to recite</li></ul>
 <p>In this course, that one-line instruction from the interviewer is the <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a>. Some older interview material uses different wording for the same idea. This course uses <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> because it keeps the focus on the system-design question you are trying to open up before architecture.</p>
 <p>The framework is not a ritual. It is a guardrail against premature architecture.</p>
+<p>This chapter builds one new habit: turn the first two minutes of an answer into a controlled extraction step.</p>
 <h2 id="the-framework-is-an-extraction-step-not-a-ceremony">The Framework Is An Extraction Step, Not A Ceremony</h2>
 <p>The <code><a class="term-link" href="glossary.html#7-plus-1" title="The course&#39;s opening question set for clarifying a system design ask.">7+1</a></code> questions are useful because each one is designed to pull something design-relevant out of the <a class="term-link" href="glossary.html#design-ask" title="The one-line system-design question the interviewer gives you at the start.">design ask</a> before components appear.</p>
 <p>Here they are in their plain form:</p>
@@ -196,7 +194,7 @@
 <h3 id="guarantees">Guarantees</h3>
 <p><a class="term-link" href="glossary.html#durability" title="Whether acknowledged data survives crashes and failures.">Durable</a> message acceptance, <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> scoped to the conversation rather than globally, lag tolerance for derived views such as search or analytics, and strong tenant isolation.</p>
 <h3 id="topology">Topology</h3>
-<p>Synchronous message accept on the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a>, <a class="term-link" href="glossary.html#async" title="Work that can happen later instead of blocking the user-visible result.">asynchronous</a> push and <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> behind it, <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> aligned to conversation or workspace boundaries, and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> driven by <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a> requirements.</p>
+<p>Synchronous message accept on the <a class="term-link" href="glossary.html#hot-path" title="The work that must finish before the user can trust the result.">hot path</a>, <a class="term-link" href="glossary.html#async" title="Work that can happen later instead of blocking the user-visible result.">asynchronous</a> push and <a class="term-link" href="glossary.html#index" title="A structure that makes specific lookups or scans faster.">indexing</a> behind it, <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across logical ownership slices so the system can scale.">partitioning</a> aligned to conversation or workspace boundaries, and <a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">replication</a> driven by <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a> requirements.</p>
 <h3 id="constraints">Constraints</h3>
 <p>Enterprise retention, eDiscovery, privacy, multi-tenant isolation, <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a> expectations, and the need to observe lag, delivery health, and operational drift.</p>
 <p>What changed?</p>
@@ -400,7 +398,7 @@ archetype says: Messaging / Delivery owns the core path</code></pre>
           data-map-node
           data-map-title="Async, Caching, Failure Handling, and Operability"
           data-map-stage="Layer 4 of 8"
-          data-map-summary="You now know what matters, where data lives, and what truth must stay protected. This chapter turns that static picture into a timeline."
+          data-map-summary="A YouTube upload can be accepted before every expensive follow-up finishes. This chapter teaches where the response line belongs."
         >
           <span class="map-node-index">04</span>
           <span class="map-node-label">Async, Caching, Failure Handling, and Operability</span>
@@ -412,7 +410,7 @@ archetype says: Messaging / Delivery owns the core path</code></pre>
           data-map-node
           data-map-title="The Interview Framework: 7+1 and LGTC"
           data-map-stage="Layer 5 of 8"
-          data-map-summary="You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture."
+          data-map-summary="When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them."
         >
           <span class="map-node-index">05</span>
           <span class="map-node-label">The Interview Framework: 7+1 and LGTC</span>
@@ -424,7 +422,7 @@ archetype says: Messaging / Delivery owns the core path</code></pre>
           data-map-node
           data-map-title="Archetypes and Component Maps"
           data-map-stage="Layer 6 of 8"
-          data-map-summary="Once a design ask has an LGTC shape, you stop seeing only product names and start hearing recurring kinds of system pain."
+          data-map-summary="After you can read a system clearly, repeated kinds of pain start to sound familiar before any boxes are drawn."
         >
           <span class="map-node-index">06</span>
           <span class="map-node-label">Archetypes and Component Maps</span>
@@ -436,7 +434,7 @@ archetype says: Messaging / Delivery owns the core path</code></pre>
           data-map-node
           data-map-title="Hybrid Systems and Guided Walkthroughs"
           data-map-stage="Layer 7 of 8"
-          data-map-summary="Once one honest label stops explaining the whole product, you have to split the system by path and ask who owns each slice."
+          data-map-summary="Design YouTube cannot be answered by one label. This chapter splits the product into upload, playback, search, recommendations, and the pressure each path owns."
         >
           <span class="map-node-index">07</span>
           <span class="map-node-label">Hybrid Systems and Guided Walkthroughs</span>
@@ -458,7 +456,7 @@ archetype says: Messaging / Delivery owns the core path</code></pre>
         <div class="map-detail" data-map-detail>
           <p class="panel-label" data-map-detail-stage>Layer 5 of 8</p>
           <h3 data-map-detail-title>The Interview Framework: 7+1 and LGTC</h3>
-          <p data-map-detail-summary>You now know the raw ideas. This chapter turns the first interview minutes into a controlled extraction step instead of a rush to architecture.</p>
+          <p data-map-detail-summary>When someone says &quot;Design Slack,&quot; this chapter teaches the first two minutes before boxes: extract facts, then summarize them.</p>
         </div>
       </div>
     </section>
@@ -508,7 +506,7 @@ archetype says: Messaging / Delivery owns the core path</code></pre>
     <aside class="toc">
       <p class="toc-label">On This Page</p>
       <ul>
-        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#start-with-one-interview-moment">Start With One Interview Moment</a></li><li class="level-2"><a href="#the-framework-is-an-extraction-step-not-a-ceremony">The Framework Is An Extraction Step, Not A Ceremony</a></li><li class="level-2"><a href="#run-the-71-on-slack-once">Run The 7+1 On Slack Once</a></li><li class="level-2"><a href="#notice-what-you-already-know-before-architecture">Notice What You Already Know Before Architecture</a></li><li class="level-2"><a href="#lgtc-is-the-compression-step">LGTC Is The Compression Step</a></li><li class="level-2"><a href="#production-lab-extract-the-case-before-admiring-it">Production Lab: Extract The Case Before Admiring It</a></li><li class="level-2"><a href="#why-this-order-matters">Why This Order Matters</a></li><li class="level-2"><a href="#what-a-good-first-two-minutes-sounds-like">What A Good First Two Minutes Sounds Like</a></li><li class="level-2"><a href="#one-quick-transfer-why-the-1-gets-heavier-in-youtube">One Quick Transfer: Why The +1 Gets Heavier In YouTube</a></li><li class="level-2"><a href="#difficulty-ladder-opening-reads">Difficulty Ladder: Opening Reads</a></li><li class="level-2"><a href="#phrase-drill-opening-language">Phrase Drill: Opening Language</a></li><li class="level-2"><a href="#mini-drill-start-uber-dispatch-without-drawing-boxes">Mini Drill: Start Uber Dispatch Without Drawing Boxes</a></li><li class="level-2"><a href="#before-you-move-to-lesson-06">Before You Move To Lesson 06</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
+        <li class="level-2"><a href="#chapter-frame">This Chapter In The Story</a></li><li class="level-2"><a href="#the-framework-is-an-extraction-step-not-a-ceremony">The Framework Is An Extraction Step, Not A Ceremony</a></li><li class="level-2"><a href="#run-the-71-on-slack-once">Run The 7+1 On Slack Once</a></li><li class="level-2"><a href="#notice-what-you-already-know-before-architecture">Notice What You Already Know Before Architecture</a></li><li class="level-2"><a href="#lgtc-is-the-compression-step">LGTC Is The Compression Step</a></li><li class="level-2"><a href="#production-lab-extract-the-case-before-admiring-it">Production Lab: Extract The Case Before Admiring It</a></li><li class="level-2"><a href="#why-this-order-matters">Why This Order Matters</a></li><li class="level-2"><a href="#what-a-good-first-two-minutes-sounds-like">What A Good First Two Minutes Sounds Like</a></li><li class="level-2"><a href="#one-quick-transfer-why-the-1-gets-heavier-in-youtube">One Quick Transfer: Why The +1 Gets Heavier In YouTube</a></li><li class="level-2"><a href="#difficulty-ladder-opening-reads">Difficulty Ladder: Opening Reads</a></li><li class="level-2"><a href="#phrase-drill-opening-language">Phrase Drill: Opening Language</a></li><li class="level-2"><a href="#mini-drill-start-uber-dispatch-without-drawing-boxes">Mini Drill: Start Uber Dispatch Without Drawing Boxes</a></li><li class="level-2"><a href="#before-you-move-to-lesson-06">Before You Move To Lesson 06</a></li><li class="level-2"><a href="#chapter-intuition">Now See The Concept Move</a></li><li class="level-2"><a href="#chapter-diagram">Animated Concept Diagram</a></li><li class="level-2"><a href="#course-map">Where We Are In The Story</a></li><li class="level-2"><a href="#key-learnings">Key Learnings</a></li><li class="level-2"><a href="#lesson-check">Lesson Check</a></li><li class="level-2"><a href="#chapter-coach">Chapter Coach</a></li>
       </ul>
     </aside>
 

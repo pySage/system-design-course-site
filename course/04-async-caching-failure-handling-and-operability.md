@@ -1,14 +1,5 @@
 # 04 - Async, Caching, Failure Handling, and Operability
 
-You now know how to read pressure, choose where data lives, and draw a narrow correctness boundary.
-
-That still leaves a question many shallow answers skip: even if the state model is right, what is the system actually allowed to do before it responds, what can wait, and how does it stay sane when the world gets noisy?
-
-This chapter is trying to build one new habit:
-read a design as a timeline, not just as a box diagram.
-
-## Start With One Honest Timeline
-
 Imagine a creator uploads a breaking-news clip to YouTube just as millions of viewers are starting to search for it.
 
 A shallow answer sounds productive:
@@ -17,6 +8,21 @@ A shallow answer sounds productive:
 
 But that answer only lists work.
 It does not say when each piece must happen, which means it still has not decided what "upload succeeded" really means.
+
+This chapter starts with one plain question:
+when the system says "upload succeeded," what must already be true, and what can still be unfinished?
+
+Before the course uses words like `async`, `queue`, `cache`, or `operability`, give them a practical meaning:
+
+- `async` means work that is allowed to happen after the response, while the system still owns responsibility for finishing it
+- `queue` means a waiting room for later work, not a place where overload disappears
+- `cache` means a faster copy used when reuse is worth the freshness risk
+- `operability` means the system leaves enough signals and controls for humans to notice lag, failure, and overload before users are surprised
+
+This chapter is trying to build one new habit:
+read a design as a timeline of promises, delayed work, and failure signals.
+
+## Start With One Honest Timeline
 
 An honest reading is more useful:
 
