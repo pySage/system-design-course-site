@@ -342,6 +342,63 @@ archetype says: Messaging / Delivery owns the core path
 
 That bridge is the reason Chapter 06 comes after this one.
 
+## Sketch The API Contract After Extraction
+
+After the `7+1` and `LGTC` read, an interviewer may expect a small API sketch before the architecture diagram.
+That does not change the framework.
+It is a deliverable that sits between extraction and component choice.
+
+The API sketch should show the product boundary, not a hidden component dump.
+It should answer:
+
+- what action is the client asking for?
+- what identity makes retries safe?
+- what response means the hot-path promise is true?
+- what is allowed to lag after the response?
+- what tenant, permission, or retention boundary is visible at the edge?
+
+For Slack, the core send contract might be:
+
+```text
+POST /workspaces/{workspace_id}/channels/{channel_id}/messages
+
+request:
+  client_message_id
+  sender_user_id
+  text
+  thread_id? / parent_message_id?
+
+response:
+  message_id
+  channel_id
+  server_timestamp
+  accepted: true
+```
+
+That sketch is useful only because the earlier read already exists.
+The `client_message_id` hints at retry safety.
+The `workspace_id` and `channel_id` expose tenant and ordering boundaries.
+The `accepted` response should mean the message is durably accepted into the channel's source truth, not that every recipient has already received it and not that search has already indexed it.
+
+A recent-history read might be:
+
+```text
+GET /workspaces/{workspace_id}/channels/{channel_id}/messages?before=<cursor>&limit=50
+
+response:
+  messages in channel order
+  next_cursor
+```
+
+This is a different contract from full-message search.
+Recent history wants ordered channel reads.
+Search wants retrieval over old messages with looser freshness.
+Those different API shapes are already hinting at different read paths before any storage brand appears.
+
+The warning is simple:
+API design is not a component list with HTTP verbs attached.
+If the API sketch does not reflect guarantees, pressure, permissions, and lag tolerance from `LGTC`, it is just another kind of premature architecture.
+
 ## Production Lab: Extract The Case Before Admiring It
 
 Real postmortems can become overwhelming if you try to absorb every detail at once. Chapter 05 gives you a safer move: run the same extraction flow on the story.

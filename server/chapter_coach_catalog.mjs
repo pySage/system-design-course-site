@@ -109,6 +109,23 @@ export const CHAPTER_COACHES = {
         qualitySignals: ["because", "while", "different", "read", "history", "search"],
         antiPatterns: ["use sql", "use nosql", "it depends", "database"],
       },
+      {
+        key: "pressure-first-sizing",
+        skillId: "pressure_reading",
+        level: "transfer",
+        label: "Size hidden work",
+        objective:
+          "Check whether the learner can turn one visible action rate into rough hidden work: fanout, peak multiplier, storage, bandwidth, and hot-key risk.",
+        promptHint:
+          "Use Slack, notifications, or feed delivery. Reward rough arithmetic only when it starts from pressure and hidden work.",
+        summary: "Can the learner size from hidden work per visible action instead of reciting formulas?",
+        systemAnchor: "Slack incident channel",
+        fallbackPrompt:
+          "A Slack incident channel receives 30 message sends per second and has 1,000 active readers. Do a rough pressure-first sizing pass: visible QPS, hidden delivery attempts, bandwidth if messages are 3 KB, and the hot-key risk.",
+        expectedConcepts: ["visible QPS", "fanout", "peak", "bandwidth", "hot key", "rough"],
+        qualitySignals: ["30", "1000", "delivery", "per second", "hot"],
+        antiPatterns: ["exact math only", "database first", "autoscale", "microservices"],
+      },
     ],
   }),
   "02-storage-partitioning-and-replication": chapter("02-storage-partitioning-and-replication", {
@@ -301,6 +318,23 @@ export const CHAPTER_COACHES = {
           qualitySignals: ["before", "dominant", "matters", "while", "hot path"],
           antiPatterns: ["kafka", "redis", "database", "microservice", "component list"],
         },
+        {
+          key: "api-contract-placement",
+          skillId: "opening_discipline",
+          level: "transfer",
+          label: "Place the API contract",
+          objective:
+            "Check whether the learner can sketch a small API contract after extraction and tie it to guarantees, retry identity, boundaries, and allowed lag.",
+          promptHint:
+            "Use Slack message send. The learner should say what the response promises and what it does not promise.",
+          summary: "Can the learner make an API sketch reflect LGTC instead of turning it into component theater?",
+          systemAnchor: "Slack message send",
+          fallbackPrompt:
+            "After a 7+1 and LGTC read for Slack, sketch the core POST message API. What retry identity, boundary, response promise, and allowed lag should the contract expose?",
+          expectedConcepts: ["API", "client_message_id", "durable accept", "channel", "lag", "boundary"],
+          qualitySignals: ["promise", "retry", "accepted", "after", "not delivery"],
+          antiPatterns: ["api gateway", "component list", "websocket only", "database schema first"],
+        },
       ],
     },
   ),
@@ -348,6 +382,23 @@ export const CHAPTER_COACHES = {
         qualitySignals: ["because", "however", "cost", "alternative", "choose"],
         antiPatterns: ["always", "never", "best practice", "obvious"],
       },
+      {
+        key: "transport-earned-by-path",
+        skillId: "archetype_recognition",
+        level: "transfer",
+        label: "Defend transport choice",
+        objective:
+          "Check whether the learner can choose WebSockets, SSE, long polling, or plain HTTP from latency, directionality, connection count, and delivery expectations.",
+        promptHint:
+          "Use Slack or Google Docs. Do not accept transport labels without the path reason.",
+        summary: "Can the learner defend transport as a consequence of path pressure instead of a memorized brand move?",
+        systemAnchor: "Slack live delivery",
+        fallbackPrompt:
+          "For Slack, which paths would you put on plain HTTP and which active path might earn WebSockets? Defend the choice using latency, directionality, connection count, and delivery expectations.",
+        expectedConcepts: ["WebSockets", "HTTP", "latency", "server push", "bidirectional", "active clients"],
+        qualitySignals: ["because", "live", "push", "while", "history"],
+        antiPatterns: ["websocket everywhere", "exactly once", "always", "because chat"],
+      },
     ],
   }),
   "07-hybrid-systems-and-guided-walkthroughs": chapter("07-hybrid-systems-and-guided-walkthroughs", {
@@ -394,6 +445,23 @@ export const CHAPTER_COACHES = {
         qualitySignals: ["because", "owner", "while", "secondary", "path"],
         antiPatterns: ["everything", "all are equal", "one big system", "same owner everywhere"],
       },
+      {
+        key: "observability-path-ownership",
+        skillId: "hybrid_path_ownership",
+        level: "transfer",
+        label: "Split observability paths",
+        objective:
+          "Check whether the learner can split a Datadog-style platform into ingest, dashboard query, alerting, and retention/downsampling owners.",
+        promptHint:
+          "Force them to name the different promises and what stays shared.",
+        summary: "Can the learner avoid flattening observability into one generic event pipeline?",
+        systemAnchor: "Datadog-style metrics and logs",
+        fallbackPrompt:
+          "Split a Datadog-style metrics/logs platform into ingest, dashboard query, alerting, and retention/downsampling paths. What promise owns each path, and what shared seam connects them?",
+        expectedConcepts: ["ingest", "query", "alerting", "retention", "bounded staleness", "shared telemetry"],
+        qualitySignals: ["because", "firehose", "dashboard", "alert", "downsample"],
+        antiPatterns: ["just kafka", "one pipeline", "dashboard owns all", "generic database"],
+      },
     ],
   }),
   "08-drill-order-and-mock-interview-prep": chapter("08-drill-order-and-mock-interview-prep", {
@@ -439,6 +507,23 @@ export const CHAPTER_COACHES = {
         expectedConcepts: ["clarify", "structure", "tradeoff", "failure mode", "out loud"],
         qualitySignals: ["because", "sounds like", "justify", "breaks first", "under pressure"],
         antiPatterns: ["vendor names", "template", "multi-region by default", "more components"],
+      },
+      {
+        key: "readiness-extra-deliverables",
+        skillId: "opening_discipline",
+        level: "pressure",
+        label: "Calibrate extra deliverables",
+        objective:
+          "Check whether the learner knows that sizing, API contracts, and transport defense are interview-readiness reps derived from the same 7+1/LGTC reasoning.",
+        promptHint:
+          "Use Slack. Ask for one readiness gap and the smallest drill that repairs it.",
+        summary: "Can the learner add sizing, API, and transport practice without renaming or bloating the framework?",
+        systemAnchor: "Slack readiness check",
+        fallbackPrompt:
+          "You can run Slack through 7+1 and LGTC, but your sizing, POST message API, and WebSocket defense are vague. Which readiness drills should you add, and why does this not change the 7+1/LGTC framework?",
+        expectedConcepts: ["sizing", "API", "transport", "7+1", "LGTC", "readiness"],
+        qualitySignals: ["derived", "pressure", "promise", "defend", "same framework"],
+        antiPatterns: ["expanded framework", "new question count", "new framework", "component list", "skip"],
       },
     ],
   }),

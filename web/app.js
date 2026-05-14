@@ -438,6 +438,17 @@
           answer: 0,
           explanation: "Chapter 01 only needs the intuition: retries are not free, and they can turn an existing pressure spike into a worse tail-latency event.",
         },
+        {
+          prompt: "In pressure-first sizing, what should you estimate after the visible request rate?",
+          options: [
+            "The exact database vendor cost before knowing the access pattern.",
+            "The hidden work per action: fanout, peak multiplier, storage growth, bandwidth, and hot-key risk.",
+            "Only the average QPS, because peaks are handled later by autoscaling.",
+            "The number of microservices in the final diagram.",
+          ],
+          answer: 1,
+          explanation: "The new sizing section keeps the same chapter habit: start from the visible action, then quantify the hidden work and uneven pressure it creates.",
+        },
       ],
     },
     "02-storage-partitioning-and-replication": {
@@ -722,6 +733,17 @@
           answer: 1,
           explanation: "The course is building a spoken flow: extract pressure first, compress it into LGTC, then let the architecture follow from that read.",
         },
+        {
+          prompt: "Where does a small API contract sketch belong in the Chapter 05 flow?",
+          options: [
+            "Before clarification, because endpoint names should drive the requirements.",
+            "After 7+1 and LGTC extraction, before architecture, so the contract reflects guarantees, retry identity, boundaries, and allowed lag.",
+            "After all components are chosen, as a cosmetic description of the diagram.",
+            "Only in frontend interviews, not system-design interviews.",
+          ],
+          answer: 1,
+          explanation: "API sketching is a post-extraction deliverable. It should expose the product promise and edge boundary before the component diagram hardens.",
+        },
       ],
     },
     "06-archetypes-and-component-maps": {
@@ -782,6 +804,17 @@
           answer: 1,
           explanation: "The archetype comes from the dominant stress on the path you are discussing. For upload and serving, blob handling and processing dominate before discovery does.",
         },
+        {
+          prompt: "What is the strongest way to defend WebSockets for a Slack-like live path?",
+          options: [
+            "Say every messaging product uses WebSockets by default.",
+            "Tie the transport to low-latency server push, bidirectional session needs, connection count, and delivery expectations for active clients.",
+            "Use WebSockets for message search and compliance export because they are also Slack features.",
+            "Claim WebSockets provide exactly-once delivery without any application logic.",
+          ],
+          answer: 1,
+          explanation: "Transport choice now comes after the path read. WebSockets earn their place on active live delivery; plain HTTP may still fit send, history, and search.",
+        },
       ],
     },
     "07-hybrid-systems-and-guided-walkthroughs": {
@@ -841,6 +874,17 @@
           ],
           answer: 1,
           explanation: "The export path is real because it changes dominant stress and topology, but it still does not own the whole product.",
+        },
+        {
+          prompt: "Why should a Datadog-style observability design split ingest, dashboard query, alerting, and retention?",
+          options: [
+            "Because every path must use a different programming language.",
+            "Because each path has a different promise: firehose absorption, query latency, bounded alert staleness, or cost-versus-fidelity retention.",
+            "Because observability systems should avoid shared source truth.",
+            "Because dashboards are always the write path owner.",
+          ],
+          answer: 1,
+          explanation: "Chapter 07 now treats observability as path-owned: shared telemetry truth flows into paths with different stresses and first failures.",
         },
       ],
     },
@@ -912,6 +956,17 @@
           ],
           answer: 1,
           explanation: "Readiness here means audible structure with justified choices and explicit failure thinking, not private recognition or extra infrastructure nouns.",
+        },
+        {
+          prompt: "Which readiness check now belongs beside mocks and archetype drills?",
+          options: [
+            "Reciting more vendor names for the same diagram.",
+            "Doing pressure-first sizing, sketching core API contracts, and defending transport choices from the path's needs.",
+            "Avoiding API and transport discussion until after the interview.",
+            "Replacing 7+1 and LGTC with a larger framework.",
+          ],
+          answer: 1,
+          explanation: "Chapter 08 keeps the core framework intact, but readiness now includes sizing, API, and transport reps that are derived from the same reasoning chain.",
         },
       ],
     },
@@ -1458,10 +1513,10 @@
       overview:
         "Train one concept at a time until you can explain it in plain language, anchor it in one concrete system, name the alternative, and say what breaks if you choose badly.",
       bestDrill:
-        "Run 60-90 second concept drills on things like idempotency in Stripe, eager versus lazy transcoding in YouTube, OT versus CRDT in Docs, or freshness versus latency in search.",
+        "Run 60-90 second concept drills on things like idempotency in Stripe, pressure-first sizing and API contracts in Slack, eager versus lazy transcoding in YouTube, OT versus CRDT in Docs, transport choice for live collaboration, or freshness versus latency in search.",
       advance:
         "Advance only when the idea sounds like reasoning instead of glossary text, and you can answer a follow-up without notes.",
-      systems: "Stripe, YouTube, Google Docs, Elasticsearch, Uber.",
+      systems: "Slack, Stripe, YouTube, Google Docs, Elasticsearch, Datadog, Uber.",
       repairs: [
         {
           button: "Sounds memorized",

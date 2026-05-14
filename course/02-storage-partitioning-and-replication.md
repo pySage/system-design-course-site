@@ -533,6 +533,16 @@ partition = table segment created from partition-column values, such as one mont
 shard = lower-level data/index slice inside that partition, distributed across nodes
 ```
 
+Other systems use nearby words differently too.
+For example:
+
+- in Kafka, a partition is an ordered append-only log slice, and brokers host replicas of that slice
+- in Cassandra, a partition can mean the rows sharing one partition key, while token ranges and virtual nodes describe how the hash ring is spread across machines
+
+The interview habit is the same in all cases:
+say which level owns ordering, which level owns placement, and which level is only a copy.
+Do not carry a vendor word into the answer without translating it into the level you mean.
+
 The habit to keep is not memorizing one vendor's vocabulary.
 The habit is to say what you mean:
 which slice is logical, which slice is physically served somewhere, and which copies are replicas.
@@ -592,12 +602,11 @@ Partitioning decisions become expensive to change once the system is large.
 
 If you expect growth or skew, mention ideas such as:
 
-- virtual partitions, sometimes called virtual shards
+- virtual partitions
 - consistent hashing
 - background resharding
 
-`Virtual shards` are better understood here as virtual partitions:
-start with more logical slices than physical machines, then move those slices between shards later without redesigning the whole key.
+`Virtual partitions` means starting with more logical slices than physical machines, then moving those slices between shards later without redesigning the whole key.
 That works because a shard can hold many small logical slices today and hand some of them to another shard tomorrow.
 
 The point is not to deep-dive implementation here.

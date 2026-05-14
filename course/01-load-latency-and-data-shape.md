@@ -411,6 +411,70 @@ What work does this action create besides the first obvious write?
 
 Once you ask that question, you start hearing the system more honestly.
 
+## Pressure-First Capacity Estimation
+
+Capacity estimation is not a separate personality from the rest of this chapter.
+It is the same hidden-work read with rough numbers attached.
+
+A weak sizing answer starts with a memorized formula.
+A stronger sizing answer starts with the visible user action and asks how much hidden work it creates.
+
+Use this small loop:
+
+1. Count the visible action rate in rough `QPS`.
+2. Multiply by the hidden work: fanout, retries, indexing, notifications, or derived writes.
+3. Apply a peak multiplier instead of trusting the average.
+4. Estimate storage per day from event count times approximate record size.
+5. Estimate bandwidth from payload size times deliveries or reads per second.
+6. Ask whether one key, channel, user, region, or time window can become hot before the average looks scary.
+
+The goal is not perfect arithmetic.
+The goal is to make the pressure concrete enough that your next design choice has a scale reason.
+
+### Slack-Style Worked Example
+
+Suppose a Slack-like workspace has an incident channel where traffic spikes to about `30` message sends per second.
+That sounds small if you stop at visible writes.
+
+Now attach the hidden work:
+
+- if `1,000` active members are watching the channel, live delivery can become roughly `30,000` delivery attempts per second
+- if each message record is about `3 KB`, the visible write storage during the spike is only about `90 KB/s`, but the live delivery bandwidth is closer to `90 MB/s` before protocol overhead
+- if the calm rate was `5` sends per second, the visible write peak is `6x`, but the delivery pressure can be much worse if the active-reader count also jumped
+- if the partition key is `channel_id`, this is not evenly spread pressure; one channel can become the hot ownership slice
+
+That estimate is intentionally rough.
+It still teaches the important lesson:
+the hard part is probably not raw message storage first.
+It is fanout, live delivery, tail latency, and hot-channel skew.
+
+If the interviewer asks for daily storage, keep the same spirit.
+For example, `5 million` messages per day at about `3 KB` each is roughly `15 GB/day` of raw message records before replicas, indexes, attachments, compression, and retention policy.
+With replicas and search/index overhead, the planning number may be several times higher.
+That does not choose the database for you, but it tells you storage growth is a real axis while the spike path is dominated by delivery work.
+
+### Small Sizing Exercise
+
+Try this without drawing architecture:
+
+A notification system accepts `200` events per second on average.
+Each event fans out to `50` recipients.
+The peak multiplier is `5x`.
+Each notification payload is roughly `1 KB`.
+
+Before naming components, answer:
+
+- what is the visible event rate at peak?
+- what is the hidden delivery attempt rate at peak?
+- what is the rough outbound payload bandwidth at peak?
+- what hot-key or skew risk could make the average lie?
+
+Expected direction:
+`200` events per second becomes `1,000` events per second at peak.
+At `50` recipients each, that is roughly `50,000` delivery attempts per second.
+At `1 KB` each, the payload alone is about `50 MB/s` before overhead.
+If one tenant, topic, celebrity, or region owns a large fraction of those events, the first failure may be local even if the global average looks affordable.
+
 ## Data Shape And Query Shape Complete The Read
 
 So far you have read how work hits the system.

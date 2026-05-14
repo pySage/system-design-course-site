@@ -83,6 +83,22 @@ That is why these sections are called production echoes or production labs, not 
 
 Every real story or company writeup will cite its source where it appears. You can open the original when you want the deeper context, but the course page should always tell you exactly what to notice at this point in the journey.
 
+## What This Course Does Not Replace
+
+This course trains system-design reasoning depth: how to read pressure, protect truth, split paths, choose components with reasons, and explain failure clearly.
+
+That is necessary for interviews, but it is not the whole interview surface.
+
+You should also be ready to produce three practical deliverables:
+
+- a rough capacity estimate that turns the pressure read into numbers
+- a small API contract sketch that shows the product boundary before the component diagram
+- a transport choice that defends why this path needs plain HTTP, long polling, SSE, WebSockets, or something else
+
+The course will add those in the same order as everything else: concrete story first, plain-language meaning second, technical label third, component choice last.
+Do not treat them as new framework buckets.
+They are interview deliverables that sit on top of the same `7+1` and `LGTC` read.
+
 ## Carry This Into Lesson 01
 
 If one sentence survives this chapter, make it this one:

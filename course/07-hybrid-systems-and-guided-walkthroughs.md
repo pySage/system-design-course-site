@@ -410,6 +410,125 @@ Shared seam:
 | What freshness is expected? | live delivery should be fast and ordered locally; search/export can lag with visible backlog |
 | What should not happen? | search, export, or analytics should not redefine whether the message was accepted |
 
+## Walkthrough 4: Datadog-Style Metrics And Logs Platform
+
+An observability platform can sound like one big ingestion system.
+That is only partly true.
+
+A Datadog-style metrics and logs product has several important paths:
+
+### Ingest Path
+
+Agents, SDKs, or services emit metrics, logs, traces, and events.
+The platform must absorb them without letting producer spikes collapse the system.
+
+Owner:
+`Event Ingestion / Observability`
+
+Why:
+
+- producer firehose and burst absorption dominate
+- batching, partitioning, schema compatibility, and tenant isolation matter early
+- the first user-visible pain may appear later, but the first system failure is often ingestion lag or dropped data
+
+What that pulls in:
+
+- edge intake or agent gateway
+- partitioned ingestion backbone
+- validation and schema controls
+- buffering, sampling, or rate limits
+
+Typical first `failure mode`:
+consumer lag, dropped events, or one noisy tenant overwhelming shared ingest.
+
+### Query And Dashboard Path
+
+An engineer opens a dashboard during an incident.
+Now the pain is not producer intake.
+It is fast range scans, aggregation, filtering, and high-cardinality tag queries under pressure.
+
+Owner:
+`Search / Discovery` plus time-series/columnar query reasoning.
+
+Why:
+
+- the user-visible job is retrieval and aggregation
+- query latency matters most during incidents
+- hot dashboards and expensive filters can hurt even if ingest is healthy
+
+What that pulls in:
+
+- time-series or columnar storage
+- query planner/coordinator
+- aggregation and rollup reads
+- result caching for hot dashboards where freshness allows it
+
+Typical first `failure mode`:
+slow incident dashboards, hot tag filters, or overloaded aggregation paths.
+
+### Alerting Path
+
+An alert rule evaluates continuously and must fire within a bounded delay.
+This path borrows from ingest and query, but its promise is different.
+
+Owner:
+`Event Ingestion / Observability`
+
+Why:
+
+- bounded staleness matters more than arbitrary query flexibility
+- missed or late alerts are trust failures during incidents
+- the path needs a clear evaluation window, state, and notification behavior
+
+What that pulls in:
+
+- stream or near-real-time aggregation
+- rule evaluator
+- alert state machine
+- notification delivery and deduplication
+
+Typical first `failure mode`:
+late alerts because consumers fall behind exactly when metric volume spikes.
+
+### Retention And Downsampling Path
+
+Old raw data cannot usually stay hot forever at full fidelity.
+Retention is where product promise, cost, and query flexibility collide.
+
+Owner:
+`Event Ingestion / Observability`, with storage-cost constraints dominating.
+
+Why:
+
+- raw retention gives flexible future queries but is expensive
+- downsampling lowers cost but loses detail
+- compliance and customer plan boundaries may decide what can be deleted
+
+What that pulls in:
+
+- retention policy engine
+- downsampling or compaction jobs
+- tiered storage
+- deletion and compliance controls
+
+Typical first `failure mode`:
+runaway storage cost, lost debugging detail after downsampling, or retention jobs falling behind.
+
+### Shared Seam
+
+The paths share data, but they do not share the same promise.
+
+| Seam question | Observability answer |
+|---|---|
+| What is the source truth? | accepted telemetry events or samples with tenant, timestamp, type, and tags |
+| What flows downstream? | rollups, indexes, alert windows, dashboards, archives, and downsampled views |
+| What freshness is expected? | alerting needs bounded lag; dashboards need useful freshness; historical queries can tolerate more delay |
+| What stays secondary? | UI polish, annotation features, and long-tail exports should not obscure ingest, query, alerting, and retention ownership |
+
+The interview-ready split is:
+
+> "I would separate ingest, dashboard query, alerting, and retention. Ingest owns the firehose and schema pressure, dashboards own query latency and aggregation, alerting owns bounded-staleness evaluation, and retention owns cost versus fidelity. They share telemetry truth, but they should not be flattened into one generic Kafka-and-database diagram."
+
 ## Production Lab: Path Ownership In Real Systems
 
 Now the production stories can be read as hybrid ownership problems.

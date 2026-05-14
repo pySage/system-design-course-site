@@ -136,6 +136,32 @@ at-least-once delivery versus exactly-once cost.
 Typical first failure:
 large-group fanout amplification or overloaded receiver paths.
 
+### Transport Choice Comes After The Delivery Shape
+
+A weak messaging answer says:
+
+> "Use WebSockets."
+
+That might be right, but it is not yet justified.
+Transport earns its place only after these questions are visible:
+
+- latency: does the user need live updates, or is request/response enough?
+- directionality: does the server need to push events, or does the client only fetch?
+- connection count: can the system afford many long-lived connections?
+- delivery expectation: does the transport carry the truth, or only notify the client to fetch truth?
+
+Use the options in plain language:
+
+- plain HTTP fits creates, reads, search, export, and any path where request/response is natural
+- long polling is a fallback when the client needs near-live updates but persistent channels are unavailable or too costly
+- SSE fits one-way server-to-browser event streams when the client mostly listens
+- WebSockets fit low-latency bidirectional sessions such as chat delivery, presence, typing, and collaborative editing
+
+For Slack, a message send can be a plain HTTP `POST` that durably accepts the write.
+Active clients may receive new-message events over WebSockets.
+History reads and search can stay plain HTTP.
+That split is stronger than saying "Slack uses WebSockets" because it chooses transport after latency, directionality, connection count, and delivery expectations are visible.
+
 ### Media Storage / Delivery
 
 You should hear this archetype when the hard part is accepting, processing, storing, and serving large blobs rather than coordinating tiny correctness-critical writes.
@@ -213,6 +239,27 @@ You may later name those families as `OT` and `CRDT`, but the product decision i
 
 Typical first failure:
 history loss after compaction, replay pain, or high-frequency collaboration fanout.
+
+### Field Note: Google Docs And The Merge Authority Question
+
+In a Google Docs-style editor, the visible action is tiny: one person types a character.
+The hard system problem is larger:
+several people may type at nearly the same time, each client wants the document to feel local, and the final document must converge without losing intent.
+
+This is where `OT` and `CRDT` become useful labels, but only after the plain problem is clear.
+
+Think about the decision through four questions:
+
+| Question | OT-leaning answer | CRDT-leaning answer |
+|---|---|---|
+| concurrent editing | transform operations against an authoritative sequence | design operations or data types so replicas can merge |
+| offline tolerance | harder when the server is the main authority | stronger fit when clients may edit offline and merge later |
+| merge authority | central service usually owns ordering and transformation | replicas can merge with less central coordination |
+| first failure | missed history, transform bugs, or compaction/replay mistakes | metadata growth, garbage collection, or semantic conflicts |
+
+For an interview, the clean sentence is:
+
+> "If the product is mostly online and server-authoritative, I would lean OT because one ordered operation log keeps reasoning simpler. If offline multi-writer editing is a central requirement, I would consider CRDTs because merge responsibility moves into the data model, at the cost of metadata and conflict-management complexity."
 
 ### Search / Discovery
 

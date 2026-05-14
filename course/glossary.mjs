@@ -244,6 +244,26 @@ Partitioning mainly helps scale and isolation. It does not automatically solve c
 In this course, a strong partition key often aligns with the ordering boundary, consistency boundary, or user-visible unit of work.`,
   },
   {
+    id: "virtual-partitions",
+    term: "Virtual Partitions",
+    group: "data-placement",
+    aliases: ["virtual partition", "virtual partitions", "virtual node", "virtual nodes", "vnode", "vnodes"],
+    summary: "Extra logical placement slices that can be moved between physical owners as the cluster changes.",
+    body: `Virtual partitions are logical slices created in larger numbers than the current physical machines or shards.
+
+They make later rebalancing easier because the system can move small logical slices between physical owners instead of redesigning the partition key or moving one huge range at once.`,
+  },
+  {
+    id: "consistent-hashing",
+    term: "Consistent Hashing",
+    group: "data-placement",
+    aliases: ["consistent hashing", "hash ring", "ring hashing"],
+    summary: "A placement technique that limits how much data moves when nodes are added or removed.",
+    body: `Consistent hashing maps keys and nodes onto a ring or similar hash space so ownership can change gradually.
+
+Its practical interview value is rebalancing: adding or removing a node should move only part of the key space instead of forcing a full reshuffle.`,
+  },
+  {
     id: "replication",
     term: "Replication",
     group: "data-placement",
@@ -334,6 +354,26 @@ Freshness is often the business-level version of consistency. The system design 
 Ordering should be scoped carefully. Per-key ordering is common and useful. Global ordering is expensive and rarely necessary.`,
   },
   {
+    id: "ot",
+    term: "OT",
+    group: "guarantees",
+    aliases: ["OT", "operational transformation", "operational transform"],
+    summary: "A collaboration technique that transforms concurrent operations against an ordered history.",
+    body: `OT stands for operational transformation. It is commonly discussed in collaborative editing systems where concurrent edits must be transformed so everyone converges on the same document.
+
+The practical choice is usually about merge authority: an OT design often leans on a server-authoritative operation order, which can simplify reasoning but makes offline-first behavior harder.`,
+  },
+  {
+    id: "crdt",
+    term: "CRDT",
+    group: "guarantees",
+    aliases: ["CRDT", "CRDTs", "conflict-free replicated data type", "conflict-free replicated data types"],
+    summary: "A data type designed so replicas can merge concurrent updates and converge.",
+    body: `A CRDT is a conflict-free replicated data type. It is designed so independently updated replicas can merge and converge without a central sequencer for every operation.
+
+CRDTs are useful when offline or peer-friendly collaboration matters, but they often pay with metadata growth, garbage-collection complexity, and constraints on what edits can be represented cleanly.`,
+  },
+  {
     id: "idempotency",
     term: "Idempotency",
     group: "guarantees",
@@ -362,6 +402,26 @@ Deduplication is often paired with idempotency. Idempotency protects the effect;
     body: `A transaction groups several related state changes into one atomic boundary.
 
 Transactions are useful when partial success would be invalid. The important design question is where the transaction boundary should stop, not whether everything everywhere should be transactional.`,
+  },
+  {
+    id: "saga",
+    term: "Saga",
+    group: "guarantees",
+    aliases: ["saga", "sagas", "saga pattern"],
+    summary: "A multi-step workflow that uses local commits and compensation instead of one giant distributed transaction.",
+    body: `A saga breaks a long business process into smaller committed steps, with compensating actions when a later step fails.
+
+In interviews, saga language is useful when one atomic cross-service commit would be too expensive or brittle, but the product still needs a deliberate recovery story.`,
+  },
+  {
+    id: "2pc",
+    term: "2PC",
+    group: "guarantees",
+    aliases: ["2PC", "two-phase commit", "two phase commit"],
+    summary: "A coordination protocol for trying to commit a transaction atomically across participants.",
+    body: `2PC means two-phase commit. Participants first prepare, then a coordinator decides whether everyone commits or aborts.
+
+It can provide a strong atomic boundary across systems, but it is coordination-heavy and can block during failures. That is why many interview designs prefer local commits plus saga-style recovery unless strict atomicity is truly required.`,
   },
   {
     id: "durability",
@@ -404,6 +464,46 @@ Keeping the hot path small improves latency and resilience, but you cannot move 
 Async design helps latency and burst handling, but it introduces freshness lag, retries, duplicate delivery, and failure-recovery questions.`,
   },
   {
+    id: "transport-choice",
+    term: "Transport Choice",
+    group: "runtime-failure",
+    aliases: ["transport choice", "transport choices", "transport"],
+    summary: "The decision about how clients and services communicate on a path.",
+    body: `Transport choice is about the communication shape for a path: request/response, server push, bidirectional sessions, streaming, or polling.
+
+In this course, transport is chosen after latency, directionality, connection count, and delivery expectations are visible. It is not a substitute for application-level guarantees.`,
+  },
+  {
+    id: "websockets",
+    term: "WebSockets",
+    group: "runtime-failure",
+    aliases: ["WebSocket", "WebSockets"],
+    summary: "A long-lived bidirectional connection often used for live updates.",
+    body: `WebSockets keep a bidirectional connection open so clients and servers can exchange messages with low overhead after the connection is established.
+
+They fit active live paths such as chat delivery, presence, typing indicators, and collaborative editing, but they create connection-management and scaling obligations.`,
+  },
+  {
+    id: "sse",
+    term: "SSE",
+    group: "runtime-failure",
+    aliases: ["SSE", "server-sent events", "server sent events"],
+    summary: "A one-way server-to-client event stream over HTTP.",
+    body: `SSE stands for server-sent events. It lets a server push a stream of events to a browser over HTTP while the client listens.
+
+It can be simpler than WebSockets when the product needs one-way updates rather than a full bidirectional session.`,
+  },
+  {
+    id: "long-polling",
+    term: "Long Polling",
+    group: "runtime-failure",
+    aliases: ["long polling", "long-polling"],
+    summary: "A fallback push-like pattern where clients hold a request open waiting for updates.",
+    body: `Long polling keeps an HTTP request open until the server has an update or the request times out, then the client sends another request.
+
+It can approximate near-live delivery when persistent connections are not available, but it costs more request churn than a true long-lived channel.`,
+  },
+  {
     id: "queue",
     term: "Queue",
     group: "runtime-failure",
@@ -422,6 +522,16 @@ Queues are powerful because they turn timing pressure into manageable backlog, b
     body: `A cache stores data closer to the reader or in a cheaper retrieval path so repeated reads are faster.
 
 Caching is a latency and load tool, not a free win. Every cache creates freshness and invalidation questions.`,
+  },
+  {
+    id: "cdn",
+    term: "CDN",
+    group: "runtime-failure",
+    aliases: ["CDN", "CDNs", "content delivery network", "content delivery networks", "edge cache", "edge caches"],
+    summary: "A geographically distributed cache and delivery layer for serving content close to users.",
+    body: `A CDN is a content delivery network. It serves cached assets, media, or other responses from edge locations closer to users instead of sending every request to origin.
+
+CDNs reduce latency, bandwidth cost, and origin load, but they introduce cache freshness, invalidation, regional coverage, and fallback questions.`,
   },
   {
     id: "retry",
@@ -502,6 +612,16 @@ Strong answers name both sides. Saying only what you chose is incomplete; the in
     body: `Interview flow is the speaking structure that keeps your reasoning stable under time pressure.
 
 The point of a good flow is not to sound scripted. It is to prevent rambling and make sure pressure, guarantees, topology, and constraints appear before components.`,
+  },
+  {
+    id: "api-contract",
+    term: "API Contract",
+    group: "interview-reasoning",
+    aliases: ["API contract", "API contracts", "API sketch", "API sketches"],
+    summary: "The product-facing request and response promise at a system boundary.",
+    body: `An API contract describes what a caller can ask for, what identity and permissions are required, and what the response promises.
+
+In system design interviews, a small API sketch is useful only after pressure and guarantees are visible. It should expose boundaries, retry identity, and allowed lag, not hide a component list behind endpoint names.`,
   },
   {
     id: "design-ask",

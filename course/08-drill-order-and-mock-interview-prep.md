@@ -8,6 +8,23 @@ The last problem is making the whole chain come out in the right order while a c
 That is why the final chapter is about practice order.
 Not because practice is a separate topic after the real content, but because the whole course was quietly building toward spoken performance from the beginning.
 
+## Scope Note: Readiness Has Three Extra Deliverables
+
+The course's main job is still reasoning depth.
+The interview performance you are training is the `7+1` opening, the `LGTC` compression, archetype or hybrid ownership, justified components, tradeoff, and first failure.
+
+But a real interview may also ask you to sketch:
+
+- a rough capacity estimate
+- a small API contract
+- a transport choice
+
+Do not turn those into new framework buckets.
+Treat them as outputs of the same reasoning.
+Sizing should quantify the pressure.
+The API contract should expose the product boundary and guarantee.
+The transport choice should follow latency, directionality, connection count, and delivery expectations.
+
 ## Start With One Bad Week Of Preparation
 
 Imagine a candidate who has spent a week doing full mocks.
@@ -132,6 +149,23 @@ Examples:
 - `Google Docs`: `OT` versus `CRDT`
 - `Elasticsearch`: freshness versus query latency
 - `Uber`: optimistic versus pessimistic assignment locking
+
+### Starter Concept Set
+
+If you do not know where to begin Stage 1, use this set:
+
+| Concept | Anchor system | One-minute question |
+|---|---|---|
+| fanout multiplier | Slack or WhatsApp | How can one send become thousands of delivery attempts? |
+| rough capacity estimate | Slack | What hidden work per visible action changes the sizing story? |
+| idempotency | Stripe | Why does retry safety need a stable business identity? |
+| API contract | Slack | What should `POST message` promise, and what can lag after the response? |
+| transport choice | Slack or Google Docs | Why would this path need WebSockets instead of plain HTTP? |
+| OT versus CRDT | Google Docs | Where does merge authority live, and what breaks first? |
+| raw retention versus rollup | Datadog-style metrics | What do you lose when old raw telemetry is downsampled? |
+
+The point is not to memorize the table.
+It is to give every fuzzy label a concrete system, an alternative, and a first failure.
 
 If your explanation still sounds like glossary text, stay here.
 If you can only name one side of the tradeoff, stay here.
@@ -622,6 +656,29 @@ Anything below `15` usually means structural gaps are still visible.
 But even a higher score can hide one repeated weakness.
 If the same miss appears twice, treat it as a real repair target immediately.
 
+## Annotated Partial Score: Slack
+
+Here is a realistic partial answer:
+
+> "For Slack, users send messages in channels and DMs. I would use WebSockets for live updates, Kafka for fanout, a database for messages, and Elasticsearch for search. The system needs to scale to big channels, keep messages ordered, and avoid losing messages."
+
+This is not bad.
+It earns some `2`s because the right ideas are present.
+But it is not a `3` yet because the ideas are not controlled.
+
+| Dimension | Why this earns `2` | What would make it `3` |
+|---|---|---|
+| requirements opening | users and broad actions are named | run the `7+1` enough to expose latency, wrong-delivery risk, compliance, and data/query shape |
+| dominant stress | big channels and scale are mentioned | say bursty fanout on hot channels, tail-latency risk, and hidden delivery work before tools |
+| components | plausible boxes appear | attach each component to a reason: durable log for accepted truth, connection layer for active delivery, index for search |
+| API contract | missing | sketch `POST message` as durable accept with retry identity, then say delivery/search can lag |
+| transport defense | WebSockets are named | explain why active live delivery is bidirectional/low-latency, while send, history, and search can stay plain HTTP |
+| failure mode | "scale" is vague | name large-channel fanout, hot partition, lagging search index, or notification backlog as the mechanism |
+
+A `3`-level repair could start like this:
+
+> "I would first extract Slack's shape: sends and recent reads are latency-sensitive, large channels create bursty fanout and hot-channel skew, accepted messages need durable per-channel order, and search/compliance paths can lag behind the live send path. The `POST message` contract should mean durable accept with a retry identity, not delivery to every recipient. For active recipients I would defend WebSockets because the path needs low-latency server push, while history and search can stay plain HTTP. The first failure I would watch is large-channel fanout or a hot channel partition stretching tail latency."
+
 ## Difficulty Ladder: Practice Decisions
 
 ### Easy: One Concept Is Fuzzy
@@ -682,6 +739,9 @@ Before calling yourself interview-ready, look for evidence like this:
 
 - you can explain five to ten core concepts cleanly without notes
 - you can run `7+1` plus `LGTC` for several systems without rushing into components
+- you can do a rough pressure-first sizing pass without hiding behind exact math
+- you can sketch one or two core APIs and say what each response promises
+- you can defend transport choices from latency, directionality, connection count, and delivery expectations
 - you can do one clean system from each major `archetype`
 - you can split hybrid products by path without blur
 - you can survive constraint changes without abandoning structure
