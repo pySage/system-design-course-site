@@ -119,7 +119,7 @@
 <p>If you cannot answer those, the storage choice is probably branding rather than reasoning.</p>
 <h3 id="the-bridge-from-chapter-01-users-hit-owners-not-averages">The Bridge From Chapter 01: Users Hit Owners, Not Averages</h3>
 <p>Chapter 01 said a system can feel broken even when average traffic looks calm. This chapter explains one common reason: the user is often hitting one owner of the data, not the whole fleet.</p>
-<p>For now, owner simply means: the partition, shard, or region responsible for that slice of data. The formal <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> section comes later; this bridge only needs the intuition.</p>
+<p>For now, owner simply means: the logical slice of data that one part of the system is responsible for. Later that logical slice may live on a shard, node, or region, but the first idea is ownership. The formal <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> section comes later; this bridge only needs the intuition.</p>
 <p>Imagine a Slack-like system where each channel&#39;s recent messages are owned by one storage slice:</p>
 <pre class="code-block"><code class="language-text">channel ownership
 
@@ -128,7 +128,7 @@
 #pets          -&gt; partition C   calm
 #announcements -&gt; partition D   calm</code></pre>
 <p>If <code>#incident</code> is melting partition A, users reading that channel wait behind partition A&#39;s <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a>. The average across partitions can still look acceptable because B, C, and D are mostly idle.</p>
-<p>That is why storage placement is not just about where bytes sit. It decides which machine, shard, region, or ownership slice has to absorb the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> from a particular product path.</p>
+<p>That is why storage placement is not just about where bytes sit. It decides which ownership slice has to absorb the <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> from a particular product path, and which machine, shard, or region may become hot because it owns that slice.</p>
 <p>The interview sentence is:</p>
 <blockquote>&quot;The fleet average is misleading here because the hot product object maps to one ownership slice; users on that slice feel <a class="term-link" href="glossary.html#tail-latency" title="The slowest slice of requests, where real production pain often lives.">tail latency</a> before the whole storage tier looks saturated.&quot;</blockquote>
 <h3 id="one-product-can-need-more-than-one-storage-family">One Product Can Need More Than One Storage Family</h3>
@@ -271,6 +271,9 @@ video exists         video can be found by title or keywords</code></pre>
 <p>You partition because one machine is no longer enough for:</p>
 <ul><li>dataset size</li><li>write throughput</li><li>read throughput on hot ranges</li><li>isolation of independent slices of work</li></ul>
 <p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> is about splitting <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> and ownership. It is not the same thing as making copies.</p>
+<p>Keep two words separate:</p>
+<ul><li>a <code>partition</code> is a logical ownership slice</li><li>a <code>shard</code> is a physical serving unit, often a node or replica group, that owns one or more partitions</li></ul>
+<p>People often use the words loosely in interviews, but the distinction matters when you explain hot spots. A hot partition is the data slice or key range receiving too much work. A hot shard is the machine or replica group suffering because it owns that hot partition.</p>
 <p>The picture is:</p>
 <pre class="code-block"><code class="language-text">before partitioning
 
@@ -278,30 +281,30 @@ all channel history -&gt; one owner
 
 after partitioning
 
-channel A history -&gt; shard 1
-channel B history -&gt; shard 2
-channel C history -&gt; shard 3</code></pre>
-<p>Each shard owns a slice of the data. That is why one hot channel can still hurt badly: <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> spreads ownership, but it does not magically make one hot owner cold.</p>
+channel A history -&gt; partition P1 -&gt; shard 1
+channel B history -&gt; partition P2 -&gt; shard 2
+channel C history -&gt; partition P3 -&gt; shard 3</code></pre>
+<p>Each partition is a logical slice. Each shard is where one or more of those slices are served. That is why one hot channel can still hurt badly: <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> spreads ownership, but it does not magically make one hot partition cold.</p>
 <h3 id="a-partition-key-should-match-the-work-that-wants-to-stay-together">A Partition Key Should Match The Work That Wants To Stay Together</h3>
 <p>This is the main instinct.</p>
 <p>A good <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> aligns with:</p>
 <ul><li>the dominant lookup pattern</li><li>the main chunk of work that usually wants to stay together</li><li>the local <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> or history boundary</li></ul>
 <p>Examples:</p>
 <ul><li>chat messages -&gt; <code>conversation_id</code></li><li>metrics -&gt; metric key plus time bucket</li><li>bookings -&gt; often <code>listing_id</code>, region, or another key tied to the hot contention path</li></ul>
-<p>The rule is practical: keep the reads and writes that most want to stay together on the same shard whenever possible. In plain language, choose a key so the system usually stays inside one machine for the common path instead of scattering one request everywhere.</p>
+<p>The rule is practical: keep the reads and writes that most want to stay together inside the same logical partition whenever possible. In plain language, choose a key so the common path usually talks to one ownership slice, and therefore usually one serving shard, instead of scattering one request everywhere.</p>
 <p>There is always a tension:</p>
 <ul><li>if the key keeps related data together, common reads are cheap</li><li>if one related group becomes extremely hot, that same locality can concentrate pain</li></ul>
 <p>For Slack-like history, <code>conversation_id</code> is natural because recent reads usually ask for one conversation. But a company-wide incident channel can make that exact conversation slice hot. That does not make the key wrong automatically. It means the design must admit the <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> risk and have a later answer for hot channels.</p>
-<p>This is the causal loop from Chapter 01: the same key that keeps normal conversation reads local is also why one incident channel can melt one shard while average fleet traffic still looks calm.</p>
+<p>This is the causal loop from Chapter 01: the same key that keeps normal conversation reads local is also why one incident channel can create a hot partition. If that partition is owned by one shard, that shard can melt while average fleet traffic still looks calm.</p>
 <h3 id="bad-keys-create-predictable-pain">Bad Keys Create Predictable Pain</h3>
 <p>Bad partition keys usually create one or more of these:</p>
-<ul><li>one shard becoming much hotter than the rest</li><li>scattered reads</li><li>expensive <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fan-out</a> queries</li><li>awkward resharding later</li></ul>
-<p>That is why strong answers do not stop at &quot;we will shard it.&quot; They say what the key is and why that key matches the workload.</p>
+<ul><li>one logical partition becoming much hotter than the rest</li><li>one physical shard becoming hot because it owns that partition</li><li>scattered reads</li><li>expensive <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fan-out</a> queries</li><li>awkward resharding later</li></ul>
+<p>That is why strong answers do not stop at &quot;we will shard it.&quot; They say what the <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> is, what logical slice it creates, and what physical hot-spot risk that slice can create.</p>
 <h3 id="repartitioning-is-easy-to-say-and-hard-to-live-through">Repartitioning Is Easy To Say And Hard To Live Through</h3>
 <p><a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">Partitioning</a> decisions become expensive to change once the system is large.</p>
 <p>If you expect growth or <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a>, mention ideas such as:</p>
-<ul><li>virtual shards</li><li>consistent hashing</li><li>background resharding</li></ul>
-<p><code>Virtual shards</code> simply means starting with more logical slices than physical machines, so you can move slices around later without redesigning the whole key.</p>
+<ul><li>virtual partitions, sometimes called virtual shards</li><li>consistent hashing</li><li>background resharding</li></ul>
+<p><code>Virtual shards</code> are better understood here as virtual partitions: start with more logical slices than physical machines, then move those slices between shards later without redesigning the whole key.</p>
 <p>The point is not to deep-dive implementation here. The point is to show you know a <a class="term-link" href="glossary.html#partition-key" title="The value used to decide which partition owns a piece of data or work.">partition key</a> is an early design decision with long consequences.</p>
 <h2 id="replication-means-copies-not-splits">Replication Means Copies, Not Splits</h2>
 <p><a class="term-link" href="glossary.html#replication" title="Keeping multiple copies of data or service state.">Replication</a> is different.</p>
@@ -310,14 +313,14 @@ channel C history -&gt; shard 3</code></pre>
 <p>Keep the two pictures separate:</p>
 <pre class="code-block"><code class="language-text">partitioning splits ownership
 
-conversation A -&gt; shard 1
-conversation B -&gt; shard 2
+conversation A -&gt; partition P1 -&gt; shard 1
+conversation B -&gt; partition P2 -&gt; shard 2
 
 replication copies ownership
 
-shard 1 primary -&gt; shard 1 follower
-shard 2 primary -&gt; shard 2 follower</code></pre>
-<p>If shard 1 is the only place allowed to accept writes for conversation A, adding followers may help reads and failure recovery. It does not remove the fact that writes for conversation A still <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> behind shard 1&#39;s write owner.</p>
+primary replica for shard 1 -&gt; follower replica for shard 1
+primary replica for shard 2 -&gt; follower replica for shard 2</code></pre>
+<p>If partition P1 for conversation A is owned by shard 1, adding followers may help reads and failure recovery. It does not remove the fact that writes for conversation A still <a class="term-link" href="glossary.html#queue" title="A buffer that decouples producers from consumers over time.">queue</a> behind the primary replica for the shard that serves P1.</p>
 <h3 id="why-replicate">Why Replicate</h3>
 <p>You replicate to:</p>
 <ul><li>survive node failure</li><li>reduce read <a class="term-link" href="glossary.html#pressure" title="The force that makes a system difficult to design.">pressure</a> on one primary owner</li><li>place copies closer to readers</li></ul>
@@ -379,7 +382,7 @@ recent #incident messages in order</code></pre>
 <blockquote>&quot;The data wants a per-channel ordered history shape, but that also means a very large channel can create a hot ownership slice, so the <a class="term-link" href="glossary.html#partitioning" title="Splitting data or work across partitions so the system can scale.">partitioning</a> choice has to be made with <a class="term-link" href="glossary.html#skew" title="Uneven distribution of work or data across keys, times, or machines.">skew</a> in mind.&quot;</blockquote>
 <p>Source: <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">Discord Engineering, &quot;How Discord Stores Trillions of Messages&quot;</a></p>
 <h3 id="slack-a-product-feature-broke-the-old-placement-assumption">Slack: A Product Feature Broke The Old Placement Assumption</h3>
-<p>Slack&#39;s shared-channels writeup describes a product change that crossed workspace boundaries. The old assumption was that channel data belonged cleanly inside one workspace&#39;s shard. Shared channels made that assumption weaker because members from different workspaces needed to interact with the same channel.</p>
+<p>Slack&#39;s shared-channels writeup describes a product change that crossed workspace boundaries. The old assumption was that channel data belonged cleanly inside one workspace-owned slice, which would then be served by that workspace&#39;s storage placement. Shared channels made that assumption weaker because members from different workspaces needed to interact with the same channel.</p>
 <p>Wrong instinct:</p>
 <blockquote>&quot;Keep every channel under the workspace that created it.&quot;</blockquote>
 <p>That may have worked before the product boundary changed. The Chapter 02 lesson is:</p>

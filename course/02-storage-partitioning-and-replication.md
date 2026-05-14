@@ -47,7 +47,8 @@ This chapter explains one common reason:
 the user is often hitting one owner of the data, not the whole fleet.
 
 For now, owner simply means:
-the partition, shard, or region responsible for that slice of data.
+the logical slice of data that one part of the system is responsible for.
+Later that logical slice may live on a shard, node, or region, but the first idea is ownership.
 The formal partitioning section comes later; this bridge only needs the intuition.
 
 Imagine a Slack-like system where each channel's recent messages are owned by one storage slice:
@@ -65,7 +66,7 @@ If `#incident` is melting partition A, users reading that channel wait behind pa
 The average across partitions can still look acceptable because B, C, and D are mostly idle.
 
 That is why storage placement is not just about where bytes sit.
-It decides which machine, shard, region, or ownership slice has to absorb the pressure from a particular product path.
+It decides which ownership slice has to absorb the pressure from a particular product path, and which machine, shard, or region may become hot because it owns that slice.
 
 The interview sentence is:
 
@@ -474,6 +475,15 @@ You partition because one machine is no longer enough for:
 Partitioning is about splitting load and ownership.
 It is not the same thing as making copies.
 
+Keep two words separate:
+
+- a `partition` is a logical ownership slice
+- a `shard` is a physical serving unit, often a node or replica group, that owns one or more partitions
+
+People often use the words loosely in interviews, but the distinction matters when you explain hot spots.
+A hot partition is the data slice or key range receiving too much work.
+A hot shard is the machine or replica group suffering because it owns that hot partition.
+
 The picture is:
 
 ```text
@@ -483,14 +493,15 @@ all channel history -> one owner
 
 after partitioning
 
-channel A history -> shard 1
-channel B history -> shard 2
-channel C history -> shard 3
+channel A history -> partition P1 -> shard 1
+channel B history -> partition P2 -> shard 2
+channel C history -> partition P3 -> shard 3
 ```
 
-Each shard owns a slice of the data.
+Each partition is a logical slice.
+Each shard is where one or more of those slices are served.
 That is why one hot channel can still hurt badly:
-partitioning spreads ownership, but it does not magically make one hot owner cold.
+partitioning spreads ownership, but it does not magically make one hot partition cold.
 
 ### A Partition Key Should Match The Work That Wants To Stay Together
 
@@ -509,8 +520,8 @@ Examples:
 - bookings -> often `listing_id`, region, or another key tied to the hot contention path
 
 The rule is practical:
-keep the reads and writes that most want to stay together on the same shard whenever possible.
-In plain language, choose a key so the system usually stays inside one machine for the common path instead of scattering one request everywhere.
+keep the reads and writes that most want to stay together inside the same logical partition whenever possible.
+In plain language, choose a key so the common path usually talks to one ownership slice, and therefore usually one serving shard, instead of scattering one request everywhere.
 
 There is always a tension:
 
@@ -523,19 +534,21 @@ That does not make the key wrong automatically.
 It means the design must admit the skew risk and have a later answer for hot channels.
 
 This is the causal loop from Chapter 01:
-the same key that keeps normal conversation reads local is also why one incident channel can melt one shard while average fleet traffic still looks calm.
+the same key that keeps normal conversation reads local is also why one incident channel can create a hot partition.
+If that partition is owned by one shard, that shard can melt while average fleet traffic still looks calm.
 
 ### Bad Keys Create Predictable Pain
 
 Bad partition keys usually create one or more of these:
 
-- one shard becoming much hotter than the rest
+- one logical partition becoming much hotter than the rest
+- one physical shard becoming hot because it owns that partition
 - scattered reads
 - expensive fan-out queries
 - awkward resharding later
 
 That is why strong answers do not stop at "we will shard it."
-They say what the key is and why that key matches the workload.
+They say what the partition key is, what logical slice it creates, and what physical hot-spot risk that slice can create.
 
 ### Repartitioning Is Easy To Say And Hard To Live Through
 
@@ -543,11 +556,12 @@ Partitioning decisions become expensive to change once the system is large.
 
 If you expect growth or skew, mention ideas such as:
 
-- virtual shards
+- virtual partitions, sometimes called virtual shards
 - consistent hashing
 - background resharding
 
-`Virtual shards` simply means starting with more logical slices than physical machines, so you can move slices around later without redesigning the whole key.
+`Virtual shards` are better understood here as virtual partitions:
+start with more logical slices than physical machines, then move those slices between shards later without redesigning the whole key.
 
 The point is not to deep-dive implementation here.
 The point is to show you know a partition key is an early design decision with long consequences.
@@ -566,17 +580,17 @@ Keep the two pictures separate:
 ```text
 partitioning splits ownership
 
-conversation A -> shard 1
-conversation B -> shard 2
+conversation A -> partition P1 -> shard 1
+conversation B -> partition P2 -> shard 2
 
 replication copies ownership
 
-shard 1 primary -> shard 1 follower
-shard 2 primary -> shard 2 follower
+primary replica for shard 1 -> follower replica for shard 1
+primary replica for shard 2 -> follower replica for shard 2
 ```
 
-If shard 1 is the only place allowed to accept writes for conversation A, adding followers may help reads and failure recovery.
-It does not remove the fact that writes for conversation A still queue behind shard 1's write owner.
+If partition P1 for conversation A is owned by shard 1, adding followers may help reads and failure recovery.
+It does not remove the fact that writes for conversation A still queue behind the primary replica for the shard that serves P1.
 
 ### Why Replicate
 
@@ -730,7 +744,7 @@ Source: [Discord Engineering, "How Discord Stores Trillions of Messages"](https:
 
 ### Slack: A Product Feature Broke The Old Placement Assumption
 
-Slack's shared-channels writeup describes a product change that crossed workspace boundaries. The old assumption was that channel data belonged cleanly inside one workspace's shard. Shared channels made that assumption weaker because members from different workspaces needed to interact with the same channel.
+Slack's shared-channels writeup describes a product change that crossed workspace boundaries. The old assumption was that channel data belonged cleanly inside one workspace-owned slice, which would then be served by that workspace's storage placement. Shared channels made that assumption weaker because members from different workspaces needed to interact with the same channel.
 
 Wrong instinct:
 

@@ -223,7 +223,9 @@ Indexes trade write cost and storage space for faster reads. A useful index is j
     group: "data-placement",
     aliases: ["partitioning", "partitioned", "sharding", "sharded"],
     summary: "Splitting data or work across partitions so the system can scale.",
-    body: `Partitioning divides data or traffic across independent partitions, shards, or ranges so one machine does not own everything.
+    body: `Partitioning divides data or traffic across independent logical ownership slices so one machine does not own everything.
+
+In this course, a partition is the logical slice; a shard is the physical serving unit, often a node or replica group, that owns one or more partitions. A hot partition can make its owning shard hot.
 
 Partitioning mainly helps scale and isolation. It does not automatically solve correctness, availability, or ordering on its own.`,
   },
@@ -233,7 +235,7 @@ Partitioning mainly helps scale and isolation. It does not automatically solve c
     group: "data-placement",
     aliases: ["partition key", "shard key"],
     summary: "The value used to decide which partition owns a piece of data or work.",
-    body: `A partition key routes writes and reads to a partition. Good partition keys spread load while still matching the access pattern.
+    body: `A partition key routes writes and reads to a logical partition. A later mapping places that partition on a shard or node. Good partition keys spread load while still matching the access pattern.
 
 In this course, a strong partition key often aligns with the ordering boundary, consistency boundary, or user-visible unit of work.`,
   },

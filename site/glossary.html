@@ -261,7 +261,7 @@
                     <h3>Partition Key</h3>
                     <p class="glossary-summary">The value used to decide which partition owns a piece of data or work.</p>
                     <div class="prose glossary-definition">
-                      <p>A partition key routes writes and reads to a partition. Good partition keys spread <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> while still matching the access pattern.</p>
+                      <p>A partition key routes writes and reads to a logical partition. A later mapping places that partition on a shard or node. Good partition keys spread <a class="term-link" href="glossary.html#load" title="How much work hits the system over time.">load</a> while still matching the access pattern.</p>
 <p>In this course, a strong partition key often aligns with the <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> boundary, <a class="term-link" href="glossary.html#consistency" title="What a reader is allowed to assume about data after writes happen.">consistency</a> boundary, or user-visible unit of work.</p>
                     </div>
                   </article>
@@ -271,7 +271,8 @@
                     <h3>Partitioning</h3>
                     <p class="glossary-summary">Splitting data or work across partitions so the system can scale.</p>
                     <div class="prose glossary-definition">
-                      <p>Partitioning divides data or traffic across independent partitions, shards, or ranges so one machine does not own everything.</p>
+                      <p>Partitioning divides data or traffic across independent logical ownership slices so one machine does not own everything.</p>
+<p>In this course, a partition is the logical slice; a shard is the physical serving unit, often a node or replica group, that owns one or more partitions. A hot partition can make its owning shard hot.</p>
 <p>Partitioning mainly helps scale and isolation. It does not automatically solve <a class="term-link" href="glossary.html#correctness" title="Whether the system does the right thing, not just whether it stays up.">correctness</a>, <a class="term-link" href="glossary.html#availability" title="Whether the system can keep serving useful requests during faults or overload.">availability</a>, or <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> on its own.</p>
                     </div>
                   </article>
