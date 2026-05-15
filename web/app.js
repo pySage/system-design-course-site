@@ -1912,7 +1912,7 @@
   }
 
   function coachProfileBadges() {
-    return ["reader-one", "reader-two", "reader-three", "reader-four", "dev-reader"]
+    return ["aman", "parth", "karan", "aditya", "codex"]
       .map((username) => `<span class="coach-chip">@${escapeHtml(username)}</span>`)
       .join("");
   }
@@ -2100,7 +2100,7 @@
                           type="text"
                           maxlength="40"
                           autocomplete="username"
-                          placeholder="reader-one"
+                          placeholder="aman"
                         />
                         <label for="coach-login-password">Password</label>
                         <input
