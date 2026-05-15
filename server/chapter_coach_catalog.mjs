@@ -335,6 +335,34 @@ export const CHAPTER_COACHES = {
           qualitySignals: ["promise", "retry", "accepted", "after", "not delivery"],
           antiPatterns: ["api gateway", "component list", "websocket only", "database schema first"],
         },
+        {
+          key: "fr-nfr-api-mapping",
+          skillId: "opening_discipline",
+          level: "transfer",
+          label: "Map 7+1 to FR / NFR / API placement",
+          objective:
+            "Check whether the learner can translate the course opening into functional requirements, non-functional requirements, the +1 data/query read, and API placement.",
+          promptHint:
+            "An interviewer says: 'before we go further, state your functional and non-functional requirements, then sketch the API.' Make the learner answer in order.",
+          summary:
+            "Can the learner map scope to FRs, LGTC to NFRs, +1 to data/query shape, and API sketch to post-extraction/pre-architecture?",
+          systemAnchor: "Ride-sharing dispatch",
+          fallbackPrompt:
+            "For ride-sharing dispatch, what does the system do and who uses it, which non-functional pressures matter, what does the +1 cover, and when would you sketch the API?",
+          expectedConcepts: [
+            "scope",
+            "actors",
+            "load",
+            "guarantees",
+            "topology",
+            "constraints",
+            "data shape",
+            "query shape",
+            "API after extraction",
+          ],
+          qualitySignals: ["before estimating", "agreed on what", "after extraction", "before the map"],
+          antiPatterns: ["kafka", "redis", "LGTC answers functional", "+1 is API"],
+        },
       ],
     },
   ),

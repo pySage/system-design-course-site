@@ -744,6 +744,28 @@
           answer: 1,
           explanation: "API sketching is a post-extraction deliverable. It should expose the product promise and edge boundary before the component diagram hardens.",
         },
+        {
+          prompt: "An interviewer asks for your functional requirements. Which part of the 7+1 opening answers this?",
+          options: [
+            "The full LGTC compression.",
+            "Scope sub-questions: actors, actions, and in-scope paths settled before numbers.",
+            "The +1 data-shape and query-shape question.",
+            "The API sketch.",
+          ],
+          answer: 1,
+          explanation: "Functional requirements are scope: what the system does and for whom. LGTC answers non-functional pressures, the +1 covers data/query shape, and API comes after extraction.",
+        },
+        {
+          prompt: "When does the API sketch belong in the interview flow?",
+          options: [
+            "During the LGTC opening.",
+            "As the +1 at the end of the seven questions.",
+            "After 7+1 and LGTC, before the component map hardens.",
+            "Only after every component has already been chosen.",
+          ],
+          answer: 2,
+          explanation: "The +1 is data shape and query shape. API sketching is a separate post-extraction, pre-architecture deliverable.",
+        },
       ],
     },
     "06-archetypes-and-component-maps": {
@@ -967,6 +989,17 @@
           ],
           answer: 1,
           explanation: "Chapter 08 keeps the core framework intact, but readiness now includes sizing, API, and transport reps that are derived from the same reasoning chain.",
+        },
+        {
+          prompt: "An interviewer interrupts your LGTC opening at minute 4 with 'why not a monolith?' What is the right move?",
+          options: [
+            "Stop and redesign around a monolith.",
+            "Say you will come back to that and continue the opening.",
+            "Answer fully before continuing the opening.",
+            "Ask the interviewer to define monolith first.",
+          ],
+          answer: 1,
+          explanation: "Acknowledge the premature interrupt in one sentence, then finish the opening. The question gets a stronger answer once the shape is grounded.",
         },
       ],
     },

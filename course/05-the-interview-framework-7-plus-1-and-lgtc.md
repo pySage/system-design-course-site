@@ -343,6 +343,52 @@ archetype says: Messaging / Delivery owns the core path
 
 That bridge is the reason Chapter 06 comes after this one.
 
+## Translate The Industry Labels Without Changing The Move
+
+Here is a common interview trap.
+
+You give a clean opening.
+You ask the `7+1`, compress the read into `LGTC`, and keep components out of the first minute.
+Then the interviewer says:
+
+> "Great. What are your functional and non-functional requirements?"
+
+Nothing has gone wrong.
+They are using the standard interview labels for facts you already extracted.
+The translation is:
+
+| Interviewer phrase | What it means in this course |
+|---|---|
+| functional requirements | the scope: who uses the system, what actions they take, and which read/write paths are in scope |
+| non-functional requirements | the `LGTC` read: load, guarantees, topology, and constraints |
+| data model or query patterns | the `+1`: data shape and query shape |
+| API sketch | a small contract after `7+1` and `LGTC`, before the architecture hardens |
+
+So if someone asks for functional requirements, do not recite the whole framework.
+Say what the product must do and who it must serve.
+For Slack: users send messages in DMs and channels, read recent history, receive live updates, and may need search, retention, or admin controls depending on scope.
+
+If someone asks for non-functional requirements, speak the `LGTC` buckets out in normal interview language.
+Say "load is bursty fanout," "guarantees are durable accept and per-conversation order," "topology separates sync accept from async delivery," and "constraints include tenant isolation and retention."
+You can use `LGTC` while practicing, but in the room the words should sound like system reasoning, not acronym recital.
+
+The `+1` still means data shape and query shape.
+It is not the API step.
+The API sketch is a separate deliverable after extraction: useful before the component map hardens, dangerous if it appears before the pressure and guarantees are visible.
+
+Typical time allocation is a guide, not a countdown:
+
+| Phase | Typical budget |
+|---|---|
+| scope and functional requirements | `2-3` minutes |
+| `LGTC` opening / non-functional requirements | `4-6` minutes |
+| API sketch | `1-2` minutes |
+| component map | `5-8` minutes |
+| deep dives, tradeoffs, and failure modes | `15-20` minutes |
+
+The interviewer sets the pace.
+If they redirect early, follow them, but keep the structure in your head.
+
 ## Sketch The API Contract After Extraction
 
 After the `7+1` and `LGTC` read, an interviewer may expect a small API sketch before the architecture diagram.
@@ -585,6 +631,25 @@ Expected direction:
 The design ask is about riders requesting trips and drivers being matched in real time. Wrong or duplicated assignments are correctness failures, while matching latency is product-critical. Pressure concentrates in dense geo cells and city spikes. Fresh truth matters on nearby supply and assignment state, while some analytics and history can lag. The hot path stays narrow around matching and assignment, while notifications and analytics can defer. Constraints include availability, safety, operational visibility, and regional behavior. Data shape matters more for geo-indexing and live state than for heavy secondary indexing.
 
 If a box appears before the `LGTC` read, restart from the fact you skipped.
+
+## Tradeoff Statements Need A Shape
+
+Interviewers listen for explicit tradeoffs.
+Do not only imply one through a component choice.
+
+Use this sentence shape when the answer starts getting busy:
+
+> "I am choosing `[X]` over `[Y]` because `[load / guarantee / topology pressure]` means `[consequence]`; the cost is `[what I give up]`."
+
+For Slack:
+
+> "I am choosing at-least-once delivery with message IDs over infrastructure-level exactly-once delivery because live messaging needs low latency and retries are normal; the cost is that clients or application logic must deduplicate repeated deliveries."
+
+A weaker version is:
+
+> "Exactly-once is hard, so I would use at-least-once."
+
+That may be true, but it does not tell the interviewer what pressure made the choice right or what cost you accepted.
 
 ## Before You Move To Lesson 06
 

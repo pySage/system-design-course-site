@@ -398,6 +398,52 @@ less coaching, more constraints, more interruptions, sharper scoring.
 If test mode keeps exposing the same weakness, do not stay in test mode out of pride.
 Step back to teach or quiz mode and repair it directly.
 
+## Handling Interviewer-Directed Deep Dives
+
+Most real interviews do not let you give a perfect lecture.
+After the opening, the interviewer will usually point at one part and ask:
+
+> "Tell me more about that."
+
+That is the intended format.
+It is not automatically a sign that you are failing.
+The skill is to move without losing the structure you just built.
+
+Use three response patterns.
+
+| Situation | Response pattern |
+|---|---|
+| premature interrupt before the opening is complete | acknowledge it once, then finish the opening |
+| post-opening deep dive | pivot cleanly and own the topic |
+| a broad prompt that forces you to skip something | say what you are focusing on and what you are leaving for later |
+
+For a premature interrupt, keep the sentence short:
+
+> "I will come back to that; let me finish the opening so the answer is grounded."
+
+Then continue.
+Do not abandon the opening at minute four and spend the rest of the interview answering from an unstable shape.
+
+For a post-opening deep dive, take the prompt directly.
+Trace the path, name the tradeoff, and use the Chapter 05 sentence shape:
+"I am choosing `[X]` over `[Y]` because `[pressure]`; the cost is `[tradeoff]`."
+
+For skip-flagging, be explicit:
+
+> "I am going to focus on write-path durability here. I am not covering search freshness yet, but I can circle back."
+
+Common deep-dive prompts usually map back to a course layer:
+
+| Interviewer prompt | Response tactic |
+|---|---|
+| "Why not just use Postgres for this?" | state the pressure Postgres may not absorb, then name the tradeoff |
+| "How does this handle a node failure?" | trace the failure path on the component map instead of naming a pattern |
+| "What happens when volume doubles overnight?" | rerun the load read on the new number |
+| "Walk me through a write from user to storage." | trace one path end to end and name each hop's purpose |
+| "What if the message queue falls behind?" | return to the guarantee: what does the user see and what promise weakens? |
+| "How would you handle a hot partition?" | name the key shape that caused it, then the mitigation |
+| "What is your biggest risk in this design?" | lead with the weakest `LGTC` dimension, not a generic concern |
+
 ## One Useful 45-Minute Practice Session
 
 A good session does not need to be long.

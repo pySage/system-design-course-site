@@ -614,6 +614,26 @@ Strong answers name both sides. Saying only what you chose is incomplete; the in
 The point of a good flow is not to sound scripted. It is to prevent rambling and make sure pressure, guarantees, topology, and constraints appear before components.`,
   },
   {
+    id: "functional-requirements",
+    term: "Functional Requirements",
+    group: "interview-reasoning",
+    aliases: ["functional requirement", "functional requirements", "FR", "FRs", "use case", "use cases"],
+    summary: "What the system must do: actors, actions, and in-scope read/write paths.",
+    body: `Functional requirements describe what the system must do and who it must serve.
+
+In this course, they are settled through the opening scope questions: who are the users, what actions are in scope, and which read/write paths matter. They should be clear before sizing. Estimating load before scope is settled means estimating the wrong thing.`,
+  },
+  {
+    id: "non-functional-requirements",
+    term: "Non-Functional Requirements",
+    group: "interview-reasoning",
+    aliases: ["non-functional requirement", "non-functional requirements", "NFR", "NFRs", "quality attributes"],
+    summary: "Performance, consistency, availability, and compliance constraints captured by LGTC.",
+    body: `Non-functional requirements describe how the system must behave under pressure.
+
+LGTC is the course's compression format for them: scale, peaks, and fanout belong in Load; wrong or lost data, consistency, and ordering belong in Guarantees; latency, geography, and decoupling belong in Topology; compliance, regulatory limits, and cost belong in Constraints. In the interview room, speak those dimensions out loud instead of relying on the acronym alone.`,
+  },
+  {
     id: "api-contract",
     term: "API Contract",
     group: "interview-reasoning",
