@@ -25,7 +25,7 @@ Sizing should quantify the pressure.
 The API contract should expose the product boundary and guarantee.
 The transport choice should follow latency, directionality, connection count, and delivery expectations.
 
-## Start With One Bad Week Of Preparation
+## Start With One Plausible But Unstable Week Of Preparation
 
 Imagine a candidate who has spent a week doing full mocks.
 
@@ -36,9 +36,13 @@ The interviewer says:
 
 > "Design Stripe."
 
-The candidate answers fast:
+The candidate has seen the common pieces and answers fast:
 
-> "We will need an API gateway, a ledger, Kafka, Redis, a database, retries, and maybe sagas."
+> "I would start with idempotency keys, a ledger-style write path, retries, an outbox or Kafka for webhooks, and maybe sagas for external payment flows."
+
+That is a credible starting inventory, not the interview answer yet.
+Several of those ideas may belong in a payment design.
+The problem is that the answer gives likely infrastructure before it has named the payment promise, retry identity, consistency boundary, or failure mode those pieces are supposed to protect.
 
 Then the interviewer asks:
 
@@ -60,7 +64,7 @@ The answer becomes:
 
 > "Maybe downtime or scale issues."
 
-This is not mainly a knowledge problem.
+This is not mainly a vocabulary problem.
 The candidate has seen the words.
 The real problem is training order.
 
@@ -203,7 +207,7 @@ Those four are enough because they force different openings.
 `Uber` makes you separate live state from deferred work.
 
 A strong Stage-2 run has a very specific feel:
-the first two or three minutes sound slower than a component dump, but much more stable after that.
+the first two or three minutes sound slower than a component-first opening, but much more stable after that.
 
 Do not leave this stage until you can run a clean opening without decorative boxes, and do it consistently.
 
@@ -233,7 +237,7 @@ For each system, you should be able to say:
 - what tradeoff interviewers expect you to notice
 - what failure mode appears first
 
-This is where many candidates sound better than they really are.
+This is where many candidates sound knowledgeable but still unstable.
 They can say the right nouns, but the components still feel detached from the pressure.
 
 If I ask:
@@ -738,7 +742,7 @@ Use Airbnb search versus booking until the contrast is automatic.
 
 ### Medium: Opening Keeps Collapsing Into Components
 
-You hear `Design Slack` and immediately say WebSockets, Kafka, and Redis.
+You hear `Design Slack` and immediately reach for WebSockets, Kafka, and Redis before saying what they protect.
 
 Do not memorize a better Slack architecture yet.
 Run Stage 2:

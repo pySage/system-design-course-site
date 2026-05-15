@@ -296,7 +296,7 @@ can be late without selling the room twice</code></pre>
 <ul><li>it does not ask the <a class="term-link" href="glossary.html#transport-choice" title="The decision about how clients and services communicate on a path.">transport</a> for magic</li><li>it explains the duplicate user-visible effect</li><li>it keeps <a class="term-link" href="glossary.html#ordering" title="Whether operations or events must be seen in a particular sequence.">ordering</a> local to the conversation instead of global to the whole platform</li></ul>
 <h3 id="hard-payment-plus-webhook">Hard: Payment Plus Webhook</h3>
 <p>A payment succeeds in the core ledger. Right after the commit, the process crashes before the merchant webhook is sent. When the system restarts, the merchant still needs to hear about the successful payment exactly once from a business point of view.</p>
-<p>A weak answer says:</p>
+<p>An incomplete answer says:</p>
 <blockquote>&quot;Kafka will make the event reliable.&quot;</blockquote>
 <p>A better answer says:</p>
 <blockquote>&quot;The core payment commit and the pending event record should be written together, then a worker can publish that pending event safely. That protects the committed business fact from being lost between the database and the downstream notification.&quot;</blockquote>

@@ -488,7 +488,7 @@ Practice replacing component-first phrases with timeline-first phrases.
 The test is simple:
 if your sentence names a component but not the promise, lag, or failure it manages, it is still too shallow.
 
-## Repair The Shopping List
+## Repair The Tool List
 
 If your answer starts like this, it sounds busy but not designed:
 
@@ -518,7 +518,7 @@ Expected direction:
 
 The hot path should end only after the original blob and core metadata are durably accepted, while transcoding, search updates, notifications, analytics, and cache warming move behind workers. Queues help absorb spikes, but backlog age and retry behavior must stay visible. Popular watch-path data can be cached if staleness is bounded and expiry or invalidation is clear. Retry safety depends on idempotent job or chunk identities. Under stress, recommendation freshness and expensive renditions should weaken before upload acceptance or first-playable availability. Operability should measure latency, lag, retries, and cache behavior directly.
 
-If your answer still sounds like a shopping list of "Kafka, Redis, and dashboards," rerun the sequence and attach every tool to a promise, lag, or failure signal.
+If your answer still sounds like a tool list of "Kafka, Redis, and dashboards," rerun the sequence and attach every tool to a promise, lag, or failure signal.
 
 ## Before You Move To Lesson 05
 

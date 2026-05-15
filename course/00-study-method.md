@@ -4,20 +4,23 @@ Before a system design course starts naming databases, queues, and caches, it ma
 
 This course chooses to train reasoning before recall. That choice is the teaching philosophy and the course structure at the same time. The chapters appear in this order because strong design explanations usually emerge in this order.
 
-## The Wrong Instinct
+## The Premature Instinct
 
 Imagine two candidates are asked to design a large group chat system.
 
 The first candidate starts like this:
 
-> "I would probably use Kafka, Redis, WebSockets, Cassandra, and a notification service."
+> "I would probably start with persistent WebSockets, Kafka-backed fanout, Redis for presence, Cassandra-style message storage, and push notifications."
 
 The second candidate starts like this:
 
 > "Before I name components, I want to know what is actually making this system hard. Is the main problem fanout to huge groups, latency for online users, correctness of message state, or something else?"
 
-The first answer sounds borrowed.
-The second answer sounds designed.
+The first answer is not nonsense.
+A decent candidate may know those are plausible parts of a chat system.
+The weakness is that the answer has moved to tools before it has shown why those tools are necessary.
+
+The second answer sounds designed because it gives the interviewer the reasoning path, not just the likely destination.
 
 That difference is the whole reason this course exists.
 
@@ -35,7 +38,7 @@ Picture one user action entering a blank system. It might be a message send, a b
 
 Once that becomes visible, the next questions arrive naturally. What data does this action touch? What guarantee must remain true if the same action is retried, if two users race, or if one dependency slows down? What must happen before the user can trust the result, and what can move later? Only after that do components begin to earn their place.
 
-At that point, the design stops sounding like a shopping list and starts sounding like a response. Maybe you need a queue because some work can safely happen later. Maybe you need a cache because the same reads repeat and a little staleness is acceptable. Maybe you need replication because failure tolerance matters. Maybe you need a partition key because one boundary of work needs to stay together. The important part is not the component name. The important part is that each choice is answering a pressure you already uncovered.
+At that point, the design stops sounding like a list of plausible tools and starts sounding like a response. Maybe you need a queue because some work can safely happen later. Maybe you need a cache because the same reads repeat and a little staleness is acceptable. Maybe you need replication because failure tolerance matters. Maybe you need a partition key because one boundary of work needs to stay together. The important part is not the component name. The important part is that each choice is answering a pressure you already uncovered.
 
 By the time those questions line up in your head, you have the mind map this course is building. It is not a map of technologies. It is a map of reasoning: pressure, data, guarantees, time, tradeoffs, and failure. Each chapter sharpens one part of that picture until the sequence becomes hard to lose.
 
@@ -45,9 +48,9 @@ You do not need the full framework yet. You only need to see the order of though
 
 Take the design ask: "Design large group chat."
 
-A borrowed answer sounds like this:
+A premature answer sounds like this:
 
-> "I would use WebSockets, Kafka, Redis, Cassandra, and push notifications."
+> "I would use WebSockets for active clients, Kafka for fanout, Redis for presence, Cassandra for messages, and push notifications for offline users."
 
 A reasoned answer starts differently:
 

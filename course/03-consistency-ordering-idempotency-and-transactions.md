@@ -486,7 +486,7 @@ A payment succeeds in the core ledger.
 Right after the commit, the process crashes before the merchant webhook is sent.
 When the system restarts, the merchant still needs to hear about the successful payment exactly once from a business point of view.
 
-A weak answer says:
+An incomplete answer says:
 
 > "Kafka will make the event reliable."
 

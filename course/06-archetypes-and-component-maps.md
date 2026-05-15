@@ -458,7 +458,7 @@ Chapter 07 will separate the mixed ownership cleanly.
 A product needs to send push notifications to millions of users.
 Some users are online, some are offline, and duplicate notifications are annoying but not usually as dangerous as duplicate payments.
 
-A weak answer says:
+An incomplete answer says:
 
 > "Use Kafka and workers."
 

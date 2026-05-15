@@ -247,7 +247,7 @@ export const PROBE_BANK = [
     format: "mcq",
     prompt: "Which opening sounds more like a pressure-first read?",
     options: [
-      "We should use Kafka, Redis, and a SQL database because chat systems usually need them.",
+      "For chat, I would probably start with Kafka, Redis, SQL storage, and WebSockets.",
       "Before naming components, I want to know whether fanout, latency, correctness, or something else is the main pressure here.",
       "The answer depends entirely on whether the company prefers microservices.",
       "I would start with caching because latency is always the hardest part.",

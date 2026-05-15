@@ -38,10 +38,10 @@ export const CHAPTER_COACHES = {
           "Check whether the learner can explain why this course starts from pressure and tradeoffs before boxes.",
         promptHint:
           "Keep the learner in plain language. Ask for the reasoning habit, not for framework jargon.",
-        summary: "Can the learner say why pressure-first reasoning produces a better opening than a component dump?",
+        summary: "Can the learner say why pressure-first reasoning produces a better opening than a component-first answer?",
         systemAnchor: "Large group chat",
         fallbackPrompt:
-          "Two candidates hear 'Design large group chat.' One starts with Kafka, Redis, and sharding. The other starts by asking what pressure makes the system hard. Why is the second opening stronger in this course?",
+          "Two candidates hear 'Design large group chat.' One gives plausible components like Kafka, Redis, sharding, and WebSockets before naming the pressure. The other starts by asking what pressure makes the system hard. Why is the second opening stronger in this course?",
         expectedConcepts: ["pressure", "before components", "why", "tradeoff", "real stress"],
         qualitySignals: ["because", "before", "instead", "reasoning", "hard part"],
         antiPatterns: ["kafka", "redis", "microservice", "tool list"],
@@ -514,7 +514,7 @@ export const CHAPTER_COACHES = {
         summary: "Can the learner step back to the earliest layer that still owns the miss?",
         systemAnchor: "Premature components in a mock",
         fallbackPrompt:
-          "In a mock interview, you keep naming Kafka and Redis before finishing the 7+1. Which stage should repair that miss first, and why is drilling a harder mock the wrong first move?",
+          "In a mock interview, you can name plausible tools like Kafka and Redis, but you do it before finishing the 7+1. Which stage should repair that miss first, and why is drilling a harder mock the wrong first move?",
         expectedConcepts: ["owning layer", "stage", "step back", "opening", "repair"],
         qualitySignals: ["because", "first", "repair", "before", "stage"],
         antiPatterns: ["harder mock", "random system", "memorize more tools", "just practice more"],

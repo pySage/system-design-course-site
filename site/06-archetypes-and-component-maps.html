@@ -265,7 +265,7 @@ boxes third</code></pre>
 <h2 id="difficulty-ladder-shape-reads">Difficulty Ladder: Shape Reads</h2>
 <h3 id="easy-notification-delivery">Easy: Notification Delivery</h3>
 <p>A product needs to send push notifications to millions of users. Some users are online, some are offline, and duplicate notifications are annoying but not usually as dangerous as duplicate payments.</p>
-<p>A weak answer says:</p>
+<p>An incomplete answer says:</p>
 <blockquote>&quot;Use Kafka and workers.&quot;</blockquote>
 <p>A better answer says:</p>
 <blockquote>&quot;This smells like messaging and delivery because one event becomes delivery work to recipients, timing and <a class="term-link" href="glossary.html#retry" title="Trying an operation again after a timeout or transient failure.">retries</a> matter, and the first failure is <a class="term-link" href="glossary.html#fanout" title="One action causing many downstream actions.">fanout</a> or delayed receiver paths.&quot;</blockquote>

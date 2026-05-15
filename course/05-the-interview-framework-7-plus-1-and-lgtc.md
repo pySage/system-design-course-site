@@ -4,12 +4,13 @@ Imagine the interviewer says:
 
 > "Design Slack."
 
-A weak start sounds busy:
+A plausible but premature start sounds busy:
 
-> "We will have clients, an API gateway, Kafka, Redis, databases, and WebSockets."
+> "I would probably use WebSockets for live delivery, Kafka for fanout, Redis for presence, and a durable message store."
 
-It sounds architectural, but it is still mostly theater.
-Nothing in that answer has been justified yet.
+Those boxes might all appear later.
+The issue is not that the candidate has never seen a Slack-like design.
+The issue is that the architecture has not been earned yet.
 
 A stronger start sounds slower for about ten seconds, and then much faster after that:
 
@@ -395,7 +396,7 @@ After the `7+1` and `LGTC` read, an interviewer may expect a small API sketch be
 That does not change the framework.
 It is a deliverable that sits between extraction and component choice.
 
-The API sketch should show the product boundary, not a hidden component dump.
+The API sketch should show the product boundary, not a hidden component list.
 It should answer:
 
 - what action is the client asking for?
@@ -510,7 +511,7 @@ It becomes a justified read.
 
 ## What A Good First Two Minutes Sounds Like
 
-A weak chapter-05 opening sounds like this:
+A premature chapter-05 opening sounds like this:
 
 > "I would use WebSockets, Kafka, Redis, and a database."
 
@@ -522,7 +523,7 @@ An expanded 60-second opening sounds like this:
 
 > "Before jumping to components, I want to clarify the dominant stresses. For Slack, users are sending messages in DMs and channels, with bursty fanout in large channels. Lost or misdelivered messages are trust failures, while send latency matters much more than analytics freshness. Ordering needs are local to conversations, not global. Search and push can lag more than durable message acceptance. There may also be enterprise constraints like retention, privacy, and eDiscovery. Given that, my `LGTC` read is: load is bursty messaging fanout with local hot spots; guarantees are durable accept plus per-conversation ordering; topology is sync accept with async delivery and indexing; constraints are enterprise trust, isolation, availability, and operability. With that framing, I would treat the core as a messaging system and then walk the write path first."
 
-Both answers are better than the component dump because they sound like reasoning, not memorization.
+Both answers are better than the component-first version because they show the reasoning that makes the later components defensible.
 
 It does not just avoid mistakes.
 It creates a stable platform for the rest of the interview.
@@ -560,7 +561,7 @@ The opening should work when the design ask is tiny, broad, or mixed.
 
 ### Easy: Design A URL Shortener
 
-A weak opening says:
+An ungrounded opening says:
 
 > "We need an API, a database, and a cache."
 
@@ -573,9 +574,9 @@ The opening still earns the cache instead of naming it first.
 
 ### Medium: Design Slack
 
-A weak opening says:
+A premature opening says:
 
-> "Use WebSockets and Kafka."
+> "Probably WebSockets for active clients and Kafka for fanout."
 
 A better opening says:
 
@@ -585,7 +586,7 @@ This is medium because live messaging and history search already pull in differe
 
 ### Hard: Design YouTube
 
-A weak opening says:
+A premature opening says:
 
 > "Use object storage, CDN, and recommendations."
 

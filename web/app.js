@@ -725,7 +725,7 @@
         {
           prompt: "What does a strong first two minutes in a system-design interview sound like?",
           options: [
-            "A fast component dump so the interviewer knows you have seen common infrastructure before.",
+            "A fast list of plausible components before the system pressure is clear.",
             "A requirements pause, a few clarifying questions, an LGTC summary, then a justified archetype and path walk.",
             "A storage choice first, because it determines every later answer.",
             "An immediate discussion of caching, because latency is always the main issue.",
@@ -966,7 +966,7 @@
             "Ignore the new constraint until the end so you can finish the original answer.",
           ],
           answer: 2,
-          explanation: "Pressure should not erase the framework. A strong answer absorbs the new fact into the existing structure instead of panicking into a fresh component dump.",
+          explanation: "Pressure should not erase the framework. A strong answer absorbs the new fact into the existing structure instead of jumping to a fresh component list.",
         },
         {
           prompt: "What is the minimum sign that an answer is becoming interview-ready?",
@@ -1067,7 +1067,7 @@
       title: "Opening move",
       prompt: "Which opening matches the teaching philosophy of this course?",
       options: [
-        '“I would probably use Kafka, Redis, and sharding.”',
+        '“For this chat system I would probably start with Kafka, Redis, sharding, and WebSockets.”',
         '“Before naming components, I want to know whether fanout, correctness, latency, or skew is making this system hard.”',
       ],
       answer: 1,
