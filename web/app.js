@@ -3080,11 +3080,25 @@
 
     const mock = mockInterviewState.data;
     if (!mock) {
+      const bodyMarkup = mockInterviewState.error
+        ? `
+            <div class="coach-panel-intro">
+              <div class="coach-card-title">Mock state could not load</div>
+              <p class="result-copy">${escapeHtml(mockInterviewState.error)}</p>
+            </div>
+            <div class="quiz-actions">
+              <button class="button button-secondary${mockInterviewState.loading ? " is-loading" : ""}" type="button" data-mock-state-retry${buttonBusyAttrs(mockInterviewState.loading)}>
+                ${buttonInnerMarkup("Retry", "Retrying…", mockInterviewState.loading)}
+              </button>
+            </div>
+          `
+        : loadingStatusMarkup("Loading mock state", "Pulling readiness, history, and current interview state for this reader.");
+
       return `
         <div class="coach-grid">
           <div class="result-card coach-panel">
             <p class="panel-label">AI Mock Interview</p>
-            ${loadingStatusMarkup("Loading mock state", "Pulling readiness, history, and current interview state for this reader.")}
+            ${bodyMarkup}
           </div>
         </div>
       `;
@@ -3226,6 +3240,29 @@
             mockInterviewState.data = payload.mockInterview;
             await refreshActiveLearner();
             return;
+          } catch (error) {
+            mockInterviewState.error = error.message;
+          } finally {
+            mockInterviewState.loading = false;
+            syncPersonalizationUi();
+          }
+        });
+      });
+
+      root.querySelectorAll("[data-mock-state-retry]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!personalizationState.activeUserId || mockInterviewState.loading) {
+            return;
+          }
+
+          mockInterviewState.loading = true;
+          mockInterviewState.error = "";
+          syncPersonalizationUi();
+
+          try {
+            const payload = await apiJson(`/api/users/${personalizationState.activeUserId}/mock-interview/state`);
+            mockInterviewState.data = payload.mockInterview;
+            mockInterviewState.error = "";
           } catch (error) {
             mockInterviewState.error = error.message;
           } finally {

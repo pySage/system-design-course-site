@@ -122,9 +122,14 @@ async function readJson(filePath, fallback) {
 
 async function writeJson(filePath, value) {
   await ensureRuntime();
-  const tempPath = `${filePath}.tmp`;
-  await fs.writeFile(tempPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
-  await fs.rename(tempPath, filePath);
+  const tempPath = `${filePath}.${process.pid}.${Date.now()}.${crypto.randomUUID()}.tmp`;
+  try {
+    await fs.writeFile(tempPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+    await fs.rename(tempPath, filePath);
+  } catch (error) {
+    await fs.rm(tempPath, { force: true });
+    throw error;
+  }
 }
 
 function withMutation(task) {
@@ -144,11 +149,6 @@ export async function loadUsersState() {
     users,
   };
 
-  if (JSON.stringify(normalized.users) !== JSON.stringify(state.users)) {
-    await saveUsersState(normalized);
-    return normalized;
-  }
-
   return normalized;
 }
 
@@ -156,16 +156,10 @@ export async function loadAttemptsState() {
   const state = await readJson(attemptsPath, defaultAttemptsState);
   const attempts = state.attempts.filter((attempt) => isKnownAccountId(attempt.userId));
 
-  if (attempts.length === state.attempts.length) {
-    return state;
-  }
-
-  const normalized = {
+  return {
     ...state,
     attempts,
   };
-  await saveAttemptsState(normalized);
-  return normalized;
 }
 
 export async function saveUsersState(state) {
