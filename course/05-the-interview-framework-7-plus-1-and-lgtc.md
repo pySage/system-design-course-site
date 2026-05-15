@@ -19,11 +19,12 @@ That pause is the whole point of this chapter.
 It is not hesitation.
 It is the moment where you prevent the answer from becoming a memorized box diagram.
 
-Before the course uses words like `framework`, `7+1`, or `LGTC`, give them a practical meaning:
+Before the course uses words like `framework`, `7+1`, `LGTC`, or `archetype`, give them a practical meaning:
 
 - a `design ask` is the one-line system-design request you are trying to open up, such as "Design Slack"
 - `7+1` is the small set of opening questions that pulls out the facts hidden inside that request
 - `LGTC` is a short four-bucket summary of those facts after you have extracted them
+- an `archetype` is the familiar kind of system the facts point toward, such as messaging, search, media delivery, payments, collaboration, observability, or dispatch
 - a `framework` is a guardrail that keeps your first two minutes in the right order, not a script to recite
 
 In this course, that one-line instruction from the interviewer is the design ask.
