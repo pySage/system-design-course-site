@@ -1541,6 +1541,47 @@ function renderArenaPage() {
       <div data-practice-arena></div>
     </section>
 
+    <section class="section-block" id="ai-mock-interview">
+      <div class="section-heading">
+        <p class="eyebrow">AI Mock Interview</p>
+        <h2>Run proper mocks that adapt to your answers, not a static prompt bank</h2>
+        <p>${renderLinkedInline(
+          "A mock interview should choose the problem from your weak spots, respond to your actual transcript, interrupt when the opening is unstable, push deeper when an answer holds, and finish with a scored repair route.",
+        )}</p>
+      </div>
+      <div class="chapter-frame-grid">
+        <article class="frame-card">
+          <p class="panel-label">Problem Selection</p>
+          <h3>Starts From The Learner Profile</h3>
+          <p>${renderLinkedInline(
+            "The interviewer uses completed lessons, recent misses, weak skills, and previous arena evidence to choose Slack, Stripe, YouTube, Datadog, dispatch, or collaboration-style problems.",
+          )}</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Live Adaptation</p>
+          <h3>Follows The Transcript</h3>
+          <p>${renderLinkedInline(
+            "Each turn is a real follow-up. Good openings get deeper constraints; weak openings get pulled back to the earliest layer that owns the miss.",
+          )}</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Scoring</p>
+          <h3>Scores Interview Dimensions</h3>
+          <p>${renderLinkedInline(
+            "The score is not activity count. It tracks requirements, dominant stress, system shape, component justification, tradeoffs, and failure modes.",
+          )}</p>
+        </article>
+        <article class="frame-card">
+          <p class="panel-label">Repair Route</p>
+          <h3>Routes Back Into Practice</h3>
+          <p>${renderLinkedInline(
+            "The final score names the weakest dimension and gives the next repair move before another full mock is started.",
+          )}</p>
+        </article>
+      </div>
+      <div data-mock-interview></div>
+    </section>
+
     <section class="section-block two-up" id="arena-rhythm">
       <div class="feature-card">
         <p class="eyebrow">Use It Well</p>
@@ -1569,6 +1610,7 @@ function renderArenaPage() {
       { level: 2, text: "How A Set Works", id: "arena-sets" },
       { level: 2, text: "Production Case Files", id: "arena-case-files" },
       { level: 2, text: "Live Arena", id: "arena-live" },
+      { level: 2, text: "AI Mock Interview", id: "ai-mock-interview" },
       { level: 2, text: "Use It Well", id: "arena-rhythm" },
     ],
     bodyClass: "arena-body",

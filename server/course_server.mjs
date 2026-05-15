@@ -42,6 +42,13 @@ import {
   setArenaActiveRound,
   startArenaSession,
 } from "./practice_arena_state.mjs";
+import {
+  applyMockInterviewTurn,
+  mockInterviewPlan,
+  mockInterviewPublicState,
+  setMockInterviewActiveProbe,
+  startMockInterview,
+} from "./mock_interview_state.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteDir = path.join(rootDir, "site");
@@ -345,6 +352,118 @@ async function evaluateArenaTextProbe(user, probe, answer) {
       probe,
       answer,
       chapterContext: arenaContext,
+    });
+    return { review, threadId };
+  } catch (error) {
+    return {
+      review: evaluateTextProbeHeuristic(probe, answer),
+      threadId: user.codexThreadId ?? null,
+      fallbackReason: error.message,
+    };
+  }
+}
+
+function mockInterviewTranscriptSummary(session) {
+  const turns = (session.transcript ?? [])
+    .slice(-8)
+    .map((turn) => {
+      const label =
+        turn.role === "user"
+          ? "candidate"
+          : turn.type === "feedback"
+            ? "coach feedback"
+            : "interviewer";
+      return `- ${label}: ${String(turn.content ?? "").replace(/\s+/g, " ").trim().slice(0, 260)}`;
+    })
+    .join("\n");
+
+  return turns || "- no turns yet";
+}
+
+function mockInterviewPromptConstraint(plan, feedback = null) {
+  const lines = [
+    "This probe belongs to a proper AI-native system design mock interview, not a static drill card.",
+    `Mock problem: ${plan.session.problemPrompt}`,
+    `Current phase: ${plan.phase.label}. ${plan.phase.summary}`,
+    `Turn number: ${plan.session.turnNumber}.`,
+    `Primary adaptation reason: ${plan.session.focusReason}`,
+    "Play the interviewer. Ask exactly one natural follow-up question.",
+    "Do not give the answer. Do not summarize the course. Do not ask for a generic component list.",
+    "Adapt to the transcript: if the candidate already clarified well, push architecture or tradeoff; if they skipped the opening, pull them back.",
+    "The candidate should answer in spoken interview style, roughly 3-8 sentences.",
+    "Use realistic interviewer pressure: clarification, interruption, constraint change, failure, or tradeoff defense.",
+    `Recent transcript:\n${mockInterviewTranscriptSummary(plan.session)}`,
+  ];
+
+  if (feedback?.misses?.length) {
+    lines.push(`The last answer missed: ${feedback.misses.join("; ")}.`);
+    lines.push("Aim the next interviewer question at the earliest missed layer instead of blindly making the mock harder.");
+  }
+
+  return lines.join("\n");
+}
+
+function fallbackMockInterviewProbe(user, plan) {
+  const fallback = generateAdaptiveProbe({ user, target: plan.target });
+  return {
+    ...fallback,
+    source: "mock-fallback",
+    coachMode: "mock-interview",
+    mockSessionId: plan.session.id,
+    mockPhaseId: plan.phase.id,
+    summary: `${plan.phase.label}. ${fallback.summary}`,
+    prompt: `${plan.phase.label}: ${fallback.prompt}`,
+  };
+}
+
+async function generateMockInterviewProbe(user, feedback = null) {
+  const plan = mockInterviewPlan(user);
+  if (!plan) {
+    throw new Error("No active mock interview is ready for another turn.");
+  }
+
+  try {
+    const { probe, threadId } = await generateContextualProbeWithCodex({
+      user,
+      target: plan.target,
+      extraConstraint: mockInterviewPromptConstraint(plan, feedback),
+    });
+
+    return {
+      probe: {
+        ...probe,
+        coachMode: "mock-interview",
+        mockSessionId: plan.session.id,
+        mockPhaseId: plan.phase.id,
+      },
+      threadId,
+      generationFallbackReason: null,
+    };
+  } catch (error) {
+    return {
+      probe: fallbackMockInterviewProbe(user, plan),
+      threadId: user.codexThreadId ?? null,
+      generationFallbackReason: error.message,
+    };
+  }
+}
+
+async function evaluateMockInterviewTextProbe(user, probe, answer) {
+  const plan = mockInterviewPlan(user);
+  const mockContext = [
+    `- mock problem: ${plan?.session?.problemPrompt ?? "active mock"}`,
+    `- mock phase: ${plan?.phase?.label ?? "unknown"}`,
+    `- adaptation reason: ${plan?.session?.focusReason ?? "adaptive mock interview"}`,
+    `- transcript:`,
+    mockInterviewTranscriptSummary(plan?.session ?? {}),
+  ].join("\n");
+
+  try {
+    const { review, threadId } = await reviewTextWithCodex({
+      user,
+      probe,
+      answer,
+      chapterContext: mockContext,
     });
     return { review, threadId };
   } catch (error) {
@@ -954,6 +1073,154 @@ async function handleApi(request, response, pathname) {
         fallbackReason: textResult.fallbackReason ?? null,
         generationFallbackReason,
         arena: arenaPublicState(finalUser),
+      });
+    } catch (error) {
+      json(response, 400, { error: error.message });
+    }
+
+    return true;
+  }
+
+  const mockStateMatch = pathname.match(/^\/api\/users\/([^/]+)\/mock-interview\/state$/);
+  if (mockStateMatch && request.method === "GET") {
+    const user = await findUser(mockStateMatch[1]);
+    if (!user) {
+      notFound(response);
+      return true;
+    }
+
+    json(response, 200, { mockInterview: mockInterviewPublicState(user) });
+    return true;
+  }
+
+  const mockStartMatch = pathname.match(/^\/api\/users\/([^/]+)\/mock-interview\/start$/);
+  if (mockStartMatch && request.method === "POST") {
+    const user = await findUser(mockStartMatch[1]);
+    if (!user) {
+      notFound(response);
+      return true;
+    }
+
+    const currentState = mockInterviewPublicState(user);
+    if (!currentState.readiness.ready) {
+      json(response, 400, { error: currentState.readiness.lockedCopy });
+      return true;
+    }
+
+    if (currentState.activeSession?.status === "active" && currentState.activeSession?.activeProbe) {
+      json(response, 200, { mockInterview: currentState });
+      return true;
+    }
+
+    const plannedUser = startMockInterview(user);
+    const generated = await generateMockInterviewProbe(plannedUser);
+    const updatedUser = await updateUser(user.id, (current) => {
+      const seeded = startMockInterview({
+        ...current,
+        codexThreadId: generated.threadId ?? current.codexThreadId,
+      });
+      const next = setMockInterviewActiveProbe(seeded, generated.probe);
+
+      return {
+        ...next,
+        codexThreadId: generated.threadId ?? next.codexThreadId,
+      };
+    });
+
+    primeLearnerSessionInBackground(updatedUser);
+    json(response, 200, {
+      mockInterview: mockInterviewPublicState(updatedUser),
+      generationFallbackReason: generated.generationFallbackReason,
+    });
+    return true;
+  }
+
+  const mockTurnMatch = pathname.match(/^\/api\/users\/([^/]+)\/mock-interview\/turn$/);
+  if (mockTurnMatch && request.method === "POST") {
+    const user = await findUser(mockTurnMatch[1]);
+    if (!user) {
+      notFound(response);
+      return true;
+    }
+
+    try {
+      const body = await readBody(request);
+      const activeProbe = user.mockInterviews?.activeSession?.activeProbe;
+      if (!activeProbe || activeProbe.id !== body.probeId) {
+        json(response, 400, { error: "This mock interview turn is no longer current. Refresh and try again." });
+        return true;
+      }
+
+      const answer = String(body.answer ?? "").trim();
+      if (!answer) {
+        json(response, 400, { error: "Write an answer first." });
+        return true;
+      }
+
+      const textResult = await evaluateMockInterviewTextProbe(user, activeProbe, answer);
+      const evaluation = textResult.review;
+      const currentPlan = mockInterviewPlan(user);
+
+      const afterFeedback = await updateUser(user.id, (current) => {
+        const next = applyMockInterviewTurn(
+          {
+            ...current,
+            codexThreadId: textResult.threadId ?? current.codexThreadId,
+          },
+          answer,
+          evaluation,
+        );
+
+        return {
+          ...next,
+          codexThreadId: textResult.threadId ?? next.codexThreadId,
+        };
+      });
+
+      await recordAttempt(user.id, {
+        type: "mock-interview-turn",
+        mockSessionId: user.mockInterviews?.activeSession?.id ?? null,
+        phaseId: currentPlan?.phase?.id ?? null,
+        probeId: activeProbe.id,
+        skillId: activeProbe.skillId,
+        level: activeProbe.level,
+        prompt: activeProbe.prompt,
+        answer,
+        score: evaluation.score,
+        evaluationMode: evaluation.mode,
+        systemAnchor: activeProbe.systemAnchor ?? currentPlan?.session?.problemLabel ?? null,
+        source: activeProbe.source ?? "mock-interview",
+      });
+
+      let finalUser = afterFeedback;
+      let generationFallbackReason = null;
+      const currentMock = mockInterviewPublicState(afterFeedback);
+
+      if (currentMock.activeSession?.status === "active" && !currentMock.activeSession?.activeProbe) {
+        const generated = await generateMockInterviewProbe(afterFeedback, evaluation);
+        finalUser = await updateUser(user.id, (current) => {
+          const next = setMockInterviewActiveProbe(
+            {
+              ...current,
+              codexThreadId: generated.threadId ?? current.codexThreadId,
+            },
+            generated.probe,
+          );
+
+          return {
+            ...next,
+            codexThreadId: generated.threadId ?? next.codexThreadId,
+          };
+        });
+        generationFallbackReason = generated.generationFallbackReason;
+      }
+
+      primeLearnerSessionInBackground(finalUser);
+      json(response, 200, {
+        evaluation,
+        fallbackReason: textResult.fallbackReason ?? null,
+        generationFallbackReason,
+        mockInterview: mockInterviewPublicState(finalUser),
       });
     } catch (error) {
       json(response, 400, { error: error.message });

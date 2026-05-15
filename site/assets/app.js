@@ -1802,6 +1802,11 @@
     error: "",
     data: null,
   };
+  const mockInterviewState = {
+    loading: false,
+    error: "",
+    data: null,
+  };
   const selectionCoachState = {
     lessonSlug: null,
     text: "",
@@ -3009,6 +3014,266 @@
     });
   }
 
+  function renderMockRubric(summary) {
+    if (!summary?.rubric?.length) {
+      return "";
+    }
+
+    return `
+      <div class="coach-metrics">
+        <article class="mini-metric">
+          <span>Total score</span>
+          <strong>${escapeHtml(String(summary.total))}/${escapeHtml(String(summary.maxTotal))}</strong>
+        </article>
+        <article class="mini-metric">
+          <span>Turns</span>
+          <strong>${escapeHtml(String(summary.turns))}</strong>
+        </article>
+        <article class="mini-metric">
+          <span>Weakest</span>
+          <strong>${escapeHtml(summary.weakestDimension?.label || "None")}</strong>
+        </article>
+      </div>
+      <div class="chapter-frame-grid">
+        ${summary.rubric
+          .map(
+            (item) => `
+              <article class="frame-card">
+                <p class="panel-label">${escapeHtml(item.label)}</p>
+                <h3>${escapeHtml(String(item.score))} / 3</h3>
+                <p>${escapeHtml(item.description)}</p>
+              </article>
+            `,
+          )
+          .join("")}
+      </div>
+      <p class="result-copy"><strong>Next repair:</strong> ${escapeHtml(summary.nextRepairMove || "Run another adaptive mock.")}</p>
+    `;
+  }
+
+  function renderMockInterviewMarkup() {
+    if (personalizationState.apiUnavailable) {
+      return `
+        <div class="coach-grid">
+          <div class="result-card coach-panel">
+            <p class="panel-label">AI Mock Interview</p>
+            <div class="result-headline">Mock interviews are unavailable</div>
+            <p class="result-copy">The course pages still work, but the live interviewer cannot be reached from this browser right now.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    if (!personalizationState.activeUserId) {
+      return `
+        <div class="coach-grid">
+          <div class="result-card coach-panel">
+            <p class="panel-label">AI Mock Interview</p>
+            <div class="coach-panel-intro">
+              <div class="coach-card-title">Log in to run adaptive mocks</div>
+              <p class="result-copy">Mock interviews need a reader profile because the interviewer chooses problems, pressure, and repair routing from your progress history.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    const mock = mockInterviewState.data;
+    if (!mock) {
+      return `
+        <div class="coach-grid">
+          <div class="result-card coach-panel">
+            <p class="panel-label">AI Mock Interview</p>
+            ${loadingStatusMarkup("Loading mock state", "Pulling readiness, history, and current interview state for this reader.")}
+          </div>
+        </div>
+      `;
+    }
+
+    const session = mock.activeSession;
+    const mockLoadingMarkup = mockInterviewState.loading
+      ? loadingStatusMarkup(
+          session?.activeProbe ? "Interviewer is scoring this turn" : "Preparing mock interview",
+          session?.activeProbe
+            ? "Codex is evaluating the answer and choosing whether to push, repair, or change constraints."
+            : "Codex is choosing the prompt and first follow-up from this learner's current profile.",
+          { compact: true },
+        )
+      : "";
+    const startLabel = session?.status === "active" ? "Continue Mock" : "Start AI Mock";
+
+    const actionMarkup = !mock.readiness.ready
+      ? `
+        <div class="coach-empty coach-empty--tinted">
+          <div class="coach-panel-intro">
+            <div class="coach-card-title">Finish Chapter 08 before full mocks</div>
+            <p class="result-copy">${escapeHtml(mock.readiness.lockedCopy)}</p>
+          </div>
+        </div>
+      `
+      : session?.activeProbe
+        ? `
+          <div class="arena-session-card">
+            <div class="coach-panel-intro">
+              <div class="coach-card-title">${escapeHtml(session.problemLabel || "Current mock")}</div>
+              <p class="result-copy">${escapeHtml(session.phase?.summary || "Answer the interviewer in spoken system-design language.")}</p>
+            </div>
+            ${renderArenaPhaseProgress(session.phaseProgress)}
+            <p class="probe-question">${escapeHtml(session.activeProbe.prompt)}</p>
+            <form class="coach-chat-form" data-mock-turn-form data-probe-id="${escapeHtml(session.activeProbe.id)}">
+              <label class="probe-text-label" for="mock-answer">Your spoken answer</label>
+              <textarea id="mock-answer" name="answer" rows="7" placeholder="Drive the interview: clarify, reason, choose, and defend."></textarea>
+              <div class="quiz-actions">
+                <button class="button button-primary${mockInterviewState.loading ? " is-loading" : ""}" type="submit"${buttonBusyAttrs(mockInterviewState.loading)}>
+                  ${buttonInnerMarkup("Send Answer", "Scoring…", mockInterviewState.loading)}
+                </button>
+              </div>
+            </form>
+          </div>
+        `
+        : `
+          <div class="coach-empty coach-empty--tinted">
+            <div class="coach-panel-intro">
+              <div class="coach-card-title">${session?.status === "completed" ? "Mock complete" : "Ready for a full mock"}</div>
+              <p class="result-copy">${
+                session?.status === "completed"
+                  ? "Review the score, repair the weakest dimension, then start another mock when you want fresh pressure."
+                  : "Start a mock when you want an interviewer to choose the problem, interrupt, probe, score, and route repair based on your profile."
+              }</p>
+            </div>
+            <div class="quiz-actions">
+              <button class="button button-primary${mockInterviewState.loading ? " is-loading" : ""}" type="button" data-mock-start${buttonBusyAttrs(mockInterviewState.loading)}>
+                ${buttonInnerMarkup(startLabel, "Starting…", mockInterviewState.loading)}
+              </button>
+            </div>
+          </div>
+        `;
+
+    return `
+      <div class="coach-grid">
+        <div class="coach-status-column">
+          <div class="result-card coach-panel">
+            <p class="panel-label">Mock Readiness</p>
+            <div class="coach-panel-intro">
+              <div class="coach-card-title">Adaptive interviewer, not a prompt bank</div>
+              <p class="result-copy">${escapeHtml(mock.readiness.entryCopy)}</p>
+            </div>
+            <div class="coach-metrics">
+              <article class="mini-metric">
+                <span>Started</span>
+                <strong>${escapeHtml(String(mock.stats.sessionsStarted ?? 0))}</strong>
+              </article>
+              <article class="mini-metric">
+                <span>Completed</span>
+                <strong>${escapeHtml(String(mock.stats.sessionsCompleted ?? 0))}</strong>
+              </article>
+              <article class="mini-metric">
+                <span>Latest</span>
+                <strong>${escapeHtml(mock.stats.latestScore || "No score yet")}</strong>
+              </article>
+            </div>
+            <p class="result-copy"><strong>Likely focus:</strong> ${escapeHtml(mock.focus.label)} (${masteryPercent(mock.focus.mastery)})</p>
+          </div>
+          <div class="result-card coach-panel">
+            <p class="panel-label">Live Mock</p>
+            ${
+              session
+                ? `
+                  <div class="coach-panel-intro">
+                    <div class="coach-card-title">${escapeHtml(session.problemLabel || "Mock interview")}</div>
+                    <p class="result-copy">${escapeHtml(session.problemPrompt || "")}</p>
+                  </div>
+                  <p class="small-copy">${escapeHtml(session.focusReason || "The interviewer adapts to your progress and live answer quality.")}</p>
+                  ${session.lastAdjustment ? `<p class="small-copy">${escapeHtml(session.lastAdjustment)}</p>` : ""}
+                `
+                : `
+                  <div class="coach-panel-intro">
+                    <div class="coach-card-title">No mock running yet</div>
+                    <p class="result-copy">The first problem is selected from the learner's weak spots. Later turns respond to the actual transcript.</p>
+                  </div>
+                `
+            }
+            ${actionMarkup}
+            ${renderArenaTranscript(session?.transcript || [])}
+            ${session?.summary ? renderMockRubric(session.summary) : mock.lastSession ? renderMockRubric(mock.lastSession) : ""}
+            ${mockLoadingMarkup}
+            ${mockInterviewState.error ? `<p class="coach-error">${escapeHtml(mockInterviewState.error)}</p>` : ""}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderMockInterviewPanels() {
+    document.querySelectorAll("[data-mock-interview]").forEach((root) => {
+      root.innerHTML = renderMockInterviewMarkup();
+
+      root.querySelectorAll("[data-mock-start]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!personalizationState.activeUserId || mockInterviewState.loading) {
+            return;
+          }
+
+          mockInterviewState.loading = true;
+          mockInterviewState.error = "";
+          syncPersonalizationUi();
+
+          try {
+            const payload = await apiJson(`/api/users/${personalizationState.activeUserId}/mock-interview/start`, {
+              method: "POST",
+              body: JSON.stringify({}),
+            });
+            mockInterviewState.data = payload.mockInterview;
+            await refreshActiveLearner();
+            return;
+          } catch (error) {
+            mockInterviewState.error = error.message;
+          } finally {
+            mockInterviewState.loading = false;
+            syncPersonalizationUi();
+          }
+        });
+      });
+
+      const form = root.querySelector("[data-mock-turn-form]");
+      if (form) {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!personalizationState.activeUserId || mockInterviewState.loading) {
+            return;
+          }
+
+          const probeId = form.dataset.probeId;
+          const answer = String(new FormData(form).get("answer") ?? "").trim();
+          if (!answer) {
+            mockInterviewState.error = "Write an answer first.";
+            syncPersonalizationUi();
+            return;
+          }
+
+          mockInterviewState.loading = true;
+          mockInterviewState.error = "";
+          syncPersonalizationUi();
+
+          try {
+            const payload = await apiJson(`/api/users/${personalizationState.activeUserId}/mock-interview/turn`, {
+              method: "POST",
+              body: JSON.stringify({ probeId, answer }),
+            });
+            mockInterviewState.data = payload.mockInterview;
+            await refreshActiveLearner();
+            return;
+          } catch (error) {
+            mockInterviewState.error = error.message;
+          } finally {
+            mockInterviewState.loading = false;
+            syncPersonalizationUi();
+          }
+        });
+      }
+    });
+  }
+
   function renderLearnerSidebarCards() {
     document.querySelectorAll("[data-learner-sidebar]").forEach((root) => {
       if (personalizationState.apiUnavailable) {
@@ -3879,6 +4144,8 @@
       chapterCoachState.error = "";
       arenaState.data = null;
       arenaState.error = "";
+      mockInterviewState.data = null;
+      mockInterviewState.error = "";
       syncPersonalizationUi();
       return;
     }
@@ -3911,6 +4178,16 @@
         arenaState.error = "";
       } catch (error) {
         arenaState.error = error.message;
+      }
+    }
+
+    if (document.querySelector("[data-mock-interview]")) {
+      try {
+        const payload = await apiJson(`/api/users/${personalizationState.activeUserId}/mock-interview/state`);
+        mockInterviewState.data = payload.mockInterview;
+        mockInterviewState.error = "";
+      } catch (error) {
+        mockInterviewState.error = error.message;
       }
     }
 

@@ -25,6 +25,38 @@ Sizing should quantify the pressure.
 The API contract should expose the product boundary and guarantee.
 The transport choice should follow latency, directionality, connection count, and delivery expectations.
 
+## Proper Mocks Are AI-Native, Not A Static Question Bank
+
+A useful mock interview is not just:
+
+> "Design Slack."
+
+plus a hidden answer key.
+
+That is a prompt bank, not an interviewer.
+
+A real mock needs to behave like another person in the room.
+It should choose the problem from your current profile, listen to the opening you actually gave, interrupt when the structure is unstable, push deeper when an answer is strong, and end by routing the miss back to the earliest layer that owns it.
+
+That makes the mock adaptive in two directions:
+
+| Signal | What the mock should do |
+|---|---|
+| recent weak spot | choose a problem that exposes that skill |
+| strong opening | move into path walk, tradeoff, or failure pressure |
+| premature components | pull back to `7+1` and `LGTC` instead of rewarding boxes |
+| vague tradeoff | ask for the strongest alternative and the accepted cost |
+| vague failure mode | force mechanism, signal, and mitigation |
+| repeated miss | stop increasing pressure and assign a repair drill |
+
+The score should still be human-readable.
+It should use interview dimensions, not internal model language:
+requirements, dominant stress, system shape, component justification, tradeoffs, and failure modes.
+
+So the course should not treat mocks as a pile of canned systems.
+The systems are only starting points.
+The interview is the adaptive conversation around them.
+
 ## Start With One Plausible But Unstable Week Of Preparation
 
 Imagine a candidate who has spent a week doing full mocks.
