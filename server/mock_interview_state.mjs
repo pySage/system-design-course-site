@@ -325,11 +325,10 @@ export function mockInterviewPublicState(user) {
 
   return {
     readiness: {
-      ready: Boolean(normalized.chapterProgress?.["08-drill-order-and-mock-interview-prep"]?.completedAt),
+      ready: true,
       entryCopy:
-        "AI mock interviews use the learner profile, prior misses, and live answer quality to choose the problem, interrupt, probe, score, and route repair work.",
-      lockedCopy:
-        "Complete Chapter 08 and its lesson check before starting full adaptive mocks. Earlier practice should stay chapter-scoped.",
+        "AI mock interviews are open for signed-in learners and use the learner profile, prior misses, and live answer quality to choose the problem, interrupt, probe, score, and route repair work.",
+      lockedCopy: "",
     },
     stats: {
       sessionsStarted: mock.sessionsStarted ?? 0,

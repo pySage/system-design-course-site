@@ -3116,52 +3116,43 @@
       : "";
     const startLabel = session?.status === "active" ? "Continue Mock" : "Start AI Mock";
 
-    const actionMarkup = !mock.readiness.ready
+    const actionMarkup = session?.activeProbe
       ? `
-        <div class="coach-empty coach-empty--tinted">
+        <div class="arena-session-card">
           <div class="coach-panel-intro">
-            <div class="coach-card-title">Finish Chapter 08 before full mocks</div>
-            <p class="result-copy">${escapeHtml(mock.readiness.lockedCopy)}</p>
+            <div class="coach-card-title">${escapeHtml(session.problemLabel || "Current mock")}</div>
+            <p class="result-copy">${escapeHtml(session.phase?.summary || "Answer the interviewer in spoken system-design language.")}</p>
           </div>
-        </div>
-      `
-      : session?.activeProbe
-        ? `
-          <div class="arena-session-card">
-            <div class="coach-panel-intro">
-              <div class="coach-card-title">${escapeHtml(session.problemLabel || "Current mock")}</div>
-              <p class="result-copy">${escapeHtml(session.phase?.summary || "Answer the interviewer in spoken system-design language.")}</p>
-            </div>
-            ${renderArenaPhaseProgress(session.phaseProgress)}
-            <p class="probe-question">${escapeHtml(session.activeProbe.prompt)}</p>
-            <form class="coach-chat-form" data-mock-turn-form data-probe-id="${escapeHtml(session.activeProbe.id)}">
-              <label class="probe-text-label" for="mock-answer">Your spoken answer</label>
-              <textarea id="mock-answer" name="answer" rows="7" placeholder="Drive the interview: clarify, reason, choose, and defend."></textarea>
-              <div class="quiz-actions">
-                <button class="button button-primary${mockInterviewState.loading ? " is-loading" : ""}" type="submit"${buttonBusyAttrs(mockInterviewState.loading)}>
-                  ${buttonInnerMarkup("Send Answer", "Scoring…", mockInterviewState.loading)}
-                </button>
-              </div>
-            </form>
-          </div>
-        `
-        : `
-          <div class="coach-empty coach-empty--tinted">
-            <div class="coach-panel-intro">
-              <div class="coach-card-title">${session?.status === "completed" ? "Mock complete" : "Ready for a full mock"}</div>
-              <p class="result-copy">${
-                session?.status === "completed"
-                  ? "Review the score, repair the weakest dimension, then start another mock when you want fresh pressure."
-                  : "Start a mock when you want an interviewer to choose the problem, interrupt, probe, score, and route repair based on your profile."
-              }</p>
-            </div>
+          ${renderArenaPhaseProgress(session.phaseProgress)}
+          <p class="probe-question">${escapeHtml(session.activeProbe.prompt)}</p>
+          <form class="coach-chat-form" data-mock-turn-form data-probe-id="${escapeHtml(session.activeProbe.id)}">
+            <label class="probe-text-label" for="mock-answer">Your spoken answer</label>
+            <textarea id="mock-answer" name="answer" rows="7" placeholder="Drive the interview: clarify, reason, choose, and defend."></textarea>
             <div class="quiz-actions">
-              <button class="button button-primary${mockInterviewState.loading ? " is-loading" : ""}" type="button" data-mock-start${buttonBusyAttrs(mockInterviewState.loading)}>
-                ${buttonInnerMarkup(startLabel, "Starting…", mockInterviewState.loading)}
+              <button class="button button-primary${mockInterviewState.loading ? " is-loading" : ""}" type="submit"${buttonBusyAttrs(mockInterviewState.loading)}>
+                ${buttonInnerMarkup("Send Answer", "Scoring…", mockInterviewState.loading)}
               </button>
             </div>
+          </form>
+        </div>
+      `
+      : `
+        <div class="coach-empty coach-empty--tinted">
+          <div class="coach-panel-intro">
+            <div class="coach-card-title">${session?.status === "completed" ? "Mock complete" : "Ready for a full mock"}</div>
+            <p class="result-copy">${
+              session?.status === "completed"
+                ? "Review the score, repair the weakest dimension, then start another mock when you want fresh pressure."
+                : "Start a mock when you want an interviewer to choose the problem, interrupt, probe, score, and route repair based on your profile."
+            }</p>
           </div>
-        `;
+          <div class="quiz-actions">
+            <button class="button button-primary${mockInterviewState.loading ? " is-loading" : ""}" type="button" data-mock-start${buttonBusyAttrs(mockInterviewState.loading)}>
+              ${buttonInnerMarkup(startLabel, "Starting…", mockInterviewState.loading)}
+            </button>
+          </div>
+        </div>
+      `;
 
     return `
       <div class="coach-grid">
