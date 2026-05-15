@@ -362,17 +362,19 @@ By Chapter 04, you can read the same production stories as timelines. The useful
 
 ### Cloudflare: Rollout Safety Is Part Of Runtime Design
 
-Cloudflare's July 2019 outage involved a globally deployed WAF rule that caused severe CPU exhaustion. Chapter 01 used it only as a pressure story. Now the Chapter 04 reading is different: fast global rollout is powerful, but it needs staged rollout, rollback controls, and a way to reach those controls even when the normal internal tools are impaired.
+Cloudflare's July 2019 outage started with a new web firewall rule. The rule was meant to inspect web requests, but one pattern inside it made machines spend far too much CPU time checking traffic. Because the rule was pushed worldwide very quickly, the bad work spread worldwide very quickly too.
 
-Staged rollout means the change touches a small, watched slice before it touches the whole world. A separate rollback path means responders are not trapped if the broken feature also hurts the usual control panel or login path.
+Chapter 01 used that as a pressure story. Chapter 04 reads it as a runtime-design lesson: if one rollout path can send a change everywhere in seconds, that rollout path needs its own safety design.
+
+Staged rollout means trying the change on a small, closely watched slice before sending it to everyone. Rollback controls mean having an emergency off switch. A separate rollback path means the team can still reach that off switch even if the broken change also makes the normal dashboard, login, or internal tools hard to use.
 
 Decision simulation:
 
-A rules change can execute on every request globally. What should the runtime design make visible before full rollout?
+A rules change can run on every web request around the world. Before turning it on everywhere, what should the system show, and what escape hatch should exist?
 
 Interview-ready answer:
 
-> "The rollout path itself is part of the system. I would try the change on a small slice first, watch resource saturation and error signals, and keep rollback controls reachable even if the normal internal path is unhealthy."
+> "The rollout path itself is part of the system. I would try the rule on a small slice first, watch CPU, error rates, and traffic-drop signals, and keep an emergency off switch reachable through a path that does not depend on the broken feature."
 
 Source: [Cloudflare, "Details of the Cloudflare outage on July 2, 2019"](https://blog.cloudflare.com/details-of-the-cloudflare-outage-on-july-2-2019/)
 
