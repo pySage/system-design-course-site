@@ -14,6 +14,7 @@ The goal is to make path discovery automatic before moving into correctness, lat
 4. Keep each actor tied to a concrete action, event, or read.
 5. Leave `Coach Feedback` blank until review.
 6. Revise in `Revised Answer` after feedback.
+7. Only after the Q1 answer is corrected, fill `Standard Interview Translation`.
 
 ## Active Threads
 
@@ -39,3 +40,18 @@ A solid Q1 answer should reveal:
 - read paths
 - fanout/fanin candidates
 - paths that may need separate correctness, latency, and load analysis later
+
+## Standard Interview Translation
+
+After the raw Q1 drill is reviewed, translate the same facts into the interviewer's familiar surface:
+
+| Section | What Q1 contributes |
+|---|---|
+| functional requirements | actor actions and in-scope paths |
+| non-functional requirements | only hints so far; Q2-Q7 will complete them |
+| core entities | nouns touched by actors and actions |
+| API sketch | candidate product contracts, not final components |
+| high-level design implication | path split candidates that later need LGTC |
+
+This second pass is not a replacement for `7+1`.
+It trains you to think in the course framework while speaking in standard interview language.

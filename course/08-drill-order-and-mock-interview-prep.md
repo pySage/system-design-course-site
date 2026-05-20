@@ -141,6 +141,18 @@ That chain is the same one the course kept building:
 6. name the real `tradeoff`
 7. explain what breaks first
 
+The interview answer needs one more adapter around that chain.
+You think in the course order, but you speak in the interviewer's expected order:
+
+```text
+internal: 7+1 -> LGTC -> archetype -> tradeoff -> first failure
+spoken: requirements -> NFRs -> entities -> API -> high-level design (HLD) -> deep dives
+```
+
+The adapter is part of practice.
+If you can reason correctly but cannot translate it into the familiar interview surface, the answer can still feel slow or unusual.
+If you can produce the surface without the reasoning, the answer can feel organized but shallow.
+
 When the chain snaps, diagnose the first broken link instead of repeating full mocks blindly:
 
 | If the answer breaks here... | Repair here first |
@@ -237,6 +249,28 @@ Those four are enough because they force different openings.
 `Stripe` forces correctness and retry language.
 `YouTube` makes the `+1` question heavier.
 `Uber` makes you separate live state from deferred work.
+
+### Translation Rep: Same Read, Standard Interview Surface
+
+After each Stage 2 opening, add a second pass that takes the same facts and speaks them in the standard interview order.
+
+Use this format:
+
+```text
+Functional requirements:
+Non-functional requirements:
+Core entities:
+API sketch:
+High-level design implication:
+Deep dive I would invite:
+```
+
+For example, after a Slack `7+1/LGTC` read, the spoken translation might be:
+
+> "Functionally, users send messages in DMs and channels, read recent history, receive live updates, and search older messages. Non-functionally, the hot path needs durable accept, per-channel order, low live-delivery latency, and tolerance for bursty fanout in large channels; search and analytics can lag. The core entities are user, workspace, channel, message, membership, and delivery state. I would sketch `POST message` as durable accept with retry identity, then draw the accepted-message path, async delivery path, and search indexing path. I would deep dive first into large-channel fanout because that is the earliest scale failure."
+
+This drill fixes the course's main presentation risk.
+It keeps `7+1/LGTC` as the reasoning engine, but trains the answer to sound like a standard interview.
 
 A strong Stage-2 run has a very specific feel:
 the first two or three minutes sound slower than a component-first opening, but much more stable after that.
@@ -838,7 +872,7 @@ Use the first week after reading to install the habits instead of starting rando
 | Day | Drill |
 |---|---|
 | 1 | Stage 1: explain five concepts for one minute each, then repair the weakest one |
-| 2 | Stage 2: run three component-ban openings for Slack, Stripe, and YouTube |
+| 2 | Stage 2: run three component-ban openings for Slack, Stripe, and YouTube, then translate each into requirements, entities, API, high-level design, and deep-dive language |
 | 3 | Stage 3: do two clean archetypes end to end, including tradeoff and first failure |
 | 4 | Stage 3: do the remaining clean archetypes in shorter reps |
 | 5 | Stage 4: split YouTube, Airbnb, Slack, and Uber by path and owner |

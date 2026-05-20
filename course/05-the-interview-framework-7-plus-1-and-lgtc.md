@@ -390,6 +390,49 @@ Typical time allocation is a guide, not a countdown:
 The interviewer sets the pace.
 If they redirect early, follow them, but keep the structure in your head.
 
+## Run Two Tracks: Thinking Track And Spoken Track
+
+This is the small adapter that keeps the course's strength while avoiding its main interview risk.
+
+Inside your head, the move is:
+
+```text
+7+1 -> LGTC -> archetype -> components -> tradeoff -> first failure
+```
+
+Out loud, the move can sound like the standard interview shape:
+
+```text
+requirements -> non-functional requirements -> entities -> API -> high-level design -> deep dives
+```
+
+Those are not competing frameworks.
+They are two views of the same work.
+
+The thinking track protects correctness.
+It stops you from drawing a system before you know source of truth, latency pain, peak shape, consistency boundary, async boundary, trust risk, and data shape.
+
+The spoken track protects pacing.
+It gives the interviewer familiar artifacts quickly enough that they can follow and evaluate you.
+
+For Slack, that translation could sound like this:
+
+> "I'll first scope the main user actions: send messages, read recent history, receive live updates, and search older history. For non-functional requirements, the main pressures are bursty fanout in large channels, durable message acceptance, per-conversation ordering, low latency for live delivery, and looser freshness for search. The core entities are users, workspaces, channels, messages, and delivery state. Then I would sketch the send and history APIs before drawing the high-level write, delivery, and search paths."
+
+Notice what happened.
+The sentence sounded like a normal interview opening, but it was powered by the `7+1` and `LGTC`.
+
+Do not announce every internal step.
+Do not say:
+
+> "Now I will do `LGTC`."
+
+Say the facts:
+
+> "The load pressure is bursty fanout, the correctness promise is durable per-channel order, live delivery is latency-sensitive, and search can lag."
+
+That is the course in interview language.
+
 ## Sketch The API Contract After Extraction
 
 After the `7+1` and `LGTC` read, an interviewer may expect a small API sketch before the architecture diagram.

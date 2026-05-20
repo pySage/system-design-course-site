@@ -26,3 +26,20 @@ Who or what interacts with the system, and what action or event do they produce 
 
 
 ## Revised Answer
+
+
+## Standard Interview Translation
+
+### Functional Requirements
+
+
+### Non-Functional Hints From Q1
+
+
+### Core Entities
+
+
+### API Sketch Candidates
+
+
+### High-Level Design Implication
